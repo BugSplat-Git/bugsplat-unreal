@@ -1,0 +1,32 @@
+AndroidPlatformFactory.RegisterBuildPlatforms: UnrealBuildTool.AndroidPlatformSDK has no valid SDK
+IOSPlatformFactory.RegisterBuildPlatforms: UnrealBuildTool.IOSPlatformSDK has no valid SDK
+LinuxPlatformFactory.RegisterBuildPlatforms: UnrealBuildTool.LinuxPlatformSDK has no valid SDK
+WindowsPlatformFactory.RegisterBuildPlatforms: UnrealBuildTool.WindowsPlatformSDK using manually installed SDK
+UnrealBuildTool.Main: ERROR: Project does not contain a valid FileVersion entry
+UnrealBuildTool.Main: BuildException: Project does not contain a valid FileVersion entry
+UnrealBuildTool.Main:    at UnrealBuildTool.ProjectDescriptor..ctor(JsonObject RawObject, DirectoryReference BaseDir) in D:\Build\++UE4\Sync\Engine\Source\Programs\UnrealBuildTool\System\ProjectDescriptor.cs:line 152
+UnrealBuildTool.Main:    at UnrealBuildTool.ProjectDescriptor.FromFile(FileReference FileName) in D:\Build\++UE4\Sync\Engine\Source\Programs\UnrealBuildTool\System\ProjectDescriptor.cs:line 211
+UnrealBuildTool.Main:    at UnrealBuildTool.ProjectFileGenerator.ConfigureProjectFileGeneration(String[] Arguments, Boolean& IncludeAllPlatforms) in D:\Build\++UE4\Sync\Engine\Source\Programs\UnrealBuildTool\ProjectFiles\ProjectFileGenerator.cs:line 1267
+UnrealBuildTool.Main:    at UnrealBuildTool.ProjectFileGenerator.GenerateProjectFiles(PlatformProjectGeneratorCollection PlatformProjectGenerators, String[] Arguments) in D:\Build\++UE4\Sync\Engine\Source\Programs\UnrealBuildTool\ProjectFiles\ProjectFileGenerator.cs:line 661
+UnrealBuildTool.Main:    at UnrealBuildTool.GenerateProjectFilesMode.Execute(CommandLineArguments Arguments) in D:\Build\++UE4\Sync\Engine\Source\Programs\UnrealBuildTool\Modes\GenerateProjectFilesMode.cs:line 208
+UnrealBuildTool.Main:    at UnrealBuildTool.UnrealBuildTool.Main(String[] ArgumentsArray) in D:\Build\++UE4\Sync\Engine\Source\Programs\UnrealBuildTool\UnrealBuildTool.cs:line 557
+Timeline.Print: Timeline:
+Timeline.Print: 
+Timeline.Print: [ 0.000]
+Timeline.Print: [ 0.000](+0.045) <unknown>
+Timeline.Print: [ 0.045](+0.080) XmlConfig.ReadConfigFiles()
+Timeline.Print: [ 0.125](+0.000) SingleInstanceMutex.Acquire()
+Timeline.Print: [ 0.125](+0.083) UEBuildPlatform.RegisterPlatforms()
+Timeline.Print:   0.126          [ 0.000](+0.044) Initializing InstalledPlatformInfo
+Timeline.Print:   0.170          [ 0.045](+0.000) Querying types
+Timeline.Print:   0.173          [ 0.047](+0.001) MacPlatformFactory
+Timeline.Print:   0.175          [ 0.049](+0.000) TVOSPlatformFactory
+Timeline.Print:   0.175          [ 0.050](+0.021) AndroidPlatformFactory
+Timeline.Print:   0.197          [ 0.071](+0.000) HoloLensPlatformFactory
+Timeline.Print:   0.198          [ 0.072](+0.003) IOSPlatformFactory
+Timeline.Print:   0.201          [ 0.075](+0.005) LinuxPlatformFactory
+Timeline.Print:   0.207          [ 0.081](+0.000) LuminPlatformFactory
+Timeline.Print:   0.208          [ 0.082](+0.001) WindowsPlatformFactory
+Timeline.Print: [ 0.209](+0.081) <unknown>
+Timeline.Print: [ 0.290](+0.000) FileMetadataPrefetch.Stop()
+Timeline.Print: [ 0.293]

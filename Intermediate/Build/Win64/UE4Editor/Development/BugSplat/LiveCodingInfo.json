@@ -1,0 +1,11 @@
+{
+	"RemapUnityFiles": 
+	{
+		"Module.BugSplat.cpp.obj": [
+			"BugSplat.cpp.obj",
+			"BugSplatCommands.cpp.obj",
+			"BugSplatSettings.cpp.obj",
+			"BugSplatStyle.cpp.obj"
+		]
+	}
+}

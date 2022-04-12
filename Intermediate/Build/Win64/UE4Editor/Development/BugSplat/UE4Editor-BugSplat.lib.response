@@ -1,0 +1,12 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UE4Editor-BugSplat.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"C:\Users\koops\OneDrive\Documents\Unreal Projects\MyProject2\Intermediate\Build\Win64\MyProject2Editor\Development\UnrealEd\SharedPCH.UnrealEd.ShadowErrors.h.obj"
+"C:\Users\koops\OneDrive\Documents\Unreal Projects\MyProject2\Plugins\BugSplat\Intermediate\Build\Win64\UE4Editor\Development\BugSplat\Module.BugSplat.cpp.obj"
+"C:\Users\koops\OneDrive\Documents\Unreal Projects\MyProject2\Plugins\BugSplat\Intermediate\Build\Win64\UE4Editor\Development\BugSplat\Default.rc2.res"
+/OUT:"C:\Users\koops\OneDrive\Documents\Unreal Projects\MyProject2\Plugins\BugSplat\Intermediate\Build\Win64\UE4Editor\Development\BugSplat\UE4Editor-BugSplat.lib"
