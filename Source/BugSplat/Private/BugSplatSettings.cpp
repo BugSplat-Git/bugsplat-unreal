@@ -134,7 +134,7 @@ void BugSplatSettings::saveSettingsToUProject()
 	PluginJsonObject->SetStringField(USERNAME_TAG, _username);	
 	PluginJsonObject->SetStringField(PASSWORD_TAG, _password);
 
-	// Next, we need to build the POSTBUILDSTEPS out properly.
+	addPostBuildSteps(PluginJsonObject);
 
 	FJsonSerializer::Serialize(PluginJsonObject, Writer);
 	FFileHelper::SaveStringToFile(Text, *_uProjectFilePath);

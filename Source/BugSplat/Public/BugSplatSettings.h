@@ -7,12 +7,12 @@
 static const FString BUGSPLAT_ENDPOINT_URL_FORMAT = FString("https://{0}.bugsplat.com/post/ue4/{1}/{2}");
 static const FString POST_BUILD_STEPS_CONSOLE_COMMAND_FORMAT =
 FString(
-	"call $(ProjectDir)\\Plugins\\BugSplat\\Source\\BugSplatSendPdbs\\bin\\SendPdbs.exe"
-	"/ u {0}" // Username
-	"/ p {1}" // Password
-	"/ a {2}" // AppName
-	"/ v {3}" // Version
-	"/ b {4}" // Database
+	"call \"$(ProjectDir)\\Plugins\\BugSplat\\Source\\BugSplatSendPdbs\\bin\\SendPdbs.exe\" "
+	"/ u {0} " // Username
+	"/ p {1} " // Password
+	"/ a {2} " // AppName
+	"/ v {3} " // Version
+	"/ b {4} " // Database
 	"/ d \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\"" // Project Directory
 );
 

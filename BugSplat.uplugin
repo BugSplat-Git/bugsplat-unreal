@@ -21,9 +21,15 @@
 			"LoadingPhase": "Default"
 		}
 	],
-	"AppName": "",
-	"AppVersion": "",
-	"Username": "",
-	"Database": "",
-	"Password": ""
+	"AppName": "Name",
+	"AppVersion": "Vers",
+	"Username": "Use",
+	"Database": "MySuperStar",
+	"Password": "Pas",
+	"PostBuildSteps":
+	{
+		"Win64": [
+			"call \"$(ProjectDir)\\Plugins\\BugSplat\\Source\\BugSplatSendPdbs\\bin\\SendPdbs.exe\"/ u Use/ p Pas/ a Name/ v Vers/ b MySuperStar/ d \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\""
+		]
+	}
 }
