@@ -5,15 +5,16 @@
 
 // TODO It feels like these should just go in the class declaration. What is c++ best practice?
 static const FString BUGSPLAT_ENDPOINT_URL_FORMAT = FString("https://{0}.bugsplat.com/post/ue4/{1}/{2}");
-static const FString POST_BUILD_STEPS_CONSOLE_COMMAND_FORMAT =
+static const FString BUGSPLAT_SENDPDBS_DIR = FString("\\Plugins\\BugSplat\\Source\\BugSplatSendPdbs\\bin\\SendPdbs.exe");
+static const FString POST_BUILD_STEPS_CONSOLE_COMMAND_FORMAT = 
 FString(
-	"call \"$(ProjectDir)\\Plugins\\BugSplat\\Source\\BugSplatSendPdbs\\bin\\SendPdbs.exe\" "
-	"/ u {0} " // Username
-	"/ p {1} " // Password
-	"/ a {2} " // AppName
-	"/ v {3} " // Version
-	"/ b {4} " // Database
-	"/ d \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\"" // Project Directory
+	"call \"$(ProjectDir){0}\" " //Send PDBS Endpoint
+	"/u {1} " // Username
+	"/p {2} " // Password
+	"/a {3} " // AppName
+	"/v {4} " // Version
+	"/b {5} " // Database
+	"/d \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\"" // Project Directory
 );
 
 static const FString LOCAL_CONFIG_PATH = *FPaths::Combine(FPaths::ProjectDir(), FString("/Config/DefaultEngine.ini"));
@@ -24,6 +25,9 @@ static const FString APP_NAME_TAG = FString("AppName");
 static const FString VERSION_TAG = FString("AppVersion"); // "Version" is reserved for plugin version.
 static const FString USERNAME_TAG = FString("Username");
 static const FString PASSWORD_TAG = FString("Password");
+
+static const FString WIN_64_LABEL = FString("Win64");
+static const FString POST_BUILD_STEPS_LABEL = FString("PostBuildSteps");
 
 class BugSplatSettings
 {

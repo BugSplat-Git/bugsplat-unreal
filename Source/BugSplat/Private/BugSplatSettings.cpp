@@ -47,6 +47,7 @@ FString BugSplatSettings::buildPostBuildStepsConsoleCommand()
 {
 	FStringFormatOrderedArguments args;
 
+	args.Add(BUGSPLAT_SENDPDBS_DIR);
 	args.Add(_username);
 	args.Add(_password);
 	args.Add(_appName);
@@ -66,7 +67,7 @@ void BugSplatSettings::loadSettingsFromConfigFile()
 
 	FString outString;
 
-	if (!fileJson->TryGetStringField("Database", outString))
+	if (!fileJson->TryGetStringField(DATABASE_TAG, outString))
 	{
 		// Is this setting it equal to the value or the ref?
 		FString empty = FString("");
@@ -87,13 +88,46 @@ void BugSplatSettings::loadSettingsFromConfigFile()
 
 void BugSplatSettings::addPostBuildSteps(TSharedRef<FJsonObject> jsonObject)
 {
-	TSharedPtr<FJsonObject> postBuildStepsJson = MakeShareable(new FJsonObject());
-	TArray<TSharedPtr<FJsonValue>> win64PostBuildStepsJson;
-	TSharedPtr<FJsonValueString> win64Value = MakeShareable(new FJsonValueString(buildPostBuildStepsConsoleCommand()));
-	win64PostBuildStepsJson.Add(win64Value);
-	postBuildStepsJson->SetArrayField("Win64", win64PostBuildStepsJson);
-	jsonObject->SetObjectField("PostBuildSteps", postBuildStepsJson);
-	
+	const TArray<TSharedPtr<FJsonValue>> * win64ConsoleCommandsOutput;
+	const TSharedPtr<FJsonObject> * postBuildStepsOutput;
+
+	TSharedPtr<FJsonObject> postBuildSteps = MakeShareable(new FJsonObject());
+	TArray<TSharedPtr<FJsonValue>> win64ConsoleCommands = TArray<TSharedPtr<FJsonValue>>();
+
+	TSharedPtr<FJsonValue> updatedPostBuildStepCommand = MakeShareable(new FJsonValueString(buildPostBuildStepsConsoleCommand()));
+	if (jsonObject->TryGetObjectField(POST_BUILD_STEPS_LABEL, postBuildStepsOutput))
+	{
+		if (postBuildStepsOutput->Get()->TryGetArrayField(WIN_64_LABEL, win64ConsoleCommandsOutput))
+		{
+			int bugSplatConsoleCommandIndex = -1;
+			for (int i = 0; i < win64ConsoleCommandsOutput->Num(); i++)
+			{
+				TSharedPtr<FJsonValue> value = (*win64ConsoleCommandsOutput)[i];
+				FString stringValue = (*win64ConsoleCommandsOutput)[i]->AsString();
+				win64ConsoleCommands.Add(value);
+				if (stringValue.Contains(BUGSPLAT_SENDPDBS_DIR))
+				{
+					bugSplatConsoleCommandIndex = i;
+				}
+			}
+
+			if (bugSplatConsoleCommandIndex < 0)
+			{
+				win64ConsoleCommands.Add(updatedPostBuildStepCommand);
+			}
+			else
+			{
+				win64ConsoleCommands[bugSplatConsoleCommandIndex] = updatedPostBuildStepCommand;
+			}
+		}
+	}
+	else
+	{
+		win64ConsoleCommands.Add(updatedPostBuildStepCommand);
+	}
+
+	postBuildSteps->SetArrayField(WIN_64_LABEL, win64ConsoleCommands);
+	jsonObject->SetObjectField(POST_BUILD_STEPS_LABEL, postBuildSteps);	
 }
 
 void BugSplatSettings::saveSettingsToConfigFile()
@@ -107,6 +141,7 @@ void BugSplatSettings::saveSettingsToConfigFile()
 
 	FString dataRouterUrlConfigTag = FString(TEXT("DataRouterUrl"));
 	FString dataRouterUrlValue = buildEndpointUrl();
+
 	FString crashReportClientVersionConfigTag = FString(TEXT("CrashReportClientVersion"));
 	FString crashReportClientVersionValue = FString(TEXT("1.0"));
 
