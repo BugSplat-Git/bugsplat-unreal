@@ -13,7 +13,6 @@
 #include <EngineSharedPCH.h>
 
 static const FName BugSplatTabName("BugSplat");
-static const FString BugSplatSendPdbsDirectory = FString("Test");
 
 #define LOCTEXT_NAMESPACE "FBugSplatModule"
 
@@ -43,8 +42,6 @@ void FBugSplatModule::StartupModule()
 void FBugSplatModule::ShutdownModule()
 {
 	delete _bugSplatSettings;
-	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
-	// we call this function before unloading the module.
 
 	UToolMenus::UnRegisterStartupCallback(this);
 
