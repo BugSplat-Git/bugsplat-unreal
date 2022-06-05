@@ -1,67 +1,73 @@
 #include "BugSplatSettings.h"
+#include <Developer/DesktopPlatform/Public/DesktopPlatformModule.h>
 
-BugSplatSettings::BugSplatSettings(FString configFilePath, FString uProjectFilePath)
+FBugSplatSettings::FBugSplatSettings(FString uProjectFilePath)
 {
-	_configFilePath = configFilePath;
-	_uProjectFilePath = uProjectFilePath;
-	loadSettingsFromConfigFile();
+	UProjectFilePath = uProjectFilePath;
+	LoadSettingsFromConfigFile();
 }
 
-void BugSplatSettings::setAppName(const FText& appName)
+void FBugSplatSettings::SetAppName(const FText& appName)
 {
-	_appName = appName.ToString();
+	AppName = appName.ToString();
 }
 
-void BugSplatSettings::setVersion(const FText& version)
+void FBugSplatSettings::SetVersion(const FText& version)
 {
-	_version = version.ToString();
+	Version = version.ToString();
 }
 
-void BugSplatSettings::setDatabase(const FText& database)
+void FBugSplatSettings::SetDatabase(const FText& database)
 {
-	_database = database.ToString();
+	Database = database.ToString();
 }
 
-void BugSplatSettings::setUsername(const FText& username)
+void FBugSplatSettings::SetUsername(const FText& username)
 {
-	_username = username.ToString();
+	Username = username.ToString();
 }
 
-void BugSplatSettings::setPassword(const FText& password)
+void FBugSplatSettings::SetPassword(const FText& password)
 {
-	_password = password.ToString();
+	Password = password.ToString();
 }
 
-FString BugSplatSettings::buildEndpointUrl()
+void FBugSplatSettings::SetUseGlobalIni(const ECheckBoxState newState)
+{
+	bool isToggledOn = newState == ECheckBoxState::Checked ? true : false;
+	bUseGlobalIni = isToggledOn;
+}
+
+FString FBugSplatSettings::BuildBugSplatEndpointUrl()
 {
 	FStringFormatOrderedArguments args;
 
-	args.Add(_database);
-	args.Add(_appName);
-	args.Add(_version);
+	args.Add(Database);
+	args.Add(AppName);
+	args.Add(Version);
 
 	return *FString::Format(*BUGSPLAT_ENDPOINT_URL_FORMAT, args);
 }
 
-FString BugSplatSettings::buildPostBuildStepsConsoleCommand()
+FString FBugSplatSettings::BuildPostBuildStepsConsoleCommand()
 {
 	FStringFormatOrderedArguments args;
 
 	args.Add(BUGSPLAT_SENDPDBS_DIR);
-	args.Add(_username);
-	args.Add(_password);
-	args.Add(_appName);
-	args.Add(_version);
-	args.Add(_database);
+	args.Add(Username);
+	args.Add(Password);
+	args.Add(AppName);
+	args.Add(Version);
+	args.Add(Database);
 
 	return *FString::Format(*POST_BUILD_STEPS_CONSOLE_COMMAND_FORMAT, args);
 }
 
-void BugSplatSettings::loadSettingsFromConfigFile()
+void FBugSplatSettings::LoadSettingsFromConfigFile()
 {
 	FString fileText;
 	TSharedPtr<FJsonObject> fileJson = MakeShareable(new FJsonObject());
-	FFileHelper::LoadFileToString(fileText, *_uProjectFilePath);
+	FFileHelper::LoadFileToString(fileText, *UProjectFilePath);
 	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(fileText);
 	FJsonSerializer::Deserialize(Reader, fileJson);
 
@@ -69,24 +75,25 @@ void BugSplatSettings::loadSettingsFromConfigFile()
 
 	if (!fileJson->TryGetStringField(DATABASE_TAG, outString))
 	{
-		// Is this setting it equal to the value or the ref?
 		FString empty = FString("");
-		_database = empty;
-		_appName = empty;
-		_version = empty;
-		_username = empty;
-		_password = empty;
+		Database = empty;
+		AppName = empty;
+		Version = empty;
+		Username = empty;
+		Password = empty;
+		bUseGlobalIni = false;
 		return;
 	}
 
-	_database = fileJson->GetStringField(DATABASE_TAG);
-	_appName = fileJson->GetStringField(APP_NAME_TAG);
-	_version = fileJson->GetStringField(VERSION_TAG);
-	_username = fileJson->GetStringField(USERNAME_TAG);
-	_password = fileJson->GetStringField(PASSWORD_TAG);
+	Database = fileJson->GetStringField(DATABASE_TAG);
+	AppName = fileJson->GetStringField(APP_NAME_TAG);
+	Version = fileJson->GetStringField(VERSION_TAG);
+	Username = fileJson->GetStringField(USERNAME_TAG);
+	Password = fileJson->GetStringField(PASSWORD_TAG);
+	bUseGlobalIni = fileJson->GetBoolField(USE_GLOBAL_INI_TAG);
 }
 
-void BugSplatSettings::addPostBuildSteps(TSharedRef<FJsonObject> jsonObject)
+void FBugSplatSettings::AddPostBuildSteps(TSharedRef<FJsonObject> jsonObject)
 {
 	const TArray<TSharedPtr<FJsonValue>> * win64ConsoleCommandsOutput;
 	const TSharedPtr<FJsonObject> * postBuildStepsOutput;
@@ -94,7 +101,7 @@ void BugSplatSettings::addPostBuildSteps(TSharedRef<FJsonObject> jsonObject)
 	TSharedPtr<FJsonObject> postBuildSteps = MakeShareable(new FJsonObject());
 	TArray<TSharedPtr<FJsonValue>> win64ConsoleCommands = TArray<TSharedPtr<FJsonValue>>();
 
-	TSharedPtr<FJsonValue> updatedPostBuildStepCommand = MakeShareable(new FJsonValueString(buildPostBuildStepsConsoleCommand()));
+	TSharedPtr<FJsonValue> updatedPostBuildStepCommand = MakeShareable(new FJsonValueString(BuildPostBuildStepsConsoleCommand()));
 	if (jsonObject->TryGetObjectField(POST_BUILD_STEPS_LABEL, postBuildStepsOutput))
 	{
 		if (postBuildStepsOutput->Get()->TryGetArrayField(WIN_64_LABEL, win64ConsoleCommandsOutput))
@@ -130,31 +137,30 @@ void BugSplatSettings::addPostBuildSteps(TSharedRef<FJsonObject> jsonObject)
 	jsonObject->SetObjectField(POST_BUILD_STEPS_LABEL, postBuildSteps);	
 }
 
-void BugSplatSettings::saveSettingsToConfigFile()
+void FBugSplatSettings::UpdateCrashReportClientIni(FString iniFilePath)
 {
 	FConfigCacheIni ini(EConfigCacheType::DiskBacked);
 
-	// TODO this could potentially be set in the global config file for ALL projects
-	ini.LoadFile(_configFilePath);
+	ini.LoadFile(iniFilePath);
 
 	FString sectionTag = FString(TEXT("CrashReportClient"));
 
 	FString dataRouterUrlConfigTag = FString(TEXT("DataRouterUrl"));
-	FString dataRouterUrlValue = buildEndpointUrl();
+	FString dataRouterUrlValue = BuildBugSplatEndpointUrl();
 
 	FString crashReportClientVersionConfigTag = FString(TEXT("CrashReportClientVersion"));
 	FString crashReportClientVersionValue = FString(TEXT("1.0"));
 
-	ini.SetString(*sectionTag, *dataRouterUrlConfigTag, *dataRouterUrlValue, _configFilePath);
-	ini.SetString(*sectionTag, *crashReportClientVersionConfigTag, *crashReportClientVersionValue, _configFilePath);
+	ini.SetString(*sectionTag, *dataRouterUrlConfigTag, *dataRouterUrlValue, iniFilePath);
+	ini.SetString(*sectionTag, *crashReportClientVersionConfigTag, *crashReportClientVersionValue, iniFilePath);
 }
 
-void BugSplatSettings::saveSettingsToUProject()
+void FBugSplatSettings::SaveSettingsToUProject()
 {
 	FString fileText;
 
 	TSharedPtr<FJsonObject> fileJson = MakeShareable(new FJsonObject());
-	FFileHelper::LoadFileToString(fileText, *_uProjectFilePath);
+	FFileHelper::LoadFileToString(fileText, *UProjectFilePath);
 	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(fileText);
 	FJsonSerializer::Deserialize(Reader, fileJson);
 
@@ -163,20 +169,43 @@ void BugSplatSettings::saveSettingsToUProject()
 	TSharedRef< TJsonWriter<> > WriterRef = TJsonWriterFactory<>::Create(&Text);
 	TJsonWriter<>& Writer = WriterRef.Get();
 
-	PluginJsonObject->SetStringField(DATABASE_TAG, _database);
-	PluginJsonObject->SetStringField(APP_NAME_TAG, _appName);
-	PluginJsonObject->SetStringField(VERSION_TAG, _version);
-	PluginJsonObject->SetStringField(USERNAME_TAG, _username);	
-	PluginJsonObject->SetStringField(PASSWORD_TAG, _password);
+	PluginJsonObject->SetStringField(DATABASE_TAG, Database);
+	PluginJsonObject->SetStringField(APP_NAME_TAG, AppName);
+	PluginJsonObject->SetStringField(VERSION_TAG, Version);
+	PluginJsonObject->SetStringField(USERNAME_TAG, Username);	
+	PluginJsonObject->SetStringField(PASSWORD_TAG, Password);
+	PluginJsonObject->SetBoolField(USE_GLOBAL_INI_TAG, bUseGlobalIni);
 
-	addPostBuildSteps(PluginJsonObject);
+	AddPostBuildSteps(PluginJsonObject);
 
 	FJsonSerializer::Serialize(PluginJsonObject, Writer);
-	FFileHelper::SaveStringToFile(Text, *_uProjectFilePath);
+	FFileHelper::SaveStringToFile(Text, *UProjectFilePath);
 }
 
-void BugSplatSettings::save()
+void FBugSplatSettings::Save()
 {
-	saveSettingsToUProject();
-	saveSettingsToConfigFile();
+	SaveSettingsToUProject();
+	if (bUseGlobalIni)
+	{
+		UpdateCrashReportClientIni(GLOBAL_CRASH_REPORT_CLIENT_CONFIG_PATH);
+	}
 }
+
+void FBugSplatSettings::PackageWithBugSplat()
+{
+	FString OutFolderName;
+
+
+	if (!FDesktopPlatformModule::Get()->OpenDirectoryDialog(
+		FSlateApplication::Get().FindBestParentWindowHandleForDialogs(nullptr),
+		FString("Packaged Directory"),
+		FPaths::GetProjectFilePath(),
+		OutFolderName))
+	{
+		return;
+	}
+
+	FString ConfigFilePathFormat = *FPaths::Combine( OutFolderName , *PACKAGED_BUILD_CONFIG_PATH);
+
+	UpdateCrashReportClientIni(ConfigFilePathFormat);
+}	

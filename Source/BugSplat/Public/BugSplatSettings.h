@@ -18,6 +18,8 @@ FString(
 );
 
 static const FString LOCAL_CONFIG_PATH = *FPaths::Combine(FPaths::ProjectDir(), FString("/Config/DefaultEngine.ini"));
+static const FString GLOBAL_CRASH_REPORT_CLIENT_CONFIG_PATH = *FPaths::Combine(FPaths::EngineDir(), FString("/Programs/CrashReportClient/Config/DefaultEngine.ini"));
+static const FString PACKAGED_BUILD_CONFIG_PATH = FString("WindowsNoEditor\\Engine\\Programs\\CrashReportClient\\Config\\DefaultEngine.ini");
 static const FString BUGSPLAT_UPROJECT_PATH = *FPaths::Combine(FPaths::ProjectDir(), FString("/Plugins/BugSplat/BugSplat.uplugin"));
 
 static const FString DATABASE_TAG = FString("Database");
@@ -25,47 +27,52 @@ static const FString APP_NAME_TAG = FString("AppName");
 static const FString VERSION_TAG = FString("AppVersion"); // "Version" is reserved for plugin version.
 static const FString USERNAME_TAG = FString("Username");
 static const FString PASSWORD_TAG = FString("Password");
+static const FString USE_GLOBAL_INI_TAG = FString("UseGlobalIni");
 
 static const FString WIN_64_LABEL = FString("Win64");
 static const FString POST_BUILD_STEPS_LABEL = FString("PostBuildSteps");
 
-class BugSplatSettings
+class FBugSplatSettings
 {
 public:
-	BugSplatSettings(FString configFilePath, FString uProjectFilePath);
+	FBugSplatSettings(FString uProjectFilePath);
 
-	void setAppName(const FText& appName);
-	void setVersion(const FText& version);
-	void setDatabase(const FText& database);
-	void setUsername(const FText& username);
-	void setPassword(const FText& password);
+	void SetAppName(const FText& appName);
+	void SetVersion(const FText& version);
+	void SetDatabase(const FText& database);
+	void SetUsername(const FText& username);
+	void SetPassword(const FText& password);
+	void SetUseGlobalIni(const ECheckBoxState newState);
 
-	// We should probably just make all these values public...
-	FText getAppName() { return FText::FromString(_appName); };
-	FText getVersion() { return FText::FromString(_version); };
-	FText getDatabase() { return FText::FromString(_database); };
-	FText getUsername() { return FText::FromString(_username); };
-	FText getPassword() { return FText::FromString(_password); };
+	FText GetAppName() { return FText::FromString(AppName); };
+	FText GetVersion() { return FText::FromString(Version); };
+	FText GetDatabase() { return FText::FromString(Database); };
+	FText GetUsername() { return FText::FromString(Username); };
+	FText GetPassword() { return FText::FromString(Password); };
+	bool GetUseGlobalIni() { return bUseGlobalIni; };
+	ECheckBoxState GetUseGlobalIniCheckboxState() const { return bUseGlobalIni ? ECheckBoxState::Checked : ECheckBoxState::Unchecked; };
 
-	FString buildEndpointUrl();
-	FString buildPostBuildStepsConsoleCommand();
+	FString BuildBugSplatEndpointUrl();
+	FString BuildPostBuildStepsConsoleCommand();
 
-	void save();
+	void PackageWithBugSplat();
+
+	void Save();
 
 private:
-	void loadSettingsFromConfigFile();
+	void LoadSettingsFromConfigFile();
 
-	void saveSettingsToConfigFile();
-	void saveSettingsToUProject();
+	void UpdateCrashReportClientIni(FString iniFilePath);
+	void SaveSettingsToUProject();
 
-	void addPostBuildSteps(TSharedRef<FJsonObject> jsonObject);
+	void AddPostBuildSteps(TSharedRef<FJsonObject> jsonObject);
 
-	FString _configFilePath;
-	FString _uProjectFilePath;
+	FString UProjectFilePath;
 
-	FString _database;
-	FString _appName;
-	FString _version;
-	FString _username;
-	FString _password;
+	FString Database;
+	FString AppName;
+	FString Version;
+	FString Username;
+	FString Password;
+	bool bUseGlobalIni;
 };

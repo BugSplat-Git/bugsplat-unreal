@@ -21,15 +21,16 @@
 			"LoadingPhase": "Default"
 		}
 	],
-	"AppName": "MyTestCrasher",
-	"AppVersion": "1.4",
-	"Username": "3d520731ca07058d91a959e614a80a7d",
-	"Database": "zandertlouie_gmail_com",
-	"Password": "AfHoeU8goitgzrphM0tbiQYd4Eyfd8fY",
+	"Database": "test",
+	"AppName": "MyApp",
+	"AppVersion": "5.0",
+	"Username": "fasf",
+	"Password": "aweg",
+	"UseGlobalIni": false,
 	"PostBuildSteps":
 	{
 		"Win64": [
-			"call \"$(ProjectDir)\\Plugins\\BugSplat\\Source\\BugSplatSendPdbs\\bin\\SendPdbs.exe\" /u 3d520731ca07058d91a959e614a80a7d /p AfHoeU8goitgzrphM0tbiQYd4Eyfd8fY /a MyTestCrasher /v 1.4 /b zandertlouie_gmail_com /d \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\""
+			"call \"$(ProjectDir)\\Plugins\\BugSplat\\Source\\BugSplatSendPdbs\\bin\\SendPdbs.exe\" /u fasf /p aweg /a MyApp /v 5.0 /b test /d \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\""
 		]
 	}
 }

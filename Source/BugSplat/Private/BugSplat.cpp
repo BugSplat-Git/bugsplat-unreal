@@ -41,7 +41,7 @@ void FBugSplatModule::StartupModule()
 
 void FBugSplatModule::ShutdownModule()
 {
-	delete _bugSplatSettings;
+	delete BugSplatSettings;
 
 	UToolMenus::UnRegisterStartupCallback(this);
 
@@ -56,7 +56,7 @@ void FBugSplatModule::ShutdownModule()
 
 TSharedRef<SDockTab> FBugSplatModule::OnSpawnPluginTab(const FSpawnTabArgs& SpawnTabArgs)
 {
-	_bugSplatSettings = new BugSplatSettings(LOCAL_CONFIG_PATH, BUGSPLAT_UPROJECT_PATH);
+	BugSplatSettings = new FBugSplatSettings(BUGSPLAT_UPROJECT_PATH);
 	return SNew(SDockTab)
 		.TabRole(ETabRole::NomadTab)
 		[
@@ -67,56 +67,81 @@ TSharedRef<SDockTab> FBugSplatModule::OnSpawnPluginTab(const FSpawnTabArgs& Spaw
 				+ SVerticalBox::Slot()
 				[
 					SNew(SEditableTextBox)
-					.OnTextChanged_Raw(_bugSplatSettings, &BugSplatSettings::setDatabase)
-					.Text(_bugSplatSettings->getDatabase())
+					.OnTextChanged_Raw(BugSplatSettings, &FBugSplatSettings::SetDatabase)
+					.Text(BugSplatSettings->GetDatabase())
 					.HintText(LOCTEXT("Database", "Database"))
 				]
 			+ SVerticalBox::Slot()
 				[
 					SNew(SEditableTextBox)
-					.OnTextChanged_Raw(_bugSplatSettings, &BugSplatSettings::setVersion)
-					.Text(_bugSplatSettings->getVersion())
+					.OnTextChanged_Raw(BugSplatSettings, &FBugSplatSettings::SetVersion)
+					.Text(BugSplatSettings->GetVersion())
 					.HintText(LOCTEXT("Version", "Version"))
 				]
 			+ SVerticalBox::Slot()
 				[
 					SNew(SEditableTextBox)
-					.OnTextChanged_Raw(_bugSplatSettings, &BugSplatSettings::setAppName)
-					.Text(_bugSplatSettings->getAppName())
+					.OnTextChanged_Raw(BugSplatSettings, &FBugSplatSettings::SetAppName)
+					.Text(BugSplatSettings->GetAppName())
 					.HintText(LOCTEXT("AppName", "Application Name"))
 				]
 			+ SVerticalBox::Slot()
 				[
 					SNew(SEditableTextBox)
-					.OnTextChanged_Raw(_bugSplatSettings, &BugSplatSettings::setUsername)
-					.Text(_bugSplatSettings->getUsername())
+					.OnTextChanged_Raw(BugSplatSettings, &FBugSplatSettings::SetUsername)
+					.Text(BugSplatSettings->GetUsername())
 					.HintText(LOCTEXT("User", "Username"))
 				]
 			+ SVerticalBox::Slot()
 				[
 					SNew(SEditableTextBox)
-					.OnTextChanged_Raw(_bugSplatSettings, &BugSplatSettings::setPassword)
-					.Text(_bugSplatSettings->getPassword())
+					.OnTextChanged_Raw(BugSplatSettings, &FBugSplatSettings::SetPassword)
+					.Text(BugSplatSettings->GetPassword())
 					.HintText(LOCTEXT("Password", "Password"))
+				]
+			+ SVerticalBox::Slot()
+				[
+					SNew(SCheckBox)
+					.OnCheckStateChanged_Raw(BugSplatSettings, &FBugSplatSettings::SetUseGlobalIni)
+					.IsChecked_Raw(BugSplatSettings, &FBugSplatSettings::GetUseGlobalIniCheckboxState)
+					[
+						SNew(STextBlock).Text(FText::FromString("Use Global INI"))
+					]
 				]
 			]
 			+ SHorizontalBox::Slot()
 				[
 					SNew(SButton)
-					.OnClicked_Raw(this, &FBugSplatModule::onSettingsSaved)
+					.OnClicked_Raw(this, &FBugSplatModule::OnSettingsSaved)
 					[
 						SNew(STextBlock)
 						.Font(FCoreStyle::GetDefaultFontStyle("Regular", 18))
 						.Text(LOCTEXT("ButtonText", "Submit"))
 					]
 				]	
+			+ SHorizontalBox::Slot()
+				[
+					SNew(SButton)
+					.OnClicked_Raw(this, &FBugSplatModule::OnPackageWithBugSplat)
+					[
+						SNew(STextBlock)
+						.Font(FCoreStyle::GetDefaultFontStyle("Regular", 18))
+						.Text(LOCTEXT("PackageText", "Package"))
+					]
+				]
 		];
 
 }
 
-FReply FBugSplatModule::onSettingsSaved()
+FReply FBugSplatModule::OnSettingsSaved()
 {
-	_bugSplatSettings->save();
+	BugSplatSettings->Save();
+	return FReply::Handled();
+}
+
+FReply FBugSplatModule::OnPackageWithBugSplat()
+{
+	BugSplatSettings->PackageWithBugSplat();
 	return FReply::Handled();
 }
 
