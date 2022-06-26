@@ -113,7 +113,7 @@ TSharedRef<SDockTab> FBugSplatModule::OnSpawnPluginTab(const FSpawnTabArgs& Spaw
 			[
 				SNew(SVerticalBox)
 				+ SVerticalBox::Slot()
-				.FillHeight(.2)
+				.FillHeight(.3)
 				[
 					SNew(STextBlock)
 					.TextStyle(FBugSplatStyle::Get(), "HeaderText")
@@ -121,7 +121,7 @@ TSharedRef<SDockTab> FBugSplatModule::OnSpawnPluginTab(const FSpawnTabArgs& Spaw
 				]
 				+ SVerticalBox::Slot()
 				.VAlign(VAlign_Top)
-				.FillHeight(.65)
+				.FillHeight(.6)
 				[
 					SNew(STextBlock)
 					.AutoWrapText(true)
@@ -130,7 +130,7 @@ TSharedRef<SDockTab> FBugSplatModule::OnSpawnPluginTab(const FSpawnTabArgs& Spaw
 				]
 				+ SVerticalBox::Slot()
 				.VAlign(VAlign_Top)
-				.FillHeight(.15)
+				.FillHeight(.1)
 				[
 					SNew(SRichTextBlock)
 					.Text(FText::FromString(TEXT("<a id=\"browser\" href=\"http://www.bugsplat.com\">View documents on BugSplat for Unreal Engine -></>")))

@@ -26,11 +26,5 @@
 	"AppVersion": "5.0",
 	"Username": "fasf",
 	"Password": "aweg",
-	"UseGlobalIni": true,
-	"PostBuildSteps":
-	{
-		"Win64": [
-			"call \"$(ProjectDir)\\Plugins\\BugSplat\\Source\\BugSplatSendPdbs\\bin\\SendPdbs.exe\" /u fasf /p aweg /a MyApp /v 5.0 /b test /d \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\""
-		]
-	}
+	"UseGlobalIni": true
 }

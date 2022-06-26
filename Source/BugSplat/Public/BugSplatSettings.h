@@ -3,19 +3,8 @@
 #include "CoreMinimal.h"
 #include <EngineSharedPCH.h>
 
-// TODO It feels like these should just go in the class declaration. What is c++ best practice?
 static const FString BUGSPLAT_ENDPOINT_URL_FORMAT = FString("https://{0}.bugsplat.com/post/ue4/{1}/{2}");
 static const FString BUGSPLAT_SENDPDBS_DIR = FString("\\Plugins\\BugSplat\\Source\\BugSplatSendPdbs\\bin\\SendPdbs.exe");
-static const FString POST_BUILD_STEPS_CONSOLE_COMMAND_FORMAT = 
-FString(
-	"call \"$(ProjectDir){0}\" " //Send PDBS Endpoint
-	"/u {1} " // Username
-	"/p {2} " // Password
-	"/a {3} " // AppName
-	"/v {4} " // Version
-	"/b {5} " // Database
-	"/d \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\"" // Project Directory
-);
 
 static const FString LOCAL_CONFIG_PATH = *FPaths::Combine(FPaths::ProjectDir(), FString("/Config/DefaultEngine.ini"));
 static const FString GLOBAL_CRASH_REPORT_CLIENT_CONFIG_PATH = *FPaths::Combine(FPaths::EngineDir(), FString("/Programs/CrashReportClient/Config/DefaultEngine.ini"));
@@ -52,8 +41,8 @@ public:
 	bool GetUseGlobalIni() { return bUseGlobalIni; };
 	ECheckBoxState GetUseGlobalIniCheckboxState() const { return bUseGlobalIni ? ECheckBoxState::Checked : ECheckBoxState::Unchecked; };
 
-	FString BuildBugSplatEndpointUrl();
-	FString BuildPostBuildStepsConsoleCommand();
+	FString CreateBugSplatEndpointUrl();
+	FString CreatePostBuildStepsConsoleCommand();
 
 	void PackageWithBugSplat();
 

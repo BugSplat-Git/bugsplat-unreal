@@ -38,7 +38,7 @@ void FBugSplatSettings::SetUseGlobalIni(const ECheckBoxState newState)
 	bUseGlobalIni = isToggledOn;
 }
 
-FString FBugSplatSettings::BuildBugSplatEndpointUrl()
+FString FBugSplatSettings::CreateBugSplatEndpointUrl()
 {
 	FStringFormatOrderedArguments args;
 
@@ -49,8 +49,19 @@ FString FBugSplatSettings::BuildBugSplatEndpointUrl()
 	return *FString::Format(*BUGSPLAT_ENDPOINT_URL_FORMAT, args);
 }
 
-FString FBugSplatSettings::BuildPostBuildStepsConsoleCommand()
+FString FBugSplatSettings::CreatePostBuildStepsConsoleCommand()
 {
+	FString PostBuildStepsConsoleCommandFormat =
+		FString(
+			"call \"$(ProjectDir){0}\" " //Send PDBS Endpoint
+			"/u {1} " // Username
+			"/p {2} " // Password
+			"/a {3} " // AppName
+			"/v {4} " // Version
+			"/b {5} " // Database
+			"/d \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\"" // Project Directory
+		);
+
 	FStringFormatOrderedArguments args;
 
 	args.Add(BUGSPLAT_SENDPDBS_DIR);
@@ -60,7 +71,7 @@ FString FBugSplatSettings::BuildPostBuildStepsConsoleCommand()
 	args.Add(Version);
 	args.Add(Database);
 
-	return *FString::Format(*POST_BUILD_STEPS_CONSOLE_COMMAND_FORMAT, args);
+	return *FString::Format(*PostBuildStepsConsoleCommandFormat, args);
 }
 
 void FBugSplatSettings::LoadSettingsFromConfigFile()
@@ -101,7 +112,7 @@ void FBugSplatSettings::AddPostBuildSteps(TSharedRef<FJsonObject> jsonObject)
 	TSharedPtr<FJsonObject> postBuildSteps = MakeShareable(new FJsonObject());
 	TArray<TSharedPtr<FJsonValue>> win64ConsoleCommands = TArray<TSharedPtr<FJsonValue>>();
 
-	TSharedPtr<FJsonValue> updatedPostBuildStepCommand = MakeShareable(new FJsonValueString(BuildPostBuildStepsConsoleCommand()));
+	TSharedPtr<FJsonValue> updatedPostBuildStepCommand = MakeShareable(new FJsonValueString(CreatePostBuildStepsConsoleCommand()));
 	if (jsonObject->TryGetObjectField(POST_BUILD_STEPS_LABEL, postBuildStepsOutput))
 	{
 		if (postBuildStepsOutput->Get()->TryGetArrayField(WIN_64_LABEL, win64ConsoleCommandsOutput))
@@ -146,7 +157,7 @@ void FBugSplatSettings::UpdateCrashReportClientIni(FString iniFilePath)
 	FString sectionTag = FString(TEXT("CrashReportClient"));
 
 	FString dataRouterUrlConfigTag = FString(TEXT("DataRouterUrl"));
-	FString dataRouterUrlValue = BuildBugSplatEndpointUrl();
+	FString dataRouterUrlValue = CreateBugSplatEndpointUrl();
 
 	FString crashReportClientVersionConfigTag = FString(TEXT("CrashReportClientVersion"));
 	FString crashReportClientVersionValue = FString(TEXT("1.0"));
@@ -206,6 +217,6 @@ void FBugSplatSettings::PackageWithBugSplat()
 	}
 
 	FString ConfigFilePathFormat = *FPaths::Combine( OutFolderName , *PACKAGED_BUILD_CONFIG_PATH);
-
+	
 	UpdateCrashReportClientIni(ConfigFilePathFormat);
 }	
