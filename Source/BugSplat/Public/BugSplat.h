@@ -8,6 +8,15 @@
 class FToolBarBuilder;
 class FMenuBuilder;
 
+enum BugSplatInputField
+{
+	Username,
+	Password,
+	Database,
+	ApplicationName,
+	Version
+};
+
 class FBugSplatModule : public IModuleInterface
 {
 public:
@@ -27,6 +36,7 @@ private:
 	void RegisterMenus();
 
 	TSharedRef<class SDockTab> OnSpawnPluginTab(const class FSpawnTabArgs& SpawnTabArgs);
+	TSharedPtr<SVerticalBox> CreateInputFieldWidget(FText InputFieldName, BugSplatInputField InputFieldType);
 
 private:
 	TSharedPtr<class FUICommandList> PluginCommands;

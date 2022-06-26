@@ -40,12 +40,39 @@ const FVector2D Icon16x16(16.0f, 16.0f);
 const FVector2D Icon20x20(20.0f, 20.0f);
 const FVector2D Icon40x40(40.0f, 40.0f);
 
+
 TSharedRef< FSlateStyleSet > FBugSplatStyle::Create()
 {
 	TSharedRef< FSlateStyleSet > Style = MakeShareable(new FSlateStyleSet("BugSplatStyle"));
-	Style->SetContentRoot(IPluginManager::Get().FindPlugin("BugSplat")->GetBaseDir() / TEXT("Resources"));
 
-	Style->Set("BugSplat.OpenPluginWindow", new IMAGE_BRUSH(TEXT("ButtonIcon_40x"), Icon40x40));
+	const FTextBlockStyle DefaultTextBlockStyle =
+		FTextBlockStyle()
+		.SetColorAndOpacity(FLinearColor::Gray)
+		.SetFont(FCoreStyle::GetDefaultFontStyle("Regular", 10));
+
+	Style->SetContentRoot(IPluginManager::Get().FindPlugin("BugSplat")->GetBaseDir() / TEXT("Resources"));
+	Style->Set("BugSplat.OpenPluginWindow", new IMAGE_BRUSH(TEXT("logo"), Icon40x40));
+	Style->Set("ProductImage", new IMAGE_BRUSH(TEXT("bugsplat_banner_video-game_blog"), FVector2D(474, 322)));
+	Style->Set("InputField",
+		FEditableTextBoxStyle()
+		.SetForegroundColor(FLinearColor::Gray)
+		.SetBackgroundColor(FLinearColor::Black));
+
+	Style->Set("HeaderText",
+		FTextBlockStyle(DefaultTextBlockStyle)
+		.SetFontSize(12)
+	);
+
+	Style->Set("SubtitleText",
+		FTextBlockStyle(DefaultTextBlockStyle)
+		.SetFontSize(10)
+	);
+
+	Style->Set("ButtonText",
+		FTextBlockStyle(DefaultTextBlockStyle)
+		.SetFontSize(8)
+		.SetColorAndOpacity(FLinearColor::Black)
+	);
 
 	return Style;
 }
