@@ -12,10 +12,9 @@
 #include "ToolMenus.h"
 #include <Runtime/Projects/Public/PluginDescriptor.h>
 #include <EngineSharedPCH.h>
+#include <Editor/MainFrame/Public/Interfaces/IMainFrameModule.h>
 
 static const FName BugSplatTabName("BugSplat");
-
-
 
 #define LOCTEXT_NAMESPACE "FBugSplatModule"
 
@@ -45,10 +44,6 @@ void FBugSplatModule::StartupModule()
 		FCanExecuteAction());
 
 	UToolMenus::RegisterStartupCallback(FSimpleMulticastDelegate::FDelegate::CreateRaw(this, &FBugSplatModule::RegisterMenus));
-	
-	FGlobalTabmanager::Get()->RegisterNomadTabSpawner(BugSplatTabName, FOnSpawnTab::CreateRaw(this, &FBugSplatModule::OnSpawnPluginTab))
-		.SetDisplayName(LOCTEXT("FBugSplatTabTitle", "BugSplat"))
-		.SetMenuType(ETabSpawnerMenuType::Hidden);
 }
 
 void FBugSplatModule::ShutdownModule()
@@ -67,19 +62,17 @@ void FBugSplatModule::ShutdownModule()
 }
 
 
-TSharedRef<SDockTab> FBugSplatModule::OnSpawnPluginTab(const FSpawnTabArgs& SpawnTabArgs)
-{
-	BugSplatSettings = new FBugSplatSettings(BUGSPLAT_UPROJECT_PATH);
-	
+TSharedRef<SBox> FBugSplatModule::CreateBugSplatWindowContent()
+{	
 	TSharedPtr<SVerticalBox> DatabaseField = CreateInputFieldWidget(FText::FromString("Database"), BugSplatInputField::Database);
+
+	TSharedPtr<SVerticalBox> ApplicationField = CreateInputFieldWidget(FText::FromString("Application"), BugSplatInputField::ApplicationName);
 	
 	TSharedPtr<SVerticalBox> VersionField = CreateInputFieldWidget(FText::FromString("Version"), BugSplatInputField::Version);
 
-	TSharedPtr<SVerticalBox> UsernameField = CreateInputFieldWidget(FText::FromString("Username"), BugSplatInputField::Username);
+	TSharedPtr<SVerticalBox> UsernameField = CreateInputFieldWidget(FText::FromString("Client ID"), BugSplatInputField::ClientID);
 
-	TSharedPtr<SVerticalBox> PasswordField = CreateInputFieldWidget(FText::FromString("Password"), BugSplatInputField::Password);
-
-	TSharedPtr<SVerticalBox> ApplicationField = CreateInputFieldWidget(FText::FromString("Application"), BugSplatInputField::ApplicationName);
+	TSharedPtr<SVerticalBox> PasswordField = CreateInputFieldWidget(FText::FromString("Client Secret"), BugSplatInputField::ClientSecret);
 
 	float BrandImageHeight = .4f;
 	float DescriptionTextHeight = .2f;
@@ -89,8 +82,7 @@ TSharedRef<SDockTab> FBugSplatModule::OnSpawnPluginTab(const FSpawnTabArgs& Spaw
 	FMargin InputFieldMargin = FMargin(0, 0, 20, 0);
 	FMargin BlockMargin = FMargin(20, 10, 20, 10);
 
-	return SNew(SDockTab)
-		.TabRole(ETabRole::NomadTab)
+	return SNew(SBox)
 		[
 			SNew(SVerticalBox)
 			+ SVerticalBox::Slot()
@@ -109,24 +101,25 @@ TSharedRef<SDockTab> FBugSplatModule::OnSpawnPluginTab(const FSpawnTabArgs& Spaw
 			]
 			+ SVerticalBox::Slot()
 			.FillHeight(DescriptionTextHeight)
-			.Padding(BlockMargin)
+			.Padding(FMargin(20, 10, 20, 0))
 			[
 				SNew(SVerticalBox)
 				+ SVerticalBox::Slot()
-				.FillHeight(.3)
+				.FillHeight(.15)
 				[
 					SNew(STextBlock)
+
 					.TextStyle(FBugSplatStyle::Get(), "HeaderText")
-					.Text(FText::FromString("Title Text in Default Font / Color"))
+					.Text(FText::FromString("BugSplat Unreal Settings"))
 				]
 				+ SVerticalBox::Slot()
 				.VAlign(VAlign_Top)
-				.FillHeight(.6)
+				.FillHeight(.8)
 				[
 					SNew(STextBlock)
 					.AutoWrapText(true)
 					.TextStyle(FBugSplatStyle::Get(), "SubtitleText")
-					.Text(FText::FromString("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."))
+					.Text(FText::FromString("Integrate your game with BugSplat crash reporting by filling in the fields below. This plugin can configure crash reporting for a packaged game (required for shipping builds) or the global engine DefaultEngine.ini (optional but useful for development). Additionally, this plugin can add a PostBuild step for symbol uploads which is required to calculate function namesand line numbers in crash reports."))
 				]
 				+ SVerticalBox::Slot()
 				.VAlign(VAlign_Top)
@@ -240,7 +233,19 @@ FReply FBugSplatModule::OnPackageWithBugSplat()
 
 void FBugSplatModule::PluginButtonClicked()
 {
-	FGlobalTabmanager::Get()->TryInvokeTab(BugSplatTabName);
+	BugSplatSettings = new FBugSplatSettings(BUGSPLAT_UPROJECT_PATH);
+
+	TSharedRef<SWindow> BugSplatWindow =
+		SNew(SWindow)
+		.Title(LOCTEXT("FBugSplatTabTitle", "BugSplat"))
+		.ClientSize(FVector2D(640, 800))
+		.MinHeight(800)
+		.MinWidth(640);
+
+	BugSplatWindow->SetContent(CreateBugSplatWindowContent());
+	IMainFrameModule& MainFrameModule = FModuleManager::LoadModuleChecked<IMainFrameModule>(TEXT("MainFrame"));
+	auto RootWindow = MainFrameModule.GetParentWindow();
+	FSlateApplication::Get().AddModalWindow(BugSplatWindow, RootWindow);
 }
 
 void FBugSplatModule::RegisterMenus()
@@ -277,12 +282,12 @@ TSharedPtr<SVerticalBox> FBugSplatModule::CreateInputFieldWidget(FText InputFiel
 				.OnTextChanged_Raw(BugSplatSettings, &FBugSplatSettings::SetAppName)
 				.Text(BugSplatSettings->GetAppName());
 			break;
-		case(BugSplatInputField::Password):
+		case(BugSplatInputField::ClientSecret):
 			TextBox = SAssignNew(TextBox, SEditableTextBox)
 				.Style(FBugSplatStyle::Get(), "InputField")
 				.HintText(InputFieldName)
-				.OnTextChanged_Raw(BugSplatSettings, &FBugSplatSettings::SetPassword)
-				.Text(BugSplatSettings->GetPassword());
+				.OnTextChanged_Raw(BugSplatSettings, &FBugSplatSettings::SetClientSecret)
+				.Text(BugSplatSettings->GetClientSecret());
 			break;
 		case(BugSplatInputField::Version):
 			TextBox = SAssignNew(TextBox, SEditableTextBox)
@@ -291,12 +296,12 @@ TSharedPtr<SVerticalBox> FBugSplatModule::CreateInputFieldWidget(FText InputFiel
 				.OnTextChanged_Raw(BugSplatSettings, &FBugSplatSettings::SetVersion)
 				.Text(BugSplatSettings->GetVersion());
 			break;
-		case(BugSplatInputField::Username):
+		case(BugSplatInputField::ClientID):
 			TextBox = SAssignNew(TextBox, SEditableTextBox)
 				.Style(FBugSplatStyle::Get(), "InputField")
 				.HintText(InputFieldName)
-				.OnTextChanged_Raw(BugSplatSettings, &FBugSplatSettings::SetUsername)
-				.Text(BugSplatSettings->GetUsername());
+				.OnTextChanged_Raw(BugSplatSettings, &FBugSplatSettings::SetClientID)
+				.Text(BugSplatSettings->GetClientID());
 			break;
 	}
 

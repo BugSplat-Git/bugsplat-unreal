@@ -52,7 +52,7 @@ TSharedRef< FSlateStyleSet > FBugSplatStyle::Create()
 
 	Style->SetContentRoot(IPluginManager::Get().FindPlugin("BugSplat")->GetBaseDir() / TEXT("Resources"));
 	Style->Set("BugSplat.OpenPluginWindow", new IMAGE_BRUSH(TEXT("logo"), Icon40x40));
-	Style->Set("ProductImage", new IMAGE_BRUSH(TEXT("bugsplat_banner_video-game_blog"), FVector2D(474, 322)));
+	Style->Set("ProductImage", new IMAGE_BRUSH(TEXT("bs-unreal-plugin-header"), FVector2D(2000, 814)));
 	Style->Set("InputField",
 		FEditableTextBoxStyle()
 		.SetForegroundColor(FLinearColor::Gray)

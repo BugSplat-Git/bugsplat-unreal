@@ -1,41 +1,35 @@
 #include "BugSplatSettings.h"
 #include <Developer/DesktopPlatform/Public/DesktopPlatformModule.h>
 
-FBugSplatSettings::FBugSplatSettings(FString uProjectFilePath)
+FBugSplatSettings::FBugSplatSettings(FString UProjectFilePath)
 {
-	UProjectFilePath = uProjectFilePath;
+	FBugSplatSettings::UProjectFilePath = UProjectFilePath;
 	LoadSettingsFromConfigFile();
 }
 
-void FBugSplatSettings::SetAppName(const FText& appName)
+void FBugSplatSettings::SetAppName(const FText& NewAppName)
 {
-	AppName = appName.ToString();
+	AppName = NewAppName.ToString();
 }
 
-void FBugSplatSettings::SetVersion(const FText& version)
+void FBugSplatSettings::SetVersion(const FText& NewVersion)
 {
-	Version = version.ToString();
+	Version = NewVersion.ToString();
 }
 
-void FBugSplatSettings::SetDatabase(const FText& database)
+void FBugSplatSettings::SetDatabase(const FText& NewDatabase)
 {
-	Database = database.ToString();
+	Database = NewDatabase.ToString();
 }
 
-void FBugSplatSettings::SetUsername(const FText& username)
+void FBugSplatSettings::SetClientID(const FText& NewClientID)
 {
-	Username = username.ToString();
+	ClientID = NewClientID.ToString();
 }
 
-void FBugSplatSettings::SetPassword(const FText& password)
+void FBugSplatSettings::SetClientSecret(const FText& NewPassword)
 {
-	Password = password.ToString();
-}
-
-void FBugSplatSettings::SetUseGlobalIni(const ECheckBoxState newState)
-{
-	bool isToggledOn = newState == ECheckBoxState::Checked ? true : false;
-	bUseGlobalIni = isToggledOn;
+	ClientSecret = NewPassword.ToString();
 }
 
 FString FBugSplatSettings::CreateBugSplatEndpointUrl()
@@ -65,8 +59,8 @@ FString FBugSplatSettings::CreatePostBuildStepsConsoleCommand()
 	FStringFormatOrderedArguments args;
 
 	args.Add(BUGSPLAT_SENDPDBS_DIR);
-	args.Add(Username);
-	args.Add(Password);
+	args.Add(ClientID);
+	args.Add(ClientSecret);
 	args.Add(AppName);
 	args.Add(Version);
 	args.Add(Database);
@@ -90,21 +84,19 @@ void FBugSplatSettings::LoadSettingsFromConfigFile()
 		Database = empty;
 		AppName = empty;
 		Version = empty;
-		Username = empty;
-		Password = empty;
-		bUseGlobalIni = false;
+		ClientID = empty;
+		ClientSecret = empty;
 		return;
 	}
 
 	Database = fileJson->GetStringField(DATABASE_TAG);
 	AppName = fileJson->GetStringField(APP_NAME_TAG);
 	Version = fileJson->GetStringField(VERSION_TAG);
-	Username = fileJson->GetStringField(USERNAME_TAG);
-	Password = fileJson->GetStringField(PASSWORD_TAG);
-	bUseGlobalIni = fileJson->GetBoolField(USE_GLOBAL_INI_TAG);
+	ClientID = fileJson->GetStringField(CLIENT_ID_TAG);
+	ClientSecret = fileJson->GetStringField(CLIENT_SECRET_TAG);
 }
 
-void FBugSplatSettings::AddPostBuildSteps(TSharedRef<FJsonObject> jsonObject)
+void FBugSplatSettings::AddPostBuildSteps(TSharedRef<FJsonObject> JsonObject)
 {
 	const TArray<TSharedPtr<FJsonValue>> * win64ConsoleCommandsOutput;
 	const TSharedPtr<FJsonObject> * postBuildStepsOutput;
@@ -113,7 +105,7 @@ void FBugSplatSettings::AddPostBuildSteps(TSharedRef<FJsonObject> jsonObject)
 	TArray<TSharedPtr<FJsonValue>> win64ConsoleCommands = TArray<TSharedPtr<FJsonValue>>();
 
 	TSharedPtr<FJsonValue> updatedPostBuildStepCommand = MakeShareable(new FJsonValueString(CreatePostBuildStepsConsoleCommand()));
-	if (jsonObject->TryGetObjectField(POST_BUILD_STEPS_LABEL, postBuildStepsOutput))
+	if (JsonObject->TryGetObjectField(POST_BUILD_STEPS_LABEL, postBuildStepsOutput))
 	{
 		if (postBuildStepsOutput->Get()->TryGetArrayField(WIN_64_LABEL, win64ConsoleCommandsOutput))
 		{
@@ -145,14 +137,14 @@ void FBugSplatSettings::AddPostBuildSteps(TSharedRef<FJsonObject> jsonObject)
 	}
 
 	postBuildSteps->SetArrayField(WIN_64_LABEL, win64ConsoleCommands);
-	jsonObject->SetObjectField(POST_BUILD_STEPS_LABEL, postBuildSteps);	
+	JsonObject->SetObjectField(POST_BUILD_STEPS_LABEL, postBuildSteps);	
 }
 
-void FBugSplatSettings::UpdateCrashReportClientIni(FString iniFilePath)
+void FBugSplatSettings::UpdateCrashReportClientIni(FString IniFilePath)
 {
 	FConfigCacheIni ini(EConfigCacheType::DiskBacked);
 
-	ini.LoadFile(iniFilePath);
+	ini.LoadFile(IniFilePath);
 
 	FString sectionTag = FString(TEXT("CrashReportClient"));
 
@@ -162,8 +154,8 @@ void FBugSplatSettings::UpdateCrashReportClientIni(FString iniFilePath)
 	FString crashReportClientVersionConfigTag = FString(TEXT("CrashReportClientVersion"));
 	FString crashReportClientVersionValue = FString(TEXT("1.0"));
 
-	ini.SetString(*sectionTag, *dataRouterUrlConfigTag, *dataRouterUrlValue, iniFilePath);
-	ini.SetString(*sectionTag, *crashReportClientVersionConfigTag, *crashReportClientVersionValue, iniFilePath);
+	ini.SetString(*sectionTag, *dataRouterUrlConfigTag, *dataRouterUrlValue, IniFilePath);
+	ini.SetString(*sectionTag, *crashReportClientVersionConfigTag, *crashReportClientVersionValue, IniFilePath);
 }
 
 void FBugSplatSettings::SaveSettingsToUProject()
@@ -183,9 +175,8 @@ void FBugSplatSettings::SaveSettingsToUProject()
 	PluginJsonObject->SetStringField(DATABASE_TAG, Database);
 	PluginJsonObject->SetStringField(APP_NAME_TAG, AppName);
 	PluginJsonObject->SetStringField(VERSION_TAG, Version);
-	PluginJsonObject->SetStringField(USERNAME_TAG, Username);	
-	PluginJsonObject->SetStringField(PASSWORD_TAG, Password);
-	PluginJsonObject->SetBoolField(USE_GLOBAL_INI_TAG, bUseGlobalIni);
+	PluginJsonObject->SetStringField(CLIENT_ID_TAG, ClientID);	
+	PluginJsonObject->SetStringField(CLIENT_SECRET_TAG, ClientSecret);
 
 	AddPostBuildSteps(PluginJsonObject);
 
@@ -196,10 +187,6 @@ void FBugSplatSettings::SaveSettingsToUProject()
 void FBugSplatSettings::Save()
 {
 	SaveSettingsToUProject();
-	if (bUseGlobalIni)
-	{
-		UpdateCrashReportClientIni(GLOBAL_CRASH_REPORT_CLIENT_CONFIG_PATH);
-	}
 }
 
 void FBugSplatSettings::PackageWithBugSplat()

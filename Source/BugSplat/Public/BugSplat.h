@@ -10,8 +10,8 @@ class FMenuBuilder;
 
 enum BugSplatInputField
 {
-	Username,
-	Password,
+	ClientID,
+	ClientSecret,
 	Database,
 	ApplicationName,
 	Version
@@ -35,7 +35,7 @@ private:
 
 	void RegisterMenus();
 
-	TSharedRef<class SDockTab> OnSpawnPluginTab(const class FSpawnTabArgs& SpawnTabArgs);
+	TSharedRef<class SBox> CreateBugSplatWindowContent();
 	TSharedPtr<SVerticalBox> CreateInputFieldWidget(FText InputFieldName, BugSplatInputField InputFieldType);
 
 private:

@@ -14,9 +14,8 @@ static const FString BUGSPLAT_UPROJECT_PATH = *FPaths::Combine(FPaths::ProjectDi
 static const FString DATABASE_TAG = FString("Database");
 static const FString APP_NAME_TAG = FString("AppName");
 static const FString VERSION_TAG = FString("AppVersion"); // "Version" is reserved for plugin version.
-static const FString USERNAME_TAG = FString("Username");
-static const FString PASSWORD_TAG = FString("Password");
-static const FString USE_GLOBAL_INI_TAG = FString("UseGlobalIni");
+static const FString CLIENT_ID_TAG = FString("ClientID");
+static const FString CLIENT_SECRET_TAG = FString("ClientSecret");
 
 static const FString WIN_64_LABEL = FString("Win64");
 static const FString POST_BUILD_STEPS_LABEL = FString("PostBuildSteps");
@@ -26,18 +25,17 @@ class FBugSplatSettings
 public:
 	FBugSplatSettings(FString uProjectFilePath);
 
-	void SetAppName(const FText& appName);
-	void SetVersion(const FText& version);
-	void SetDatabase(const FText& database);
-	void SetUsername(const FText& username);
-	void SetPassword(const FText& password);
-	void SetUseGlobalIni(const ECheckBoxState newState);
+	void SetAppName(const FText& AppName);
+	void SetVersion(const FText& Version);
+	void SetDatabase(const FText& Database);
+	void SetClientID(const FText& ClientID);
+	void SetClientSecret(const FText& ClientSecret);
 
 	FText GetAppName() { return FText::FromString(AppName); };
 	FText GetVersion() { return FText::FromString(Version); };
 	FText GetDatabase() { return FText::FromString(Database); };
-	FText GetUsername() { return FText::FromString(Username); };
-	FText GetPassword() { return FText::FromString(Password); };
+	FText GetClientID() { return FText::FromString(ClientID); };
+	FText GetClientSecret() { return FText::FromString(ClientSecret); };
 	bool GetUseGlobalIni() { return bUseGlobalIni; };
 	ECheckBoxState GetUseGlobalIniCheckboxState() const { return bUseGlobalIni ? ECheckBoxState::Checked : ECheckBoxState::Unchecked; };
 
@@ -61,7 +59,7 @@ private:
 	FString Database;
 	FString AppName;
 	FString Version;
-	FString Username;
-	FString Password;
+	FString ClientID;
+	FString ClientSecret;
 	bool bUseGlobalIni;
 };
