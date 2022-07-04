@@ -36,8 +36,6 @@ public:
 	FText GetDatabase() { return FText::FromString(Database); };
 	FText GetClientID() { return FText::FromString(ClientID); };
 	FText GetClientSecret() { return FText::FromString(ClientSecret); };
-	bool GetUseGlobalIni() { return bUseGlobalIni; };
-	ECheckBoxState GetUseGlobalIniCheckboxState() const { return bUseGlobalIni ? ECheckBoxState::Checked : ECheckBoxState::Unchecked; };
 
 	FString CreateBugSplatEndpointUrl();
 	FString CreatePostBuildStepsConsoleCommand();
@@ -61,5 +59,5 @@ private:
 	FString Version;
 	FString ClientID;
 	FString ClientSecret;
-	bool bUseGlobalIni;
+
 };
