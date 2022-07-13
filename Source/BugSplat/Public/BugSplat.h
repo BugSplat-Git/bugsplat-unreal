@@ -28,8 +28,9 @@ public:
 	/** This function will be bound to Command (by default it will bring up plugin window) */
 	void PluginButtonClicked();
 
-	FReply OnSettingsSaved();
-	FReply OnPackageWithBugSplat();
+	FReply OnUpdateGlobalIni();
+	FReply OnUpdateLocalIni();
+	FReply OnUpdateSendPdbsShell();
 	
 private:
 

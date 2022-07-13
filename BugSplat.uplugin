@@ -2,11 +2,11 @@
 	"FileVersion": 3,
 	"Version": "1.2",
 	"VersionName": "1.0",
-	"FriendlyName": "UObject Example Plugin",
-	"Description": "An example of a plugin which declares its own UObject type.  This can be used as a starting point when creating your own plugin.",
-	"Category": "Examples",
-	"CreatedBy": "Epic Games, Inc.",
-	"CreatedByURL": "http://epicgames.com",
+	"FriendlyName": "",
+	"Description": "",
+	"Category": "Crash Reporting",
+	"CreatedBy": "BugSplat",
+	"CreatedByURL": "http://bugsplat.com",
 	"DocsURL": "",
 	"MarketplaceURL": "",
 	"SupportURL": "",
@@ -21,10 +21,13 @@
 			"LoadingPhase": "Default"
 		}
 	],
-	"Database": "test",
-	"AppName": "MyApp",
-	"AppVersion": "5.0",
-	"Username": "fasf",
-	"Password": "aweg",
-	"UseGlobalIni": true
+	"PostBuildSteps":
+	{
+		"Win64": [
+			"call \"$(ProjectDir)\\Plugins\\BugSplat\\Source\\Shell\\BugSplat.bat\" $(TargetPlatform)"
+		],
+		"Linux": [
+			"call \"$(ProjectDir)\\Plugins\\BugSplat\\Source\\Shell\\BugSplat.bat\" $(TargetPlatform)"
+		]
+	}
 }

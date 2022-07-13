@@ -119,7 +119,7 @@ TSharedRef<SBox> FBugSplatModule::CreateBugSplatWindowContent()
 					SNew(STextBlock)
 					.AutoWrapText(true)
 					.TextStyle(FBugSplatStyle::Get(), "SubtitleText")
-					.Text(FText::FromString("Integrate your game with BugSplat crash reporting by filling in the fields below. This plugin can configure crash reporting for a packaged game (required for shipping builds) or the global engine DefaultEngine.ini (optional but useful for development). Additionally, this plugin can add a PostBuild step for symbol uploads which is required to calculate function namesand line numbers in crash reports."))
+					.Text(FText::FromString("Integrate your game with BugSplat crash reporting by filling in the fields below. This plugin can configure crash reporting for a packaged game (required for shipping builds) or the global engine DefaultEngine.ini (optional but useful for development). Additionally, this plugin can add a PostBuild step for symbol uploads which is required to calculate function names and line numbers in crash reports."))
 				]
 				+ SVerticalBox::Slot()
 				.VAlign(VAlign_Top)
@@ -186,47 +186,60 @@ TSharedRef<SBox> FBugSplatModule::CreateBugSplatWindowContent()
 			[
 				SNew(SHorizontalBox)
 				+ SHorizontalBox::Slot()
-				.FillWidth(.30)
+				.FillWidth(.33)
 				.Padding(FMargin(0, 10, 10, 10))
 				[
 					SNew(SButton)
 					.HAlign(HAlign_Center)
 					.VAlign(VAlign_Center)
 					.ContentPadding(FMargin(8, 2))
-					.OnClicked_Raw(this, &FBugSplatModule::OnSettingsSaved)
+					.OnClicked_Raw(this, &FBugSplatModule::OnUpdateGlobalIni)
 					.TextStyle(FBugSplatStyle::Get(), "ButtonText")
 					.Text(FText::FromString("Update Global INI"))
 				]
 				+ SHorizontalBox::Slot()
-				.FillWidth(.30)
-				.Padding(FMargin(10, 10, 0, 10))
+				.FillWidth(.33)
+				.Padding(FMargin(10, 10, 10, 10))
 				[
 					SNew(SButton)
 					.HAlign(HAlign_Center)
 					.VAlign(VAlign_Center)
 					.ContentPadding(FMargin(8, 2))
-					.OnClicked_Raw(this, &FBugSplatModule::OnPackageWithBugSplat)
+					.OnClicked_Raw(this, &FBugSplatModule::OnUpdateLocalIni)
 					.TextStyle(FBugSplatStyle::Get(), "ButtonText")
 					.Text(FText::FromString("Update Game INI"))
 				]
 				+ SHorizontalBox::Slot()
-				.FillWidth(.40)
-				[
-					SNew(SSpacer)
-				]					
+					.FillWidth(.33)
+					.Padding(FMargin(10, 10, 0, 10))
+					[
+						SNew(SButton)
+						.HAlign(HAlign_Center)
+					.VAlign(VAlign_Center)
+					.ContentPadding(FMargin(8, 2))
+					.OnClicked_Raw(this, &FBugSplatModule::OnUpdateSendPdbsShell)
+					.TextStyle(FBugSplatStyle::Get(), "ButtonText")
+					.Text(FText::FromString("Update SendPdbs Shell"))
+					]
 			]
 		];
 }
 
-FReply FBugSplatModule::OnSettingsSaved()
+FReply FBugSplatModule::OnUpdateGlobalIni()
 {
-	BugSplatSettings->Save();
+	BugSplatSettings->UpdateGlobalIni();
 	return FReply::Handled();
 }
 
-FReply FBugSplatModule::OnPackageWithBugSplat()
+FReply FBugSplatModule::OnUpdateLocalIni()
 {
-	BugSplatSettings->PackageWithBugSplat();
+	BugSplatSettings->UpdateLocalIni();
+	return FReply::Handled();
+}
+
+FReply FBugSplatModule::OnUpdateSendPdbsShell()
+{
+	BugSplatSettings->WriteSendPdbsToShellScript();
 	return FReply::Handled();
 }
 
