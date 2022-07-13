@@ -32,7 +32,7 @@ If you would like BugSplat to be configured for every new packaged build, select
 
 // Helpful Image Here //
 
-If you would like to add BugSplat after a build has been packaged, select 'Add to Local Ini'. You will be prompted to provide the location of your packaged build. Note that you will need to repeat this step for every instance of your packaged game.
+If you would like to add BugSplat after a build has been packaged, select 'Add to Local Ini'. You will be prompted to provide the location of your packaged build. Note that you will need to repeat this step for every instance of your packaged game if you did not add your configuration settings to the Global Ini.
 
 // Helpful Image Here //
 
