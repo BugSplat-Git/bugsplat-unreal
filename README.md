@@ -19,7 +19,21 @@ In order to use this package please make sure you have completed the following c
 * [Sign Up](https://app.bugsplat.com/v2/sign-up) as a new BugSplat user
 * [Log In](https://app.bugsplat.com/auth0/login) to your account
 
+## 🏗 Installation 
+
+You may choose to add BugSplat to your Unreal Project manually, or through the Unreal Marketplace.
+
+### Install to project manually
+1. Navigate to your project folder, which contains your [ProjectName].uproject file.
+2. If it does not already exist, create a folder called Plugins.
+3. Place bugsplat-unreal into the Plugins folder.
+4. Ensure you can access the BugSplat plugin through Edit > BugSplat.
+
+### Install from MarketPlace
+(TODO Include link to marketplace and some helpful steps)
+
 ## ⚙️ Usage
+
 BugSplat's Unreal integration modifies crash report configuration settings and automatically uploads symbol files during build time. To get started, access the BugSplat configuration menu through Edit > BugSplat.
 
 Fill in your application and user settings. Note that a Client ID and Client Secret can be generated on the BugSplat [Integrations](https://app.bugsplat.com/v2/settings/database/integrations) page.
@@ -36,7 +50,7 @@ If you would like to add BugSplat after a build has been packaged, select 'Add t
 
 // Helpful Image Here //
 
-If you would like BugSplat to automatically upload symbol files during package time, select 'Add Post Build Symbol Upload'. 
+If you would like BugSplat to automatically upload symbol files during package time, select 'Update SendPdbs Shell'. This will generate a bash script which uploads your Project's Binaries to BugSplat. By default, a call to this bash file is added to the BugSplat.uplugin 'PostBuildSteps', which will run automatically when your game is built.
 
 ## 🧑‍💻 Contributing
 
