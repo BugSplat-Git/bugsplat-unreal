@@ -39,7 +39,6 @@ public:
 	FText GetClientSecret() { return FText::FromString(ClientSecret); };
 
 	FString CreateBugSplatEndpointUrl();
-	FString CreatePostBuildStepsConsoleCommand();
 
 	void UpdateLocalIni();
 	void UpdateGlobalIni();

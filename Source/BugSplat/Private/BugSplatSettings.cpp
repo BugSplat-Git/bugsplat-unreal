@@ -48,31 +48,6 @@ FString FBugSplatSettings::CreateBugSplatEndpointUrl()
 	return *FString::Format(*BUGSPLAT_ENDPOINT_URL_FORMAT, args);
 }
 
-FString FBugSplatSettings::CreatePostBuildStepsConsoleCommand()
-{
-	FString PostBuildStepsConsoleCommandFormat =
-		FString(
-			"call \"$(ProjectDir){0}\" " //Send PDBS Endpoint
-			"/u {1} " // Username
-			"/p {2} " // Password
-			"/a {3} " // AppName
-			"/v {4} " // Version
-			"/b {5} " // Database
-			"/d \"$(ProjectDir)\\Binaries\\$(TargetPlatform)\"" // Project Directory
-		);
-
-	FStringFormatOrderedArguments args;
-
-	args.Add(BUGSPLAT_SENDPDBS_DIR);
-	args.Add(ClientID);
-	args.Add(ClientSecret);
-	args.Add(AppName);
-	args.Add(Version);
-	args.Add(Database);
-
-	return *FString::Format(*PostBuildStepsConsoleCommandFormat, args);
-}
-
 void FBugSplatSettings::LoadSettingsFromConfigFile()
 {
 	FString fileText;
@@ -103,6 +78,12 @@ void FBugSplatSettings::LoadSettingsFromConfigFile()
 
 void FBugSplatSettings::UpdateCrashReportClientIni(FString IniFilePath)
 {
+	if (!FPaths::FileExists(IniFilePath))
+	{
+		FMessageDialog::Debugf(FText::FromString("Invalid Project Directory!"));
+		return;
+	}
+
 	FConfigCacheIni ini(EConfigCacheType::DiskBacked);
 
 	ini.LoadFile(IniFilePath);
@@ -117,6 +98,8 @@ void FBugSplatSettings::UpdateCrashReportClientIni(FString IniFilePath)
 
 	ini.SetString(*sectionTag, *dataRouterUrlConfigTag, *dataRouterUrlValue, IniFilePath);
 	ini.SetString(*sectionTag, *crashReportClientVersionConfigTag, *crashReportClientVersionValue, IniFilePath);
+
+	FMessageDialog::Debugf(FText::FromString("Configuration File Successfully Updated!"));
 }
 
 void FBugSplatSettings::SaveSettingsToUProject()
@@ -168,6 +151,7 @@ void FBugSplatSettings::WriteSendPdbsToShellScript()
 
 	FString FormattedString = *FString::Format(*PostBuildStepsConsoleCommandFormat, args);
 	FFileHelper::SaveStringToFile(FormattedString, *BUGSPLAT_BASH_DIR);
+	FMessageDialog::Debugf(FText::FromString("Shell script successfully updated!"));
 }
 
 void FBugSplatSettings::UpdateGlobalIni()
@@ -189,12 +173,6 @@ void FBugSplatSettings::UpdateLocalIni()
 	}
 
 	FString ConfigFilePathFormat = *FPaths::Combine( OutFolderName , *PACKAGED_BUILD_CONFIG_PATH);
-	
-	if (!FPaths::FileExists(ConfigFilePathFormat))
-	{
-		FMessageDialog::Debugf(FText::FromString("Invalid Project Directory!"));
-		return;
-	}
 
 	UpdateCrashReportClientIni(ConfigFilePathFormat);
 }	

@@ -3,8 +3,8 @@
 	"Version": "1.2",
 	"VersionName": "1.0",
 	"FriendlyName": "",
-	"Description": "",
-	"Category": "Crash Reporting",
+	"Description": "BugSplat provides crash reporting for Unreal projects, and gives invaluable insight into the issues tripping up your users.",
+	"Category": "BugSplat",
 	"CreatedBy": "BugSplat",
 	"CreatedByURL": "http://bugsplat.com",
 	"DocsURL": "",
@@ -17,16 +17,13 @@
 	"Modules": [
 		{
 			"Name": "BugSplat",
-			"Type": "Developer",
+			"Type": "Editor",
 			"LoadingPhase": "Default"
 		}
 	],
 	"PostBuildSteps":
 	{
 		"Win64": [
-			"call \"$(ProjectDir)\\Plugins\\BugSplat\\Source\\Shell\\BugSplat.bat\" $(TargetPlatform)"
-		],
-		"Linux": [
 			"call \"$(ProjectDir)\\Plugins\\BugSplat\\Source\\Shell\\BugSplat.bat\" $(TargetPlatform)"
 		]
 	}
