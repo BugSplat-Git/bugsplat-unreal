@@ -21,9 +21,9 @@ In order to use this package please make sure you have completed the following c
 
 ## 🏗 Installation 
 
-You can choose to add BugSplat to your Unreal Project manually through git, or by downloading it through the Unreal Marketplace.
+You may choose to add BugSplat to your Unreal Project manually, or through the Unreal Marketplace.
 
-### Install to project 
+### Install to project manually
 1. Navigate to your project folder, which contains your [ProjectName].uproject file.
 2. If it does not already exist, create a folder called Plugins.
 3. Place bugsplat-unreal into the Plugins folder.
@@ -50,7 +50,7 @@ If you would like to add BugSplat after a build has been packaged, select 'Add t
 
 // Helpful Image Here //
 
-If you would like BugSplat to automatically upload symbol files during package time, select 'Add Post Build Symbol Upload'. 
+If you would like BugSplat to automatically upload symbol files during package time, select 'Update SendPdbs Shell'. This will generate a bash script which uploads your Project's Binaries to BugSplat. By default, a call to this bash file is added to the BugSplat.uplugin 'PostBuildSteps', which will run automatically when your game is built.
 
 ## 🧑‍💻 Contributing
 
