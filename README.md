@@ -19,7 +19,21 @@ In order to use this package please make sure you have completed the following c
 * [Sign Up](https://app.bugsplat.com/v2/sign-up) as a new BugSplat user
 * [Log In](https://app.bugsplat.com/auth0/login) to your account
 
+## 🏗 Installation 
+
+You can choose to add BugSplat to your Unreal Project manually through git, or by downloading it through the Unreal Marketplace.
+
+### Install to project 
+1. Navigate to your project folder, which contains your [ProjectName].uproject file.
+2. If it does not already exist, create a folder called Plugins.
+3. Place bugsplat-unreal into the Plugins folder.
+4. Ensure you can access the BugSplat plugin through Edit > BugSplat.
+
+### Install from MarketPlace
+(TODO Include link to marketplace and some helpful steps)
+
 ## ⚙️ Usage
+
 BugSplat's Unreal integration modifies crash report configuration settings and automatically uploads symbol files during build time. To get started, access the BugSplat configuration menu through Edit > BugSplat.
 
 Fill in your application and user settings. Note that a Client ID and Client Secret can be generated on the BugSplat [Integrations](https://app.bugsplat.com/v2/settings/database/integrations) page.
