@@ -9,7 +9,7 @@ static const FString BUGSPLAT_BASH_DIR = *FPaths::Combine(FPaths::ProjectDir(), 
 
 static const FString LOCAL_CONFIG_PATH = *FPaths::Combine(FPaths::ProjectDir(), FString("/Config/DefaultEngine.ini"));
 static const FString GLOBAL_CRASH_REPORT_CLIENT_CONFIG_PATH = *FPaths::Combine(FPaths::EngineDir(), FString("/Programs/CrashReportClient/Config/DefaultEngine.ini"));
-static const FString PACKAGED_BUILD_CONFIG_PATH = FString("WindowsNoEditor\\Engine\\Programs\\CrashReportClient\\Config\\DefaultEngine.ini");
+static const FString PACKAGED_BUILD_CONFIG_PATH = FString("Engine\\Restricted\\NoRedist\\Programs\\CrashReportClient\\Config\\DefaultEngine.ini");
 static const FString BUGSPLAT_UPROJECT_PATH = *FPaths::Combine(FPaths::ProjectDir(), FString("/Plugins/BugSplat/BugSplat.uplugin"));
 
 static const FString DATABASE_TAG = FString("Database");

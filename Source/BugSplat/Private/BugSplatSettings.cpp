@@ -76,14 +76,22 @@ void FBugSplatSettings::LoadSettingsFromConfigFile()
 	ClientSecret = fileJson->GetStringField(CLIENT_SECRET_TAG);
 }
 
-void FBugSplatSettings::UpdateCrashReportClientIni(FString IniFilePath)
+void FBugSplatSettings::UpdateCrashReportClientIni(FString PackagedBuildFolderPath)
 {
 	// TODO BG test if the project directory is valid by traversing the directory structure
 	// TODO BG create file if it doesn't exist
 	// TODO BG conditional for Unreal Engine <= 4.25 packaged path ([BUILD_DIR]\WindowsNoEditor\Engine\Programs\CrashReportClient\Config\NoRedist)
 	// TODO BG conditional for Unreal Engine >= 4.26 packaged path ([BUILD_DIR]\WindowsNoEditor\Engine\Restricted\NoRedist\Programs\CrashReportClient\Config)
-	// TODO BG support for Windows instead of WindowsNoEditor (UE5)
 	// TODO BG give user more info on what folder they should select
+
+	FString IniFilePath = *FPaths::Combine(PackagedBuildFolderPath, "Windows", *PACKAGED_BUILD_CONFIG_PATH);
+
+	if (!FPaths::FileExists(IniFilePath))
+	{
+		// Support UE4 Packaged Directory Convention
+		IniFilePath = *FPaths::Combine(PackagedBuildFolderPath, "WindowsNoEditor", *PACKAGED_BUILD_CONFIG_PATH);
+	}
+
 	if (!FPaths::FileExists(IniFilePath))
 	{
 		FMessageDialog::Debugf(FText::FromString("Invalid Project Directory!"));
@@ -167,18 +175,16 @@ void FBugSplatSettings::UpdateGlobalIni()
 
 void FBugSplatSettings::UpdateLocalIni()
 {
-	FString OutFolderName;
+	FString PackagedBuildFolderPath;
 
 	if (!FDesktopPlatformModule::Get()->OpenDirectoryDialog(
 		FSlateApplication::Get().FindBestParentWindowHandleForDialogs(nullptr),
 		FString("Packaged Directory"),
 		FPaths::GetProjectFilePath(),
-		OutFolderName))
+		PackagedBuildFolderPath))
 	{
 		return;
 	}
 
-	FString ConfigFilePathFormat = *FPaths::Combine( OutFolderName , *PACKAGED_BUILD_CONFIG_PATH);
-
-	UpdateCrashReportClientIni(ConfigFilePathFormat);
+	UpdateCrashReportClientIni(PackagedBuildFolderPath);
 }	
