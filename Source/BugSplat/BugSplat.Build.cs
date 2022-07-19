@@ -1,6 +1,13 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
+using System.IO;
 using UnrealBuildTool;
+
+#if UE_5_0_OR_LATER
+using EpicGames.Core;
+#else
+using Tools.DotNETCommon;
+#endif
 
 public class BugSplat : ModuleRules
 {
@@ -55,5 +62,17 @@ public class BugSplat : ModuleRules
 				// ... add any modules that your module loads dynamically here ...
 			}
 			);
+		
+		if (Target.Platform == UnrealTargetPlatform.IOS)
+		{
+			PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Private/IOS"));
+
+			PublicAdditionalFrameworks.Add(new Framework("Bugsplat", "../ThirdParty/IOS/Bugsplat.embeddedframework.zip", "HockeySDKResources.bundle"));
+
+			PrivateDependencyModuleNames.AddRange(new string[] { "Launch" });
+			string PluginPath = Utils.MakePathRelativeTo(ModuleDirectory, Target.RelativeEnginePath);
+
+			AdditionalPropertiesForReceipt.Add("IOSPlugin", Path.Combine(PluginPath, "Bugsplat_IOS_UPL.xml"));
+		}
 	}
 }

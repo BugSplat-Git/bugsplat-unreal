@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <init>
+        <log text="Bugsplat SDK iOS UPL initialization"/>
+        <copyDir src="$S(PluginDir)/../ThirdParty/IOS/Bugsplat.framework" dst="$S(BuildDir)/Frameworks/Bugsplat.framework" />
+    </init>
+</root>
