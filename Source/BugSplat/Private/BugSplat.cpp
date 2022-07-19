@@ -126,7 +126,8 @@ TSharedRef<SBox> FBugSplatModule::CreateBugSplatWindowContent()
 				.FillHeight(.1)
 				[
 					SNew(SRichTextBlock)
-					.Text(FText::FromString(TEXT("<a id=\"browser\" href=\"http://www.bugsplat.com\">View documents on BugSplat for Unreal Engine -></>")))
+					// TODO BG link to plugin specific docs 
+					.Text(FText::FromString(TEXT("<a id=\"browser\" href=\"http://www.bugsplat.com\">View BugSplat's Unreal Engine Docs-></>")))
 					.AutoWrapText(true)
 					.DecoratorStyleSet(&FCoreStyle::Get())
 					+ SRichTextBlock::HyperlinkDecorator(TEXT("browser"), FSlateHyperlinkRun::FOnClick::CreateStatic(&OnBrowserLinkClicked))
@@ -148,8 +149,9 @@ TSharedRef<SBox> FBugSplatModule::CreateBugSplatWindowContent()
 					+ SHorizontalBox::Slot()
 					.Padding(InputFieldMargin)
 					[
-						VersionField->AsShared()
+						ApplicationField->AsShared()
 					]
+					
 				]
 				+ SVerticalBox::Slot()
 				[
@@ -157,7 +159,7 @@ TSharedRef<SBox> FBugSplatModule::CreateBugSplatWindowContent()
 					+ SHorizontalBox::Slot()
 					.Padding(InputFieldMargin)
 					[
-						ApplicationField->AsShared()
+						VersionField->AsShared()
 					]
 					+ SHorizontalBox::Slot()
 					.Padding(InputFieldMargin)
@@ -215,11 +217,11 @@ TSharedRef<SBox> FBugSplatModule::CreateBugSplatWindowContent()
 					[
 						SNew(SButton)
 						.HAlign(HAlign_Center)
-					.VAlign(VAlign_Center)
-					.ContentPadding(FMargin(8, 2))
-					.OnClicked_Raw(this, &FBugSplatModule::OnUpdateSendPdbsShell)
-					.TextStyle(FBugSplatStyle::Get(), "ButtonText")
-					.Text(FText::FromString("Update SendPdbs Shell"))
+						.VAlign(VAlign_Center)
+						.ContentPadding(FMargin(8, 2))
+						.OnClicked_Raw(this, &FBugSplatModule::OnUpdateSendPdbsScript)
+						.TextStyle(FBugSplatStyle::Get(), "ButtonText")
+						.Text(FText::FromString("Add Symbol Uploads"))
 					]
 			]
 		];
@@ -237,9 +239,9 @@ FReply FBugSplatModule::OnUpdateLocalIni()
 	return FReply::Handled();
 }
 
-FReply FBugSplatModule::OnUpdateSendPdbsShell()
+FReply FBugSplatModule::OnUpdateSendPdbsScript()
 {
-	BugSplatSettings->WriteSendPdbsToShellScript();
+	BugSplatSettings->WriteSendPdbsToScript();
 	return FReply::Handled();
 }
 

@@ -78,6 +78,12 @@ void FBugSplatSettings::LoadSettingsFromConfigFile()
 
 void FBugSplatSettings::UpdateCrashReportClientIni(FString IniFilePath)
 {
+	// TODO BG test if the project directory is valid by traversing the directory structure
+	// TODO BG create file if it doesn't exist
+	// TODO BG conditional for Unreal Engine <= 4.25 packaged path ([BUILD_DIR]\WindowsNoEditor\Engine\Programs\CrashReportClient\Config\NoRedist)
+	// TODO BG conditional for Unreal Engine >= 4.26 packaged path ([BUILD_DIR]\WindowsNoEditor\Engine\Restricted\NoRedist\Programs\CrashReportClient\Config)
+	// TODO BG support for Windows instead of WindowsNoEditor (UE5)
+	// TODO BG give user more info on what folder they should select
 	if (!FPaths::FileExists(IniFilePath))
 	{
 		FMessageDialog::Debugf(FText::FromString("Invalid Project Directory!"));
@@ -126,7 +132,7 @@ void FBugSplatSettings::SaveSettingsToUProject()
 	FFileHelper::SaveStringToFile(Text, *UProjectFilePath);
 }
 
-void FBugSplatSettings::WriteSendPdbsToShellScript()
+void FBugSplatSettings::WriteSendPdbsToScript()
 {
 	FString PostBuildStepsConsoleCommandFormat =
 		FString(
@@ -151,7 +157,7 @@ void FBugSplatSettings::WriteSendPdbsToShellScript()
 
 	FString FormattedString = *FString::Format(*PostBuildStepsConsoleCommandFormat, args);
 	FFileHelper::SaveStringToFile(FormattedString, *BUGSPLAT_BASH_DIR);
-	FMessageDialog::Debugf(FText::FromString("Shell script successfully updated!"));
+	FMessageDialog::Debugf(FText::FromString("Symbol uploads added successfully!"));
 }
 
 void FBugSplatSettings::UpdateGlobalIni()
