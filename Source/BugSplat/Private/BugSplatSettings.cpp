@@ -1,5 +1,6 @@
 #include "BugSplatSettings.h"
 #include <Developer/DesktopPlatform/Public/DesktopPlatformModule.h>
+#include <Modules/BuildVersion.h>
 
 FBugSplatSettings::FBugSplatSettings(FString UProjectFilePath)
 {
@@ -76,25 +77,11 @@ void FBugSplatSettings::LoadSettingsFromConfigFile()
 	ClientSecret = fileJson->GetStringField(CLIENT_SECRET_TAG);
 }
 
-void FBugSplatSettings::UpdateCrashReportClientIni(FString PackagedBuildFolderPath)
+void FBugSplatSettings::UpdateCrashReportClientIni(FString IniFilePath)
 {
-	// TODO BG test if the project directory is valid by traversing the directory structure
-	// TODO BG create file if it doesn't exist
-	// TODO BG conditional for Unreal Engine <= 4.25 packaged path ([BUILD_DIR]\WindowsNoEditor\Engine\Programs\CrashReportClient\Config\NoRedist)
-	// TODO BG conditional for Unreal Engine >= 4.26 packaged path ([BUILD_DIR]\WindowsNoEditor\Engine\Restricted\NoRedist\Programs\CrashReportClient\Config)
-	// TODO BG give user more info on what folder they should select
-
-	FString IniFilePath = *FPaths::Combine(PackagedBuildFolderPath, "Windows", *PACKAGED_BUILD_CONFIG_PATH);
-
 	if (!FPaths::FileExists(IniFilePath))
 	{
-		// Support UE4 Packaged Directory Convention
-		IniFilePath = *FPaths::Combine(PackagedBuildFolderPath, "WindowsNoEditor", *PACKAGED_BUILD_CONFIG_PATH);
-	}
-
-	if (!FPaths::FileExists(IniFilePath))
-	{
-		FMessageDialog::Debugf(FText::FromString("Invalid Project Directory!"));
+		FMessageDialog::Debugf(FText::FromString("Could not find DefaultEngine.ini!"));
 		return;
 	}
 
@@ -186,5 +173,18 @@ void FBugSplatSettings::UpdateLocalIni()
 		return;
 	}
 
-	UpdateCrashReportClientIni(PackagedBuildFolderPath);
+	// TODO BG test if the project directory is valid by traversing the directory structure
+	// TODO BG create file if it doesn't exist
+	// TODO BG conditional for Unreal Engine <= 4.25 packaged path ([BUILD_DIR]\WindowsNoEditor\Engine\Programs\CrashReportClient\Config\NoRedist)
+	// TODO BG conditional for Unreal Engine >= 4.26 packaged path ([BUILD_DIR]\WindowsNoEditor\Engine\Restricted\NoRedist\Programs\CrashReportClient\Config)
+
+	FString IniFilePath = *FPaths::Combine(PackagedBuildFolderPath, "Windows", *PACKAGED_BUILD_CONFIG_PATH);
+
+	if (!FPaths::FileExists(IniFilePath))
+	{
+		// Support UE4 Packaged Directory Convention
+		IniFilePath = *FPaths::Combine(PackagedBuildFolderPath, "WindowsNoEditor", *PACKAGED_BUILD_CONFIG_PATH);
+	}
+
+	UpdateCrashReportClientIni(IniFilePath);
 }	
