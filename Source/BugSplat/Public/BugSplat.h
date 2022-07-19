@@ -30,7 +30,7 @@ public:
 
 	FReply OnUpdateGlobalIni();
 	FReply OnUpdateLocalIni();
-	FReply OnUpdateSendPdbsShell();
+	FReply OnUpdateSendPdbsScript();
 	
 private:
 

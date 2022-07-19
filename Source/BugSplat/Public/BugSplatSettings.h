@@ -4,8 +4,8 @@
 #include <EngineSharedPCH.h>
 
 static const FString BUGSPLAT_ENDPOINT_URL_FORMAT = FString("https://{0}.bugsplat.com/post/ue4/{1}/{2}");
-static const FString BUGSPLAT_SENDPDBS_DIR = *FPaths::Combine(FPaths::ConvertRelativePathToFull(FPaths::ProjectDir()), FString("/Plugins/BugSplat/Source/BugSplatSendPdbs/bin/SendPdbs.exe"));
-static const FString BUGSPLAT_BASH_DIR = *FPaths::Combine(FPaths::ProjectDir(), FString("/Plugins/BugSplat/Source/Shell/BugSplat.bat"));
+static const FString BUGSPLAT_SENDPDBS_DIR = *FPaths::Combine(FPaths::ConvertRelativePathToFull(FPaths::ProjectDir()), FString("/Plugins/BugSplat/Source/Scripts/bin/SendPdbs.exe"));
+static const FString BUGSPLAT_BASH_DIR = *FPaths::Combine(FPaths::ProjectDir(), FString("/Plugins/BugSplat/Source/Scripts/BugSplat.bat"));
 
 static const FString LOCAL_CONFIG_PATH = *FPaths::Combine(FPaths::ProjectDir(), FString("/Config/DefaultEngine.ini"));
 static const FString GLOBAL_CRASH_REPORT_CLIENT_CONFIG_PATH = *FPaths::Combine(FPaths::EngineDir(), FString("/Programs/CrashReportClient/Config/DefaultEngine.ini"));
@@ -42,7 +42,7 @@ public:
 
 	void UpdateLocalIni();
 	void UpdateGlobalIni();
-	void WriteSendPdbsToShellScript();
+	void WriteSendPdbsToScript();
 
 private:
 	void LoadSettingsFromConfigFile();
