@@ -1,0 +1,1 @@
+echo BugSplat has not been configured, so no PDBS will be uploaded!
