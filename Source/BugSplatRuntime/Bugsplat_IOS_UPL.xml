@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <init>
+        <log text="Bugsplat SDK iOS UPL initialization"/>
+        <copyDir src="$S(PluginDir)/../ThirdParty/IOS/Bugsplat.framework" dst="$S(BuildDir)/Frameworks/Bugsplat.framework" />
+
+        <setStringFromProperty result="DatabaseName" ini="Engine" section="/Script/BugSplat.BugSplatEditorSettings" property="Database"/>
+    </init>
+
+    <iosPListUpdates>
+        <setElement result="BugsplatServerURLKey" xml="&lt;key&gt;BugsplatServerURL&lt;/key&gt;"/>
+        <addElement tag="dict" name="BugsplatServerURLKey" />
+        <setElement result="BugsplatServerURLValue" xml="&lt;string&gt;https://$S(DatabaseName).bugsplat.com/&lt;/string&gt;"/>
+        <addElement tag="dict" name="BugsplatServerURLValue" />
+    </iosPListUpdates>
+</root>

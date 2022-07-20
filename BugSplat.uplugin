@@ -19,6 +19,12 @@
 			"Name": "BugSplat",
 			"Type": "Editor",
 			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "BugSplatRuntime",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"WhitelistPlatforms": [ "Win64", "Mac", "Android", "IOS", "Linux" ]
 		}
 	],
 	"PostBuildSteps":

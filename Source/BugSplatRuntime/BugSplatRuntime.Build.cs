@@ -9,9 +9,9 @@ using EpicGames.Core;
 using Tools.DotNETCommon;
 #endif
 
-public class BugSplat : ModuleRules
+public class BugSplatRuntime : ModuleRules
 {
-	public BugSplat(ReadOnlyTargetRules Target) : base(Target)
+	public BugSplatRuntime(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
@@ -43,14 +43,12 @@ public class BugSplat : ModuleRules
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Projects",
-				"InputCore",
-				"UnrealEd",
-				"ToolMenus",
 				"CoreUObject",
 				"Engine",
 				"Slate",
 				"SlateCore",
+				"Projects",
+				"Json"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
@@ -62,5 +60,17 @@ public class BugSplat : ModuleRules
 				// ... add any modules that your module loads dynamically here ...
 			}
 			);
+		
+		if (Target.Platform == UnrealTargetPlatform.IOS)
+		{
+			PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Private/IOS"));
+
+			PublicAdditionalFrameworks.Add(new Framework("Bugsplat", "../ThirdParty/IOS/Bugsplat.embeddedframework.zip", "HockeySDKResources.bundle"));
+
+			PrivateDependencyModuleNames.AddRange(new string[] { "Launch" });
+			string PluginPath = Utils.MakePathRelativeTo(ModuleDirectory, Target.RelativeEnginePath);
+
+			AdditionalPropertiesForReceipt.Add("IOSPlugin", Path.Combine(PluginPath, "Bugsplat_IOS_UPL.xml"));
+		}
 	}
 }

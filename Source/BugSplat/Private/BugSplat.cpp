@@ -2,6 +2,7 @@
 
 #include "BugSplat.h"
 #include "BugSplatSettings.h"
+#include "BugSplatEditorSettings.h"
 #include "BugSplatStyle.h"
 #include "BugSplatCommands.h"
 #include "LevelEditor.h"
@@ -13,6 +14,14 @@
 #include <Runtime/Projects/Public/PluginDescriptor.h>
 #include <EngineSharedPCH.h>
 #include <Editor/MainFrame/Public/Interfaces/IMainFrameModule.h>
+#include "Interfaces/IPluginManager.h"
+#include "Modules/ModuleManager.h"
+#include "Developer/Settings/Public/ISettingsModule.h"
+
+#if PLATFORM_IOS
+#import <Foundation/Foundation.h>
+#import <Bugsplat/Bugsplat.h>
+#endif
 
 static const FName BugSplatTabName("BugSplat");
 
@@ -44,6 +53,13 @@ void FBugSplatModule::StartupModule()
 		FCanExecuteAction());
 
 	UToolMenus::RegisterStartupCallback(FSimpleMulticastDelegate::FDelegate::CreateRaw(this, &FBugSplatModule::RegisterMenus));
+
+	RegisterEditorSettingsPanel();
+
+#if PLATFORM_IOS
+	BugsplatStartupManager* bugsplatStartupManager = [[BugsplatStartupManager alloc] init];
+	[bugsplatStartupManager start];
+#endif
 }
 
 void FBugSplatModule::ShutdownModule()
@@ -59,6 +75,8 @@ void FBugSplatModule::ShutdownModule()
 	FBugSplatCommands::Unregister();
 
 	FGlobalTabmanager::Get()->UnregisterNomadTabSpawner(BugSplatTabName);
+
+	UnregisterEditorSettingsPanel();
 }
 
 
@@ -272,6 +290,38 @@ void FBugSplatModule::RegisterMenus()
 			FToolMenuSection& Section = Menu->FindOrAddSection("Configuration");
 			Section.AddMenuEntryWithCommandList(FBugSplatCommands::Get().OpenPluginWindow, PluginCommands);
 		}
+	}
+}
+
+void FBugSplatModule::RegisterEditorSettingsPanel()
+{
+	BugsplatEditoSettings = NewObject<UBugSplatEditorSettings>(GetTransientPackage(), "BugSplatEditorSettings", RF_Standalone);
+	BugsplatEditoSettings->AddToRoot();
+
+	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
+	{
+		SettingsModule->RegisterSettings("Project", "Plugins", "BugSplat",
+			LOCTEXT("RuntimeSettingsName", "BugSplat"),
+			LOCTEXT("RuntimeSettingsDescription", "Configure BugSplat"),
+			BugsplatEditoSettings);
+	}
+}
+
+void FBugSplatModule::UnregisterEditorSettingsPanel()
+{
+	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
+	{
+		SettingsModule->UnregisterSettings("Project", "Plugins", "BugSplat");
+	}
+
+	if (!GExitPurge)
+	{
+		// If we're in exit purge, this object has already been destroyed
+		BugsplatEditoSettings->RemoveFromRoot();
+	}
+	else
+	{
+		BugsplatEditoSettings = nullptr;
 	}
 }
 
