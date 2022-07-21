@@ -126,8 +126,7 @@ TSharedRef<SBox> FBugSplatModule::CreateBugSplatWindowContent()
 				.FillHeight(.1)
 				[
 					SNew(SRichTextBlock)
-					// TODO BG link to plugin specific docs 
-					.Text(FText::FromString(TEXT("<a id=\"browser\" href=\"http://www.bugsplat.com\">View BugSplat's Unreal Engine Docs-></>")))
+					.Text(FText::FromString(TEXT("<a id=\"browser\" href=\"https://docs.bugsplat.com/introduction/getting-started/integrations/game-development/unreal-engine#unreal-engine-plugin\">View BugSplat's Unreal Engine Docs-></>")))
 					.AutoWrapText(true)
 					.DecoratorStyleSet(&FCoreStyle::Get())
 					+ SRichTextBlock::HyperlinkDecorator(TEXT("browser"), FSlateHyperlinkRun::FOnClick::CreateStatic(&OnBrowserLinkClicked))
