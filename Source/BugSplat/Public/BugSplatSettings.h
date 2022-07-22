@@ -7,11 +7,17 @@ static const FString BUGSPLAT_ENDPOINT_URL_FORMAT = FString("https://{0}.bugspla
 static const FString BUGSPLAT_SENDPDBS_DIR = *FPaths::Combine(FPaths::ConvertRelativePathToFull(FPaths::ProjectDir()), FString("/Plugins/BugSplat/Source/Scripts/bin/SendPdbs.exe"));
 static const FString BUGSPLAT_BASH_DIR = *FPaths::Combine(FPaths::ProjectDir(), FString("/Plugins/BugSplat/Source/Scripts/BugSplat.bat"));
 
-static const FString LOCAL_CONFIG_PATH = *FPaths::Combine(FPaths::ProjectDir(), FString("/Config/DefaultEngine.ini"));
 static const FString GLOBAL_CRASH_REPORT_CLIENT_CONFIG_PATH = *FPaths::Combine(FPaths::EngineDir(), FString("/Programs/CrashReportClient/Config/DefaultEngine.ini"));
-static const FString PACKAGED_BUILD_CONFIG_PATH = FString("Engine\\Restricted\\NoRedist\\Programs\\CrashReportClient\\Config\\DefaultEngine.ini");
 static const FString BUGSPLAT_UPROJECT_PATH = *FPaths::Combine(FPaths::ProjectDir(), FString("/Plugins/BugSplat/BugSplat.uplugin"));
 
+static const FString PACKAGED_BUILD_CONFIG_PATH_5 = FString("Engine\\Restricted\\NoRedist\\Programs\\CrashReportClient\\Config");
+static const FString PACKAGED_BUILD_CONFIG_PATH_4_26_TO_5 = FString("Engine\\Restricted\\NoRedist\\Programs\\CrashReportClient\\Config");
+static const FString PACKAGED_BUILD_CONFIG_PATH_4_25_AND_OLDER = FString("Engine\\Programs\\CrashReportClient\\Config\\NoRedist");
+
+static const FString INI_FILE_NAME = FString("DefaultEngine.ini");
+
+static const FString PACKAGED_BUILD_ROOT_5 = FString("Windows");
+static const FString PACKAGED_BUILD_ROOT_OLDER_THAN_5 = FString("WindowsNoEditor");
 static const FString DATABASE_TAG = FString("Database");
 static const FString APP_NAME_TAG = FString("AppName");
 static const FString VERSION_TAG = FString("AppVersion"); // "Version" is reserved for plugin version.

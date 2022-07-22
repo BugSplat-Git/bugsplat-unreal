@@ -1,6 +1,7 @@
 #include "BugSplatSettings.h"
 #include <Developer/DesktopPlatform/Public/DesktopPlatformModule.h>
 #include <Modules/BuildVersion.h>
+#include <Runtime/Core/Public/Misc/EngineVersionComparison.h>
 
 FBugSplatSettings::FBugSplatSettings(FString UProjectFilePath)
 {
@@ -173,17 +174,51 @@ void FBugSplatSettings::UpdateLocalIni()
 		return;
 	}
 
-	// TODO BG test if the project directory is valid by traversing the directory structure
-	// TODO BG create file if it doesn't exist
-	// TODO BG conditional for Unreal Engine <= 4.25 packaged path ([BUILD_DIR]\WindowsNoEditor\Engine\Programs\CrashReportClient\Config\NoRedist)
-	// TODO BG conditional for Unreal Engine >= 4.26 packaged path ([BUILD_DIR]\WindowsNoEditor\Engine\Restricted\NoRedist\Programs\CrashReportClient\Config)
-
-	FString IniFilePath = *FPaths::Combine(PackagedBuildFolderPath, "Windows", *PACKAGED_BUILD_CONFIG_PATH);
-
-	if (!FPaths::FileExists(IniFilePath))
+	FString PackagedBuildConfigPath;
+	if (ENGINE_MAJOR_VERSION == 5)
 	{
-		// Support UE4 Packaged Directory Convention
-		IniFilePath = *FPaths::Combine(PackagedBuildFolderPath, "WindowsNoEditor", *PACKAGED_BUILD_CONFIG_PATH);
+		PackagedBuildConfigPath = PACKAGED_BUILD_CONFIG_PATH_5;
+	}
+	else if (ENGINE_MAJOR_VERSION == 4 && ENGINE_MINOR_VERSION >= 26)
+	{
+		PackagedBuildConfigPath = PACKAGED_BUILD_CONFIG_PATH_4_26_TO_5;
+	}
+	else
+	{
+		PackagedBuildConfigPath = PACKAGED_BUILD_CONFIG_PATH_4_25_AND_OLDER;
+	}
+
+	FString PackagedBuildRoot = ENGINE_MAJOR_VERSION >= 5 ? PACKAGED_BUILD_ROOT_5 : PACKAGED_BUILD_ROOT_OLDER_THAN_5;
+
+	FString Path = *FPaths::Combine(PackagedBuildFolderPath, PackagedBuildRoot);
+	if (!FPaths::DirectoryExists(*FPaths::Combine(PackagedBuildFolderPath, PackagedBuildRoot)))
+	{
+		FMessageDialog::Debugf(FText::FromString("Invalid Project Directory!"));
+		return;
+	}
+
+	FString ConfigDirectory = *FPaths::Combine(PackagedBuildFolderPath, *PackagedBuildRoot, *PackagedBuildConfigPath);
+	FString IniFilePath = *FPaths::Combine(*ConfigDirectory, *INI_FILE_NAME);
+
+	if (!FPaths::DirectoryExists(ConfigDirectory))
+	{
+		IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+		PlatformFile.CreateDirectoryTree(*ConfigDirectory);
+		if (!FPaths::DirectoryExists(ConfigDirectory))
+		{
+			FMessageDialog::Debugf(FText::FromString("Failed to create project Ini directories!"));
+			return;
+		}
+
+		// Creates an empty .ini file with nothing inside of it.
+		FString Empty = FString("");
+		FFileHelper::SaveStringToFile(Empty, *IniFilePath );
+		
+		if (!FPaths::FileExists(IniFilePath))
+		{
+			FMessageDialog::Debugf(FText::FromString("Failed to create ini config file!"));
+			return;
+		}
 	}
 
 	UpdateCrashReportClientIni(IniFilePath);
