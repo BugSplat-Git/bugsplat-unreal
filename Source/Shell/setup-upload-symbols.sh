@@ -59,7 +59,7 @@ $scriptsPath/upload-symbols.sh -f $binariesPath/$targetName.zip
 
 echo "BugSplat postprocessing: Clean up temporaries"
 
-rm -r $binariesPath/Payload/$targetName.app
+rm -r $binariesPath/$targetName.app
 rm -r $binariesPath/$targetName.zip
 rm $HOME/.bugsplat.conf
 rm $HOME/.bugsplat.conf.backup
