@@ -4,7 +4,7 @@
 #include "BugSplatEditorSettings.generated.h"
 
 UCLASS(Config = Engine, defaultconfig)
-class BUGSPLAT_API UBugSplatEditorSettings : public UObject
+class BUGSPLATRUNTIME_API UBugSplatEditorSettings : public UObject
 {
 	GENERATED_UCLASS_BODY()
 

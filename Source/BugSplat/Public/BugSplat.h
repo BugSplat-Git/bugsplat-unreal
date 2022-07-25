@@ -7,7 +7,6 @@
 
 class FToolBarBuilder;
 class FMenuBuilder;
-class UBugSplatEditorSettings;
 
 enum BugSplatInputField
 {
@@ -37,15 +36,10 @@ private:
 
 	void RegisterMenus();
 
-	void RegisterEditorSettingsPanel();
-	void UnregisterEditorSettingsPanel();
-
 	TSharedRef<class SBox> CreateBugSplatWindowContent();
 	TSharedPtr<SVerticalBox> CreateInputFieldWidget(FText InputFieldName, BugSplatInputField InputFieldType);
 
 private:
 	TSharedPtr<class FUICommandList> PluginCommands;
 	FBugSplatSettings* BugSplatSettings;
-
-	UBugSplatEditorSettings* BugsplatEditoSettings;
 };
