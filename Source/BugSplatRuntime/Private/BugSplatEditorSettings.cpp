@@ -6,4 +6,5 @@ UBugSplatEditorSettings::UBugSplatEditorSettings(const FObjectInitializer& Objec
 	BugSplatDatabase = TEXT("");
 	BugSplatUser = TEXT("");
 	BugSplatPassword = TEXT("");
+	bUploadDebugSymbolsIos = false;
 }

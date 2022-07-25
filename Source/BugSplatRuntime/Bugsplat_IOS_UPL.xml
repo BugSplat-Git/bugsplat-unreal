@@ -4,7 +4,7 @@
         <log text="Bugsplat SDK iOS UPL initialization"/>
         <copyDir src="$S(PluginDir)/../ThirdParty/IOS/Bugsplat.framework" dst="$S(BuildDir)/Frameworks/Bugsplat.framework" />
 
-        <setStringFromProperty result="DatabaseName" ini="Engine" section="/Script/BugSplat.BugSplatEditorSettings" property="BugSplatDatabase"/>
+        <setStringFromProperty result="DatabaseName" ini="Engine" section="/Script/BugSplatRuntime.BugSplatEditorSettings" property="BugSplatDatabase"/>
     </init>
 
     <iosPListUpdates>

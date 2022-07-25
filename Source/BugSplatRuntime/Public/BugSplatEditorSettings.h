@@ -17,4 +17,8 @@ public:
 
 	UPROPERTY(Config, EditAnywhere, Category = "IOS", Meta = (DisplayName = "Password", ToolTip = "Password (required for debug symbols upload)"))
 	FString BugSplatPassword;
+
+	UPROPERTY(Config, EditAnywhere, Category = "IOS",
+		Meta = (DisplayName = "Enable automatic symbols upload", ToolTip = "Flag indicating whether to upload iOS debug symbols automatically"))
+	bool bUploadDebugSymbolsIos;
 };
