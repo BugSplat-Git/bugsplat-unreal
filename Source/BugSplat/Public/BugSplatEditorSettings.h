@@ -10,11 +10,11 @@ class BUGSPLAT_API UBugSplatEditorSettings : public UObject
 
 public:
 	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "Database", ToolTip = "Database name"))
-	FString Database;
+	FString BugSplatDatabase;
 
 	UPROPERTY(Config, EditAnywhere, Category = "IOS", Meta = (DisplayName = "User", ToolTip = "Username (required for debug symbols upload)"))
-	FString User;
+	FString BugSplatUser;
 
 	UPROPERTY(Config, EditAnywhere, Category = "IOS", Meta = (DisplayName = "Password", ToolTip = "Password (required for debug symbols upload)"))
-	FString Password;
+	FString BugSplatPassword;
 };

@@ -3,7 +3,7 @@
 UBugSplatEditorSettings::UBugSplatEditorSettings(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	Database = TEXT("");
-	User = TEXT("");
-	Password = TEXT("");
+	BugSplatDatabase = TEXT("");
+	BugSplatUser = TEXT("");
+	BugSplatPassword = TEXT("");
 }

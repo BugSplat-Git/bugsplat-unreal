@@ -31,6 +31,9 @@
 	{
 		"Win64": [
 			"call \"$(ProjectDir)\\Plugins\\BugSplat\\Source\\Shell\\BugSplat.bat\" $(TargetPlatform)"
+		],
+		"Mac": [
+			"sh $(PluginDir)/Source/Shell/setup-upload-symbols.sh $(TargetPlatform) $(TargetName) $(ProjectDir) $(PluginDir)"
 		]
 	}
 }
