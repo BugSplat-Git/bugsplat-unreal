@@ -24,7 +24,7 @@
 	"PostBuildSteps":
 	{
 		"Win64": [
-			"call \"$(ProjectDir)\\Plugins\\BugSplat\\Source\\Shell\\BugSplat.bat\" $(TargetPlatform)"
+			"call \"$(ProjectDir)\\Plugins\\BugSplat\\Source\\Scripts\\BugSplat.bat\" $(TargetPlatform)"
 		]
 	}
 }
