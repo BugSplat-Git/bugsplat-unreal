@@ -21,4 +21,10 @@ public:
 	UPROPERTY(Config, EditAnywhere, Category = "IOS",
 		Meta = (DisplayName = "Enable automatic symbols upload", ToolTip = "Flag indicating whether to upload iOS debug symbols automatically"))
 	bool bUploadDebugSymbolsIos;
+
+	UPROPERTY(Config, EditAnywhere, Category = "Android", Meta = (DisplayName = "App name", ToolTip = "Application name"))
+	FString BugSplatApp;
+
+	UPROPERTY(Config, EditAnywhere, Category = "Android", Meta = (DisplayName = "App version", ToolTip = "Application version"))
+	FString BugSplatAppVersion;
 };

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root xmlns:android="http://schemas.android.com/apk/res/android">
+    <init>
+        <log text="BugSplat SDK Android UPL initialization"/>
+    </init>
+
+    <resourceCopies>
+        <copyDir src="$S(PluginDir)/../ThirdParty/Android/lib/$S(Architecture)" dst="$S(BuildDir)/libs/$S(Architecture)" />
+    </resourceCopies>
+</root>
