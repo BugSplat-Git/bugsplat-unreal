@@ -24,7 +24,4 @@ public:
 
 	UPROPERTY(Config, EditAnywhere, Category = "Android", Meta = (DisplayName = "App name", ToolTip = "Application name"))
 	FString BugSplatApp;
-
-	UPROPERTY(Config, EditAnywhere, Category = "Android", Meta = (DisplayName = "App version", ToolTip = "Application version"))
-	FString BugSplatAppVersion;
 };
