@@ -9,31 +9,31 @@ FBugSplatSettings::FBugSplatSettings(FString UProjectFilePath)
 	LoadSettingsFromConfigFile();
 }
 
-void FBugSplatSettings::SetAppName(const FText& NewAppName)
+void FBugSplatSettings::SetAppName(const FText &NewAppName)
 {
 	AppName = NewAppName.ToString();
 	SaveSettingsToUProject();
 }
 
-void FBugSplatSettings::SetVersion(const FText& NewVersion)
+void FBugSplatSettings::SetVersion(const FText &NewVersion)
 {
 	Version = NewVersion.ToString();
 	SaveSettingsToUProject();
 }
 
-void FBugSplatSettings::SetDatabase(const FText& NewDatabase)
+void FBugSplatSettings::SetDatabase(const FText &NewDatabase)
 {
 	Database = NewDatabase.ToString();
 	SaveSettingsToUProject();
 }
 
-void FBugSplatSettings::SetClientID(const FText& NewClientID)
+void FBugSplatSettings::SetClientID(const FText &NewClientID)
 {
 	ClientID = NewClientID.ToString();
 	SaveSettingsToUProject();
 }
 
-void FBugSplatSettings::SetClientSecret(const FText& NewPassword)
+void FBugSplatSettings::SetClientSecret(const FText &NewPassword)
 {
 	ClientSecret = NewPassword.ToString();
 	SaveSettingsToUProject();
@@ -78,9 +78,9 @@ void FBugSplatSettings::LoadSettingsFromConfigFile()
 	ClientSecret = fileJson->GetStringField(CLIENT_SECRET_TAG);
 }
 
-void FBugSplatSettings::UpdateCrashReportClientIni(FString IniFilePath)
+void FBugSplatSettings::UpdateCrashReportClientIni(FString DefaultEngineIniFilePath)
 {
-	if (!FPaths::FileExists(IniFilePath))
+	if (!FPaths::FileExists(DefaultEngineIniFilePath))
 	{
 		FMessageDialog::Debugf(FText::FromString("Could not find DefaultEngine.ini!"));
 		return;
@@ -88,7 +88,7 @@ void FBugSplatSettings::UpdateCrashReportClientIni(FString IniFilePath)
 
 	FConfigCacheIni ini(EConfigCacheType::DiskBacked);
 
-	ini.LoadFile(IniFilePath);
+	ini.LoadFile(DefaultEngineIniFilePath);
 
 	FString sectionTag = FString(TEXT("CrashReportClient"));
 
@@ -98,8 +98,8 @@ void FBugSplatSettings::UpdateCrashReportClientIni(FString IniFilePath)
 	FString crashReportClientVersionConfigTag = FString(TEXT("CrashReportClientVersion"));
 	FString crashReportClientVersionValue = FString(TEXT("1.0"));
 
-	ini.SetString(*sectionTag, *dataRouterUrlConfigTag, *dataRouterUrlValue, IniFilePath);
-	ini.SetString(*sectionTag, *crashReportClientVersionConfigTag, *crashReportClientVersionValue, IniFilePath);
+	ini.SetString(*sectionTag, *dataRouterUrlConfigTag, *dataRouterUrlValue, DefaultEngineIniFilePath);
+	ini.SetString(*sectionTag, *crashReportClientVersionConfigTag, *crashReportClientVersionValue, DefaultEngineIniFilePath);
 
 	FMessageDialog::Debugf(FText::FromString("Configuration File Successfully Updated!"));
 }
@@ -115,13 +115,13 @@ void FBugSplatSettings::SaveSettingsToUProject()
 
 	FString Text;
 	TSharedRef<FJsonObject> PluginJsonObject = fileJson.ToSharedRef();
-	TSharedRef< TJsonWriter<> > WriterRef = TJsonWriterFactory<>::Create(&Text);
-	TJsonWriter<>& Writer = WriterRef.Get();
+	TSharedRef<TJsonWriter<>> WriterRef = TJsonWriterFactory<>::Create(&Text);
+	TJsonWriter<> &Writer = WriterRef.Get();
 
 	PluginJsonObject->SetStringField(DATABASE_TAG, Database);
 	PluginJsonObject->SetStringField(APP_NAME_TAG, AppName);
 	PluginJsonObject->SetStringField(VERSION_TAG, Version);
-	PluginJsonObject->SetStringField(CLIENT_ID_TAG, ClientID);	
+	PluginJsonObject->SetStringField(CLIENT_ID_TAG, ClientID);
 	PluginJsonObject->SetStringField(CLIENT_SECRET_TAG, ClientSecret);
 
 	FJsonSerializer::Serialize(PluginJsonObject, Writer);
@@ -132,12 +132,12 @@ void FBugSplatSettings::WriteSendPdbsToScript()
 {
 	FString PostBuildStepsConsoleCommandFormat =
 		FString(
-			"\"{0}\" " //Send PDBS Endpoint
-			"/u {1} " // Username
-			"/p {2} " // Password
-			"/a {3} " // AppName
-			"/v {4} " // Version
-			"/b {5} " // Database
+			"\"{0}\" "	 // Send PDBS Endpoint
+			"/u {1} "	 // Username
+			"/p {2} "	 // Password
+			"/a {3} "	 // AppName
+			"/v {4} "	 // Version
+			"/b {5} "	 // Database
 			"/d \"{6}\"" // Project Directory
 		);
 
@@ -166,60 +166,85 @@ void FBugSplatSettings::UpdateLocalIni()
 	FString PackagedBuildFolderPath;
 
 	if (!FDesktopPlatformModule::Get()->OpenDirectoryDialog(
-		FSlateApplication::Get().FindBestParentWindowHandleForDialogs(nullptr),
-		FString("Packaged Directory"),
-		FPaths::GetProjectFilePath(),
-		PackagedBuildFolderPath))
+			FSlateApplication::Get().FindBestParentWindowHandleForDialogs(nullptr),
+			FString("Packaged Directory"),
+			FPaths::GetProjectFilePath(),
+			PackagedBuildFolderPath))
 	{
 		return;
 	}
 
-	FString PackagedBuildConfigPath;
+	FString Platforms[] = {
+		TEXT("Windows"),
+		TEXT("Linux")
+	};
+	bool FoundAnyValidFolders = false;
+
+	for (auto &Platform : Platforms)
+	{
+		FString PlatformTarget = GetPackagedBuildPlatformTarget(Platform);
+		FString PlatformTargetPath = *FPaths::Combine(PackagedBuildFolderPath, PlatformTarget);
+
+		if (!FPaths::DirectoryExists(PlatformTargetPath))
+		{
+			continue;
+		}
+
+		FoundAnyValidFolders = true;
+		FString DefaultEngineIniRelativePath = GetPackagedBuildDefaultEngineIniRelativePath();
+		FString DefaultEngineIniFolderPath = *FPaths::Combine(PackagedBuildFolderPath, *PlatformTarget, *DefaultEngineIniRelativePath);
+		FString DefaultEngineIniFilePath = *FPaths::Combine(*DefaultEngineIniFolderPath, *INI_FILE_NAME);
+
+		if (!FPaths::DirectoryExists(DefaultEngineIniFolderPath))
+		{
+			IPlatformFile &PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+			PlatformFile.CreateDirectoryTree(*DefaultEngineIniFolderPath);
+
+			if (!FPaths::DirectoryExists(DefaultEngineIniFolderPath))
+			{
+				FMessageDialog::Debugf(FText::FromString("Failed to create " + DefaultEngineIniFolderPath));
+				return;
+			}
+
+			CreateEmptyTextFile(DefaultEngineIniFilePath);
+
+			if (!FPaths::FileExists(DefaultEngineIniFilePath))
+			{
+				FMessageDialog::Debugf(FText::FromString("Failed to create " + DefaultEngineIniFilePath));
+				return;
+			}
+		}
+
+		UpdateCrashReportClientIni(DefaultEngineIniFilePath);
+	}
+
+	if (!FoundAnyValidFolders)
+	{
+		FMessageDialog::Debugf(FText::FromString("Could not find any packaged build directories to update. Please specify the root directory of a valid packaged build."));
+	}
+}
+
+void FBugSplatSettings::CreateEmptyTextFile(FString FullPath)
+{
+	FString Empty = FString("");
+	FFileHelper::SaveStringToFile(Empty, *FullPath);
+}
+
+FString FBugSplatSettings::GetPackagedBuildPlatformTarget(FString Platform)
+{
+	return ENGINE_MAJOR_VERSION >= 5 ? Platform : Platform + TEXT("NoEditor");
+}
+
+FString FBugSplatSettings::GetPackagedBuildDefaultEngineIniRelativePath()
+{
 	if (ENGINE_MAJOR_VERSION == 5)
 	{
-		PackagedBuildConfigPath = PACKAGED_BUILD_CONFIG_PATH_5;
+		return PACKAGED_BUILD_CONFIG_PATH_5;
 	}
 	else if (ENGINE_MAJOR_VERSION == 4 && ENGINE_MINOR_VERSION >= 26)
 	{
-		PackagedBuildConfigPath = PACKAGED_BUILD_CONFIG_PATH_4_26_TO_5;
-	}
-	else
-	{
-		PackagedBuildConfigPath = PACKAGED_BUILD_CONFIG_PATH_4_25_AND_OLDER;
+		return PACKAGED_BUILD_CONFIG_PATH_4_26_TO_5;
 	}
 
-	FString PackagedBuildRoot = ENGINE_MAJOR_VERSION >= 5 ? PACKAGED_BUILD_ROOT_5 : PACKAGED_BUILD_ROOT_OLDER_THAN_5;
-
-	FString Path = *FPaths::Combine(PackagedBuildFolderPath, PackagedBuildRoot);
-	if (!FPaths::DirectoryExists(*FPaths::Combine(PackagedBuildFolderPath, PackagedBuildRoot)))
-	{
-		FMessageDialog::Debugf(FText::FromString("Invalid Project Directory!"));
-		return;
-	}
-
-	FString ConfigDirectory = *FPaths::Combine(PackagedBuildFolderPath, *PackagedBuildRoot, *PackagedBuildConfigPath);
-	FString IniFilePath = *FPaths::Combine(*ConfigDirectory, *INI_FILE_NAME);
-
-	if (!FPaths::DirectoryExists(ConfigDirectory))
-	{
-		IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
-		PlatformFile.CreateDirectoryTree(*ConfigDirectory);
-		if (!FPaths::DirectoryExists(ConfigDirectory))
-		{
-			FMessageDialog::Debugf(FText::FromString("Failed to create project Ini directories!"));
-			return;
-		}
-
-		// Creates an empty .ini file with nothing inside of it.
-		FString Empty = FString("");
-		FFileHelper::SaveStringToFile(Empty, *IniFilePath );
-		
-		if (!FPaths::FileExists(IniFilePath))
-		{
-			FMessageDialog::Debugf(FText::FromString("Failed to create ini config file!"));
-			return;
-		}
-	}
-
-	UpdateCrashReportClientIni(IniFilePath);
-}	
+	return PACKAGED_BUILD_CONFIG_PATH_4_25_AND_OLDER;
+}
