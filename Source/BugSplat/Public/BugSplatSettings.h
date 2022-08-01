@@ -16,8 +16,6 @@ static const FString PACKAGED_BUILD_CONFIG_PATH_4_25_AND_OLDER = FString("Engine
 
 static const FString INI_FILE_NAME = FString("DefaultEngine.ini");
 
-static const FString PACKAGED_BUILD_ROOT_5 = FString("Windows");
-static const FString PACKAGED_BUILD_ROOT_OLDER_THAN_5 = FString("WindowsNoEditor");
 static const FString DATABASE_TAG = FString("Database");
 static const FString APP_NAME_TAG = FString("AppName");
 static const FString VERSION_TAG = FString("AppVersion"); // "Version" is reserved for plugin version.
@@ -51,6 +49,9 @@ public:
 	void WriteSendPdbsToScript();
 
 private:
+	FString GetPackagedBuildPlatformTarget(FString Platform);
+	FString GetPackagedBuildDefaultEngineIniRelativePath();
+	void CreateEmptyTextFile(FString FullPath);
 	void LoadSettingsFromConfigFile();
 	void UpdateCrashReportClientIni(FString iniFilePath);
 	void SaveSettingsToUProject();
