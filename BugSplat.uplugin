@@ -11,7 +11,7 @@
 	"MarketplaceURL": "",
 	"SupportURL": "",
 	"EnabledByDefault": true,
-	"CanContainContent": false,
+	"CanContainContent": true,
 	"IsBetaVersion": false,
 	"Installed": false,
 	"Modules": [
@@ -19,12 +19,21 @@
 			"Name": "BugSplat",
 			"Type": "Editor",
 			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "BugSplatRuntime",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"WhitelistPlatforms": [ "Win64", "Mac", "Android", "IOS", "Linux" ]
 		}
 	],
 	"PostBuildSteps":
 	{
 		"Win64": [
 			"call \"$(ProjectDir)\\Plugins\\BugSplat\\Source\\Scripts\\BugSplat.bat\" $(TargetPlatform)"
+		],
+		"Mac": [
+			"sh $(PluginDir)/Source/Shell/setup-upload-symbols.sh $(TargetPlatform) $(TargetName) $(ProjectDir) $(PluginDir)"
 		]
 	}
 }

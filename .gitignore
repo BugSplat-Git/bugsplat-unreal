@@ -4,7 +4,6 @@
 # Compiled Object files
 *.slo
 *.lo
-*.o
 *.obj
 
 # Precompiled Headers
@@ -12,7 +11,6 @@
 *.pch
 
 # Compiled Dynamic libraries
-*.so
 *.dylib
 *.dll
 
@@ -22,7 +20,6 @@
 # Compiled Static libraries
 *.lai
 *.la
-*.a
 *.lib
 
 # Executables
@@ -77,3 +74,6 @@ DerivedDataCache/*
 !Source/Scripts/bin/SendPdbs.exe
 !Source/Scripts/bin/AWSSDK.Core.dll
 !Source/Scripts/bin/AWSSDK.S3.dll
+
+# Mac OS
+.DS_Store
