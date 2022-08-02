@@ -68,8 +68,7 @@ void FBugSplatRuntimeModule::StartupModule()
 	UE_LOG(LogBugsplat, Log, TEXT("BUGSPLAT PackageName: %s"), *androidPackageName);
 	UE_LOG(LogBugsplat, Log, TEXT("BUGSPLAT VersionDisplayName: %s"), *androidPackageVersion);
 
-	string dataDir = "/data/data/com.bugsplat.demo";
-		//string(TCHAR_TO_UTF8(*FString::Printf(TEXT("/data/data/%s"), *androidPackageName)));
+	string dataDir = string(TCHAR_TO_UTF8(*FString::Printf(TEXT("/data/data/%s"), *androidPackageName)));
 
 	// Crashpad file paths
 	FilePath handler(dataDir + "/lib/libcrashpad_handler.so");
@@ -77,15 +76,14 @@ void FBugSplatRuntimeModule::StartupModule()
 	FilePath metricsDir(dataDir + "/crashpad");
 
 	// Crashpad upload URL for BugSplat database	
-	string url = "http://ue_plugin_test.bugsplat.com/post/bp/crash/crashpad.php";
-		//string(TCHAR_TO_UTF8(*FString::Printf(TEXT("http://%s.bugsplat.com/post/bp/crash/crashpad.php"), *BugsplatEditoSettings->BugSplatDatabase)));
+	string url = string(TCHAR_TO_UTF8(*FString::Printf(TEXT("http://%s.bugsplat.com/post/bp/crash/crashpad.php"), *BugsplatEditoSettings->BugSplatDatabase)));
 
 	// Crashpad annotations
 	map<string, string> annotations;
 	annotations["format"] = "minidump";
-	annotations["database"] = "ue_plugin_test";			//string(TCHAR_TO_UTF8(*BugsplatEditoSettings->BugSplatDatabase));
-	annotations["product"] = "PlaygroundBugsplat";		//string(TCHAR_TO_UTF8(*BugsplatEditoSettings->BugSplatApp));
-	annotations["version"] = "1.0";						//string(TCHAR_TO_UTF8(*androidPackageVersion));
+	annotations["database"] = string(TCHAR_TO_UTF8(*BugsplatEditoSettings->BugSplatDatabase));
+	annotations["product"] = string(TCHAR_TO_UTF8(*BugsplatEditoSettings->BugSplatApp));
+	annotations["version"] = string(TCHAR_TO_UTF8(*androidPackageVersion));
 
 	// Crashpad arguments
 	vector<string> arguments;
@@ -107,16 +105,7 @@ void FBugSplatRuntimeModule::StartupModule()
 
 	// Start Crashpad crash handler
 	static CrashpadClient *client = new CrashpadClient();
-	bool status = client->StartHandlerAtCrash(handler, reportsDir, metricsDir, url, annotations, arguments, attachments);
-
-	if(status)
-	{
-		UE_LOG(LogBugsplat, Log, TEXT("BUGSPLAT status: true"));
-	}
-	else
-	{
-		UE_LOG(LogBugsplat, Log, TEXT("BUGSPLAT status: false"));
-	}
+	client->StartHandlerAtCrash(handler, reportsDir, metricsDir, url, annotations, arguments, attachments);
 #endif
 }
 

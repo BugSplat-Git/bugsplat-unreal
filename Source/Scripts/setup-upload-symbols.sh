@@ -7,7 +7,7 @@ export pluginPath=$4
 
 export binariesPath=$projectPath/Binaries/IOS
 export configPath=$projectPath/Config
-export scriptsPath=$pluginPath/Source/Shell
+export scriptsPath=$pluginPath/Source/Scripts
 
 echo "BugSplat postprocessing: Start debug symbols upload for iOS"
 
@@ -22,6 +22,12 @@ echo "BugSplat postprocessing: Input config path: $configPath"
 echo "BugSplat postprocessing: Input scripts path: $scriptsPath"
 
 export uploadSymbols=$(awk -F "=" '/bUploadDebugSymbolsIos/ {print $2}' ${configPath}/DefaultEngine.ini)
+
+if [ -z "$uploadSymbols" ]; then
+    echo "BugSplat postprocessing: Automatic symbols upload is disabled in plugin settings. Terminating..." 
+    exit
+fi
+
 if [ $uploadSymbols != "True" ]; then
     echo "BugSplat postprocessing: Automatic symbols upload is disabled in plugin settings. Terminating..." 
     exit

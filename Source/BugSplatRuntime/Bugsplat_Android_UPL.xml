@@ -2,6 +2,8 @@
 <root xmlns:android="http://schemas.android.com/apk/res/android">
     <init>
         <log text="BugSplat SDK Android UPL initialization"/>
+
+        <setBoolFromProperty result="bUploadSymbols" ini="Engine" section="/Script/BugSplatRuntime.BugSplatEditorSettings" property="bUploadDebugSymbols" default="false" />
     </init>
 
     <resourceCopies>

@@ -12,6 +12,10 @@ public:
 	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "Database", ToolTip = "Database name"))
 	FString BugSplatDatabase;
 
+	UPROPERTY(Config, EditAnywhere, Category = "Common",
+		Meta = (DisplayName = "Enable automatic symbols upload", ToolTip = "Flag indicating whether to upload iOS debug symbols automatically"))
+	bool bUploadDebugSymbols;
+
 	UPROPERTY(Config, EditAnywhere, Category = "IOS", Meta = (DisplayName = "User", ToolTip = "Username (required for debug symbols upload)"))
 	FString BugSplatUser;
 
@@ -20,10 +24,6 @@ public:
 
 	UPROPERTY(Config, EditAnywhere, Category = "IOS", Meta = (DisplayName = "Version", ToolTip = "Application version number"))
 	FString BugSplatVersion;
-
-	UPROPERTY(Config, EditAnywhere, Category = "IOS",
-		Meta = (DisplayName = "Enable automatic symbols upload", ToolTip = "Flag indicating whether to upload iOS debug symbols automatically"))
-	bool bUploadDebugSymbolsIos;
 
 	UPROPERTY(Config, EditAnywhere, Category = "Android", Meta = (DisplayName = "App name", ToolTip = "Application name"))
 	FString BugSplatApp;

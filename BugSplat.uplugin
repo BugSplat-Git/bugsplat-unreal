@@ -33,7 +33,7 @@
 			"call \"$(ProjectDir)\\Plugins\\BugSplat\\Source\\Scripts\\BugSplat.bat\" $(TargetPlatform)"
 		],
 		"Mac": [
-			"sh $(PluginDir)/Source/Shell/setup-upload-symbols.sh $(TargetPlatform) $(TargetName) $(ProjectDir) $(PluginDir)"
+			"sh $(PluginDir)/Source/Scripts/setup-upload-symbols.sh $(TargetPlatform) $(TargetName) $(ProjectDir) $(PluginDir)"
 		]
 	}
 }

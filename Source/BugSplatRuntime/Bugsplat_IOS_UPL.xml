@@ -4,6 +4,8 @@
         <log text="Bugsplat SDK iOS UPL initialization"/>
         <copyDir src="$S(PluginDir)/../ThirdParty/IOS/Bugsplat.framework" dst="$S(BuildDir)/Frameworks/Bugsplat.framework" />
 
+        <setBoolFromProperty result="bUploadSymbols" ini="Engine" section="/Script/BugSplatRuntime.BugSplatEditorSettings" property="bUploadDebugSymbols" default="false" />
+
         <setStringFromProperty result="DatabaseName" ini="Engine" section="/Script/BugSplatRuntime.BugSplatEditorSettings" property="BugSplatDatabase"/>
         <setStringFromProperty result="VersionNumber" ini="Engine" section="/Script/BugSplatRuntime.BugSplatEditorSettings" property="BugSplatVersion"/>
     </init>
