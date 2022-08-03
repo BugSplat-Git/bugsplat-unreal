@@ -14,5 +14,5 @@ public:
 	virtual void ShutdownModule() override;
 
 private:
-	UBugSplatEditorSettings* BugsplatEditoSettings;
+	UBugSplatEditorSettings* BugsplatEditorSettings;
 };
