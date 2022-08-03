@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright 2022 BugSplat. All Rights Reserved.
 
 #include "BugSplatRuntime.h"
 #include "BugSplatEditorSettings.h"
