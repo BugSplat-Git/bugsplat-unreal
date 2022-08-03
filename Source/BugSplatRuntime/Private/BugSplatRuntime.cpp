@@ -37,15 +37,15 @@ DEFINE_LOG_CATEGORY(LogBugsplat);
 void FBugSplatRuntimeModule::StartupModule()
 {
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
-	BugsplatEditorSettings = NewObject<UBugSplatEditorSettings>(GetTransientPackage(), "BugSplatEditorSettings", RF_Standalone);
-	BugsplatEditorSettings->AddToRoot();
+	BugSplatEditorSettings = NewObject<UBugSplatEditorSettings>(GetTransientPackage(), "BugSplatEditorSettings", RF_Standalone);
+	BugSplatEditorSettings->AddToRoot();
 
 	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
 	{
 		SettingsModule->RegisterSettings("Project", "Plugins", "BugSplat",
 			LOCTEXT("RuntimeSettingsName", "BugSplat"),
 			LOCTEXT("RuntimeSettingsDescription", "Configure BugSplat"),
-			BugsplatEditorSettings);
+			BugSplatEditorSettings);
 	}
 
 #if PLATFORM_IOS
@@ -76,13 +76,13 @@ void FBugSplatRuntimeModule::StartupModule()
 	FilePath metricsDir(dataDir + "/crashpad");
 
 	// Crashpad upload URL for BugSplat database	
-	string url = string(TCHAR_TO_UTF8(*FString::Printf(TEXT("http://%s.bugsplat.com/post/bp/crash/crashpad.php"), *BugsplatEditorSettings->BugSplatDatabase)));
+	string url = string(TCHAR_TO_UTF8(*FString::Printf(TEXT("http://%s.bugsplat.com/post/bp/crash/crashpad.php"), *BugSplatEditorSettings->BugSplatDatabase)));
 
 	// Crashpad annotations
 	map<string, string> annotations;
 	annotations["format"] = "minidump";
-	annotations["database"] = string(TCHAR_TO_UTF8(*BugsplatEditorSettings->BugSplatDatabase));
-	annotations["product"] = string(TCHAR_TO_UTF8(*BugsplatEditorSettings->BugSplatApp));
+	annotations["database"] = string(TCHAR_TO_UTF8(*BugSplatEditorSettings->BugSplatDatabase));
+	annotations["product"] = string(TCHAR_TO_UTF8(*BugSplatEditorSettings->BugSplatApp));
 	annotations["version"] = string(TCHAR_TO_UTF8(*androidPackageVersion));
 
 	// Crashpad arguments
@@ -119,11 +119,11 @@ void FBugSplatRuntimeModule::ShutdownModule()
 	if (!GExitPurge)
 	{
 		// If we're in exit purge, this object has already been destroyed
-		BugsplatEditorSettings->RemoveFromRoot();
+		BugSplatEditorSettings->RemoveFromRoot();
 	}
 	else
 	{
-		BugsplatEditorSettings = nullptr;
+		BugSplatEditorSettings = nullptr;
 	}
 }
 

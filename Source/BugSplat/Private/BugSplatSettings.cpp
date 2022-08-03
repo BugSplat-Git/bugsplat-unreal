@@ -1,3 +1,5 @@
+// Copyright 2022 BugSplat. All Rights Reserved.
+
 #include "BugSplatSettings.h"
 #include <Developer/DesktopPlatform/Public/DesktopPlatformModule.h>
 #include <Modules/BuildVersion.h>
