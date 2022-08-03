@@ -54,7 +54,7 @@ if [ -z "$bugSplatUser" ]; then
 fi
 
 if [ -z "$bugSplatPassword" ]; then
-    echo "BugSplat postprocessing: bugSplbugSplatPassword variable is empty"
+    echo "BugSplat postprocessing: bugSplatPassword variable is empty"
 fi
 
 sed -i .backup 's/username/'$bugSplatUser'/g' $HOME/.bugsplat.conf
