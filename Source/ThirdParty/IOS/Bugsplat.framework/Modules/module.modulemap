@@ -1,0 +1,6 @@
+framework module Bugsplat {
+  umbrella header "Bugsplat.h"
+
+  export *
+  module * { export * }
+}

@@ -1,0 +1,120 @@
+defines = -D_FILE_OFFSET_BITS=64 -D__ANDROID_API__=21
+includes = -I../../../../third_party/mini_chromium/mini_chromium
+cflags = -fPIC -fno-exceptions -fno-strict-aliasing -fstack-protector-all $
+    -fvisibility=hidden -g -pipe -pthread -Wall -Werror -Wextra $
+    -Wno-unused-parameter -Wno-missing-field-initializers $
+    -Wexit-time-destructors -Wextra-semi -Wheader-hygiene $
+    -Wimplicit-fallthrough -Wsign-compare -Wstring-conversion -fPIC $
+    -fno-exceptions -fno-strict-aliasing -fstack-protector-all $
+    -fvisibility=hidden -g -pipe -pthread -Wall -Werror -Wextra $
+    -Wno-unused-parameter -Wno-missing-field-initializers $
+    -Wexit-time-destructors -Wextra-semi -Wheader-hygiene $
+    -Wimplicit-fallthrough -Wsign-compare -Wstring-conversion -O0 -O0
+cflags_c = 
+cflags_cc = -fno-rtti -fvisibility-inlines-hidden -std=c++14 -fno-rtti $
+    -fvisibility-inlines-hidden -std=c++14
+arflags = 
+
+build obj/third_party/mini_chromium/mini_chromium/base/debug/base.alias.o: $
+    cxx $
+    ../../../../third_party/mini_chromium/mini_chromium/base/debug/alias.cc
+build $
+    obj/third_party/mini_chromium/mini_chromium/base/files/base.file_path.o: $
+    cxx $
+    ../../../../third_party/mini_chromium/mini_chromium/base/files/file_path.cc
+build $
+    obj/third_party/mini_chromium/mini_chromium/base/files/base.file_util_posix.o: $
+    cxx $
+    ../../../../third_party/mini_chromium/mini_chromium/base/files/file_util_posix.cc
+build $
+    obj/third_party/mini_chromium/mini_chromium/base/files/base.scoped_file.o: $
+    cxx $
+    ../../../../third_party/mini_chromium/mini_chromium/base/files/scoped_file.cc
+build obj/third_party/mini_chromium/mini_chromium/base/base.logging.o: cxx $
+    ../../../../third_party/mini_chromium/mini_chromium/base/logging.cc
+build $
+    obj/third_party/mini_chromium/mini_chromium/base/posix/base.safe_strerror.o: $
+    cxx $
+    ../../../../third_party/mini_chromium/mini_chromium/base/posix/safe_strerror.cc
+build $
+    obj/third_party/mini_chromium/mini_chromium/base/process/base.memory.o: $
+    cxx $
+    ../../../../third_party/mini_chromium/mini_chromium/base/process/memory.cc
+build $
+    obj/third_party/mini_chromium/mini_chromium/base/process/base.process_metrics_posix.o: $
+    cxx $
+    ../../../../third_party/mini_chromium/mini_chromium/base/process/process_metrics_posix.cc
+build obj/third_party/mini_chromium/mini_chromium/base/base.rand_util.o: $
+    cxx ../../../../third_party/mini_chromium/mini_chromium/base/rand_util.cc
+build $
+    obj/third_party/mini_chromium/mini_chromium/base/strings/base.string16.o: $
+    cxx $
+    ../../../../third_party/mini_chromium/mini_chromium/base/strings/string16.cc
+build $
+    obj/third_party/mini_chromium/mini_chromium/base/strings/base.string_number_conversions.o: $
+    cxx $
+    ../../../../third_party/mini_chromium/mini_chromium/base/strings/string_number_conversions.cc
+build $
+    obj/third_party/mini_chromium/mini_chromium/base/strings/base.string_util.o: $
+    cxx $
+    ../../../../third_party/mini_chromium/mini_chromium/base/strings/string_util.cc
+build $
+    obj/third_party/mini_chromium/mini_chromium/base/strings/base.stringprintf.o: $
+    cxx $
+    ../../../../third_party/mini_chromium/mini_chromium/base/strings/stringprintf.cc
+build $
+    obj/third_party/mini_chromium/mini_chromium/base/strings/base.utf_string_conversion_utils.o: $
+    cxx $
+    ../../../../third_party/mini_chromium/mini_chromium/base/strings/utf_string_conversion_utils.cc
+build $
+    obj/third_party/mini_chromium/mini_chromium/base/strings/base.utf_string_conversions.o: $
+    cxx $
+    ../../../../third_party/mini_chromium/mini_chromium/base/strings/utf_string_conversions.cc
+build $
+    obj/third_party/mini_chromium/mini_chromium/base/synchronization/base.condition_variable_posix.o: $
+    cxx $
+    ../../../../third_party/mini_chromium/mini_chromium/base/synchronization/condition_variable_posix.cc
+build $
+    obj/third_party/mini_chromium/mini_chromium/base/synchronization/base.lock.o: $
+    cxx $
+    ../../../../third_party/mini_chromium/mini_chromium/base/synchronization/lock.cc
+build $
+    obj/third_party/mini_chromium/mini_chromium/base/synchronization/base.lock_impl_posix.o: $
+    cxx $
+    ../../../../third_party/mini_chromium/mini_chromium/base/synchronization/lock_impl_posix.cc
+build $
+    obj/third_party/mini_chromium/mini_chromium/base/third_party/icu/base.icu_utf.o: $
+    cxx $
+    ../../../../third_party/mini_chromium/mini_chromium/base/third_party/icu/icu_utf.cc
+build $
+    obj/third_party/mini_chromium/mini_chromium/base/threading/base.thread_local_storage.o: $
+    cxx $
+    ../../../../third_party/mini_chromium/mini_chromium/base/threading/thread_local_storage.cc
+build $
+    obj/third_party/mini_chromium/mini_chromium/base/threading/base.thread_local_storage_posix.o: $
+    cxx $
+    ../../../../third_party/mini_chromium/mini_chromium/base/threading/thread_local_storage_posix.cc
+
+build obj/third_party/mini_chromium/mini_chromium/base/libbase.a: $
+    alink_thin $
+    obj/third_party/mini_chromium/mini_chromium/base/debug/base.alias.o $
+    obj/third_party/mini_chromium/mini_chromium/base/files/base.file_path.o $
+    obj/third_party/mini_chromium/mini_chromium/base/files/base.file_util_posix.o $
+    obj/third_party/mini_chromium/mini_chromium/base/files/base.scoped_file.o $
+    obj/third_party/mini_chromium/mini_chromium/base/base.logging.o $
+    obj/third_party/mini_chromium/mini_chromium/base/posix/base.safe_strerror.o $
+    obj/third_party/mini_chromium/mini_chromium/base/process/base.memory.o $
+    obj/third_party/mini_chromium/mini_chromium/base/process/base.process_metrics_posix.o $
+    obj/third_party/mini_chromium/mini_chromium/base/base.rand_util.o $
+    obj/third_party/mini_chromium/mini_chromium/base/strings/base.string16.o $
+    obj/third_party/mini_chromium/mini_chromium/base/strings/base.string_number_conversions.o $
+    obj/third_party/mini_chromium/mini_chromium/base/strings/base.string_util.o $
+    obj/third_party/mini_chromium/mini_chromium/base/strings/base.stringprintf.o $
+    obj/third_party/mini_chromium/mini_chromium/base/strings/base.utf_string_conversion_utils.o $
+    obj/third_party/mini_chromium/mini_chromium/base/strings/base.utf_string_conversions.o $
+    obj/third_party/mini_chromium/mini_chromium/base/synchronization/base.condition_variable_posix.o $
+    obj/third_party/mini_chromium/mini_chromium/base/synchronization/base.lock.o $
+    obj/third_party/mini_chromium/mini_chromium/base/synchronization/base.lock_impl_posix.o $
+    obj/third_party/mini_chromium/mini_chromium/base/third_party/icu/base.icu_utf.o $
+    obj/third_party/mini_chromium/mini_chromium/base/threading/base.thread_local_storage.o $
+    obj/third_party/mini_chromium/mini_chromium/base/threading/base.thread_local_storage_posix.o

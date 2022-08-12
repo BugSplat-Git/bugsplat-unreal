@@ -1,3 +1,5 @@
+// Copyright 2022 BugSplat. All Rights Reserved.
+
 #pragma once
 
 #include "CoreMinimal.h"

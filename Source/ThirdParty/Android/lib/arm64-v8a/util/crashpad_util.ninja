@@ -1,0 +1,247 @@
+defines = -D_FILE_OFFSET_BITS=64 -D__ANDROID_API__=21 -DZLIB_CONST $
+    -DCRASHPAD_ZLIB_SOURCE_SYSTEM -DCRASHPAD_LSS_SOURCE_EMBEDDED
+includes = -I../../../.. -Iobj/util/crashpad_util.gen $
+    -I../../../../compat/non_mac -I../../../../compat/non_win $
+    -I../../../../compat/android -I../../../../compat/linux $
+    -I../../../../third_party/mini_chromium/mini_chromium
+cflags = -fPIC -fno-exceptions -fno-strict-aliasing -fstack-protector-all $
+    -fvisibility=hidden -g -pipe -pthread -Wall -Werror -Wextra $
+    -Wno-unused-parameter -Wno-missing-field-initializers $
+    -Wexit-time-destructors -Wextra-semi -Wheader-hygiene $
+    -Wimplicit-fallthrough -Wsign-compare -Wstring-conversion -O0
+cflags_c = 
+cflags_cc = -fno-rtti -fvisibility-inlines-hidden -std=c++14
+arflags = 
+
+build obj/util/file/crashpad_util.delimited_file_reader.o: cxx $
+    ../../../../util/file/delimited_file_reader.cc
+build obj/util/file/crashpad_util.directory_reader_posix.o: cxx $
+    ../../../../util/file/directory_reader_posix.cc
+build obj/util/file/crashpad_util.file_helper.o: cxx $
+    ../../../../util/file/file_helper.cc
+build obj/util/file/crashpad_util.file_io.o: cxx $
+    ../../../../util/file/file_io.cc
+build obj/util/file/crashpad_util.file_io_posix.o: cxx $
+    ../../../../util/file/file_io_posix.cc
+build obj/util/file/crashpad_util.file_reader.o: cxx $
+    ../../../../util/file/file_reader.cc
+build obj/util/file/crashpad_util.file_seeker.o: cxx $
+    ../../../../util/file/file_seeker.cc
+build obj/util/file/crashpad_util.filesystem_posix.o: cxx $
+    ../../../../util/file/filesystem_posix.cc
+build obj/util/file/crashpad_util.file_writer.o: cxx $
+    ../../../../util/file/file_writer.cc
+build obj/util/file/crashpad_util.output_stream_file_writer.o: cxx $
+    ../../../../util/file/output_stream_file_writer.cc
+build obj/util/file/crashpad_util.scoped_remove_file.o: cxx $
+    ../../../../util/file/scoped_remove_file.cc
+build obj/util/file/crashpad_util.string_file.o: cxx $
+    ../../../../util/file/string_file.cc
+build obj/util/linux/crashpad_util.auxiliary_vector.o: cxx $
+    ../../../../util/linux/auxiliary_vector.cc
+build obj/util/linux/crashpad_util.direct_ptrace_connection.o: cxx $
+    ../../../../util/linux/direct_ptrace_connection.cc
+build obj/util/linux/crashpad_util.exception_handler_client.o: cxx $
+    ../../../../util/linux/exception_handler_client.cc
+build obj/util/linux/crashpad_util.exception_handler_protocol.o: cxx $
+    ../../../../util/linux/exception_handler_protocol.cc
+build obj/util/linux/crashpad_util.initial_signal_dispositions.o: cxx $
+    ../../../../util/linux/initial_signal_dispositions.cc
+build obj/util/linux/crashpad_util.memory_map.o: cxx $
+    ../../../../util/linux/memory_map.cc
+build obj/util/linux/crashpad_util.proc_stat_reader.o: cxx $
+    ../../../../util/linux/proc_stat_reader.cc
+build obj/util/linux/crashpad_util.proc_task_reader.o: cxx $
+    ../../../../util/linux/proc_task_reader.cc
+build obj/util/linux/crashpad_util.ptrace_broker.o: cxx $
+    ../../../../util/linux/ptrace_broker.cc
+build obj/util/linux/crashpad_util.ptrace_client.o: cxx $
+    ../../../../util/linux/ptrace_client.cc
+build obj/util/linux/crashpad_util.ptracer.o: cxx $
+    ../../../../util/linux/ptracer.cc
+build obj/util/linux/crashpad_util.scoped_pr_set_dumpable.o: cxx $
+    ../../../../util/linux/scoped_pr_set_dumpable.cc
+build obj/util/linux/crashpad_util.scoped_pr_set_ptracer.o: cxx $
+    ../../../../util/linux/scoped_pr_set_ptracer.cc
+build obj/util/linux/crashpad_util.scoped_ptrace_attach.o: cxx $
+    ../../../../util/linux/scoped_ptrace_attach.cc
+build obj/util/linux/crashpad_util.socket.o: cxx $
+    ../../../../util/linux/socket.cc
+build obj/util/linux/crashpad_util.thread_info.o: cxx $
+    ../../../../util/linux/thread_info.cc
+build obj/util/misc/crashpad_util.capture_context_linux.o: cc $
+    ../../../../util/misc/capture_context_linux.S
+build obj/util/misc/crashpad_util.clock_posix.o: cxx $
+    ../../../../util/misc/clock_posix.cc
+build obj/util/misc/crashpad_util.initialization_state_dcheck.o: cxx $
+    ../../../../util/misc/initialization_state_dcheck.cc
+build obj/util/misc/crashpad_util.lexing.o: cxx $
+    ../../../../util/misc/lexing.cc
+build obj/util/misc/crashpad_util.metrics.o: cxx $
+    ../../../../util/misc/metrics.cc
+build obj/util/misc/crashpad_util.paths_linux.o: cxx $
+    ../../../../util/misc/paths_linux.cc
+build obj/util/misc/crashpad_util.pdb_structures.o: cxx $
+    ../../../../util/misc/pdb_structures.cc
+build obj/util/misc/crashpad_util.random_string.o: cxx $
+    ../../../../util/misc/random_string.cc
+build obj/util/misc/crashpad_util.range_set.o: cxx $
+    ../../../../util/misc/range_set.cc
+build obj/util/misc/crashpad_util.reinterpret_bytes.o: cxx $
+    ../../../../util/misc/reinterpret_bytes.cc
+build obj/util/misc/crashpad_util.scoped_forbid_return.o: cxx $
+    ../../../../util/misc/scoped_forbid_return.cc
+build obj/util/misc/crashpad_util.time.o: cxx ../../../../util/misc/time.cc
+build obj/util/misc/crashpad_util.time_linux.o: cxx $
+    ../../../../util/misc/time_linux.cc
+build obj/util/misc/crashpad_util.uuid.o: cxx ../../../../util/misc/uuid.cc
+build obj/util/misc/crashpad_util.zlib.o: cxx ../../../../util/misc/zlib.cc
+build obj/util/net/crashpad_util.http_body.o: cxx $
+    ../../../../util/net/http_body.cc
+build obj/util/net/crashpad_util.http_body_gzip.o: cxx $
+    ../../../../util/net/http_body_gzip.cc
+build obj/util/net/crashpad_util.http_multipart_builder.o: cxx $
+    ../../../../util/net/http_multipart_builder.cc
+build obj/util/net/crashpad_util.http_transport.o: cxx $
+    ../../../../util/net/http_transport.cc
+build obj/util/net/crashpad_util.url.o: cxx ../../../../util/net/url.cc
+build obj/util/numeric/crashpad_util.checked_address_range.o: cxx $
+    ../../../../util/numeric/checked_address_range.cc
+build obj/util/posix/crashpad_util.close_multiple.o: cxx $
+    ../../../../util/posix/close_multiple.cc
+build obj/util/posix/crashpad_util.close_stdio.o: cxx $
+    ../../../../util/posix/close_stdio.cc
+build obj/util/posix/crashpad_util.drop_privileges.o: cxx $
+    ../../../../util/posix/drop_privileges.cc
+build obj/util/posix/crashpad_util.double_fork_and_exec.o: cxx $
+    ../../../../util/posix/double_fork_and_exec.cc
+build obj/util/posix/crashpad_util.process_info_linux.o: cxx $
+    ../../../../util/posix/process_info_linux.cc
+build obj/util/posix/crashpad_util.scoped_dir.o: cxx $
+    ../../../../util/posix/scoped_dir.cc
+build obj/util/posix/crashpad_util.scoped_mmap.o: cxx $
+    ../../../../util/posix/scoped_mmap.cc
+build obj/util/posix/crashpad_util.signals.o: cxx $
+    ../../../../util/posix/signals.cc
+build obj/util/posix/crashpad_util.symbolic_constants_posix.o: cxx $
+    ../../../../util/posix/symbolic_constants_posix.cc
+build obj/util/process/crashpad_util.process_memory.o: cxx $
+    ../../../../util/process/process_memory.cc
+build obj/util/process/crashpad_util.process_memory_linux.o: cxx $
+    ../../../../util/process/process_memory_linux.cc
+build obj/util/process/crashpad_util.process_memory_range.o: cxx $
+    ../../../../util/process/process_memory_range.cc
+build obj/util/stdlib/crashpad_util.aligned_allocator.o: cxx $
+    ../../../../util/stdlib/aligned_allocator.cc
+build obj/util/stdlib/crashpad_util.string_number_conversion.o: cxx $
+    ../../../../util/stdlib/string_number_conversion.cc
+build obj/util/stdlib/crashpad_util.strlcpy.o: cxx $
+    ../../../../util/stdlib/strlcpy.cc
+build obj/util/stdlib/crashpad_util.strnlen.o: cxx $
+    ../../../../util/stdlib/strnlen.cc
+build obj/util/stream/crashpad_util.base94_output_stream.o: cxx $
+    ../../../../util/stream/base94_output_stream.cc
+build obj/util/stream/crashpad_util.file_encoder.o: cxx $
+    ../../../../util/stream/file_encoder.cc
+build obj/util/stream/crashpad_util.file_output_stream.o: cxx $
+    ../../../../util/stream/file_output_stream.cc
+build obj/util/stream/crashpad_util.log_output_stream.o: cxx $
+    ../../../../util/stream/log_output_stream.cc
+build obj/util/stream/crashpad_util.zlib_output_stream.o: cxx $
+    ../../../../util/stream/zlib_output_stream.cc
+build obj/util/string/crashpad_util.split_string.o: cxx $
+    ../../../../util/string/split_string.cc
+build obj/util/synchronization/crashpad_util.semaphore_posix.o: cxx $
+    ../../../../util/synchronization/semaphore_posix.cc
+build obj/util/thread/crashpad_util.thread.o: cxx $
+    ../../../../util/thread/thread.cc
+build obj/util/thread/crashpad_util.thread_log_messages.o: cxx $
+    ../../../../util/thread/thread_log_messages.cc
+build obj/util/thread/crashpad_util.thread_posix.o: cxx $
+    ../../../../util/thread/thread_posix.cc
+build obj/util/thread/crashpad_util.worker_thread.o: cxx $
+    ../../../../util/thread/worker_thread.cc
+build obj/util/net/crashpad_util.http_transport_socket.o: cxx $
+    ../../../../util/net/http_transport_socket.cc
+build obj/util/process/crashpad_util.process_memory_sanitized.o: cxx $
+    ../../../../util/process/process_memory_sanitized.cc
+
+build obj/util/libcrashpad_util.a: alink_thin $
+    obj/util/file/crashpad_util.delimited_file_reader.o $
+    obj/util/file/crashpad_util.directory_reader_posix.o $
+    obj/util/file/crashpad_util.file_helper.o $
+    obj/util/file/crashpad_util.file_io.o $
+    obj/util/file/crashpad_util.file_io_posix.o $
+    obj/util/file/crashpad_util.file_reader.o $
+    obj/util/file/crashpad_util.file_seeker.o $
+    obj/util/file/crashpad_util.filesystem_posix.o $
+    obj/util/file/crashpad_util.file_writer.o $
+    obj/util/file/crashpad_util.output_stream_file_writer.o $
+    obj/util/file/crashpad_util.scoped_remove_file.o $
+    obj/util/file/crashpad_util.string_file.o $
+    obj/util/linux/crashpad_util.auxiliary_vector.o $
+    obj/util/linux/crashpad_util.direct_ptrace_connection.o $
+    obj/util/linux/crashpad_util.exception_handler_client.o $
+    obj/util/linux/crashpad_util.exception_handler_protocol.o $
+    obj/util/linux/crashpad_util.initial_signal_dispositions.o $
+    obj/util/linux/crashpad_util.memory_map.o $
+    obj/util/linux/crashpad_util.proc_stat_reader.o $
+    obj/util/linux/crashpad_util.proc_task_reader.o $
+    obj/util/linux/crashpad_util.ptrace_broker.o $
+    obj/util/linux/crashpad_util.ptrace_client.o $
+    obj/util/linux/crashpad_util.ptracer.o $
+    obj/util/linux/crashpad_util.scoped_pr_set_dumpable.o $
+    obj/util/linux/crashpad_util.scoped_pr_set_ptracer.o $
+    obj/util/linux/crashpad_util.scoped_ptrace_attach.o $
+    obj/util/linux/crashpad_util.socket.o $
+    obj/util/linux/crashpad_util.thread_info.o $
+    obj/util/misc/crashpad_util.capture_context_linux.o $
+    obj/util/misc/crashpad_util.clock_posix.o $
+    obj/util/misc/crashpad_util.initialization_state_dcheck.o $
+    obj/util/misc/crashpad_util.lexing.o $
+    obj/util/misc/crashpad_util.metrics.o $
+    obj/util/misc/crashpad_util.paths_linux.o $
+    obj/util/misc/crashpad_util.pdb_structures.o $
+    obj/util/misc/crashpad_util.random_string.o $
+    obj/util/misc/crashpad_util.range_set.o $
+    obj/util/misc/crashpad_util.reinterpret_bytes.o $
+    obj/util/misc/crashpad_util.scoped_forbid_return.o $
+    obj/util/misc/crashpad_util.time.o $
+    obj/util/misc/crashpad_util.time_linux.o $
+    obj/util/misc/crashpad_util.uuid.o obj/util/misc/crashpad_util.zlib.o $
+    obj/util/net/crashpad_util.http_body.o $
+    obj/util/net/crashpad_util.http_body_gzip.o $
+    obj/util/net/crashpad_util.http_multipart_builder.o $
+    obj/util/net/crashpad_util.http_transport.o $
+    obj/util/net/crashpad_util.url.o $
+    obj/util/numeric/crashpad_util.checked_address_range.o $
+    obj/util/posix/crashpad_util.close_multiple.o $
+    obj/util/posix/crashpad_util.close_stdio.o $
+    obj/util/posix/crashpad_util.drop_privileges.o $
+    obj/util/posix/crashpad_util.double_fork_and_exec.o $
+    obj/util/posix/crashpad_util.process_info_linux.o $
+    obj/util/posix/crashpad_util.scoped_dir.o $
+    obj/util/posix/crashpad_util.scoped_mmap.o $
+    obj/util/posix/crashpad_util.signals.o $
+    obj/util/posix/crashpad_util.symbolic_constants_posix.o $
+    obj/util/process/crashpad_util.process_memory.o $
+    obj/util/process/crashpad_util.process_memory_linux.o $
+    obj/util/process/crashpad_util.process_memory_range.o $
+    obj/util/stdlib/crashpad_util.aligned_allocator.o $
+    obj/util/stdlib/crashpad_util.string_number_conversion.o $
+    obj/util/stdlib/crashpad_util.strlcpy.o $
+    obj/util/stdlib/crashpad_util.strnlen.o $
+    obj/util/stream/crashpad_util.base94_output_stream.o $
+    obj/util/stream/crashpad_util.file_encoder.o $
+    obj/util/stream/crashpad_util.file_output_stream.o $
+    obj/util/stream/crashpad_util.log_output_stream.o $
+    obj/util/stream/crashpad_util.zlib_output_stream.o $
+    obj/util/string/crashpad_util.split_string.o $
+    obj/util/synchronization/crashpad_util.semaphore_posix.o $
+    obj/util/thread/crashpad_util.thread.o $
+    obj/util/thread/crashpad_util.thread_log_messages.o $
+    obj/util/thread/crashpad_util.thread_posix.o $
+    obj/util/thread/crashpad_util.worker_thread.o $
+    obj/util/net/crashpad_util.http_transport_socket.o $
+    obj/util/process/crashpad_util.process_memory_sanitized.o || $
+    obj/third_party/mini_chromium/mini_chromium/base/libbase.a

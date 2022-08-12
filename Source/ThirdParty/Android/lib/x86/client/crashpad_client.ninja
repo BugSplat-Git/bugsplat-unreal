@@ -1,0 +1,48 @@
+defines = -D_FILE_OFFSET_BITS=64 -D__ANDROID_API__=21 $
+    -DCRASHPAD_LSS_SOURCE_EMBEDDED
+includes = -I../../../.. -I../../../../compat/non_mac $
+    -I../../../../compat/non_win -I../../../../compat/android $
+    -I../../../../compat/linux $
+    -I../../../../third_party/mini_chromium/mini_chromium
+cflags = -fPIC -fno-exceptions -fno-strict-aliasing -fstack-protector-all $
+    -fvisibility=hidden -g -pipe -pthread -Wall -Werror -Wextra $
+    -Wno-unused-parameter -Wno-missing-field-initializers $
+    -Wexit-time-destructors -Wextra-semi -Wheader-hygiene $
+    -Wimplicit-fallthrough -Wsign-compare -Wstring-conversion -O0
+cflags_c = 
+cflags_cc = -fno-rtti -fvisibility-inlines-hidden -std=c++14
+arflags = 
+
+build obj/client/crashpad_client.annotation.o: cxx $
+    ../../../../client/annotation.cc
+build obj/client/crashpad_client.annotation_list.o: cxx $
+    ../../../../client/annotation_list.cc
+build obj/client/crashpad_client.crash_report_database.o: cxx $
+    ../../../../client/crash_report_database.cc
+build obj/client/crashpad_client.crashpad_client_linux.o: cxx $
+    ../../../../client/crashpad_client_linux.cc
+build obj/client/crashpad_client.crashpad_info.o: cxx $
+    ../../../../client/crashpad_info.cc
+build obj/client/crashpad_client.prune_crash_reports.o: cxx $
+    ../../../../client/prune_crash_reports.cc
+build obj/client/crashpad_client.settings.o: cxx $
+    ../../../../client/settings.cc
+build obj/client/crashpad_client.client_argv_handling.o: cxx $
+    ../../../../client/client_argv_handling.cc
+build obj/client/crashpad_client.crashpad_info_note.o: cc $
+    ../../../../client/crashpad_info_note.S
+build obj/client/crashpad_client.crash_report_database_generic.o: cxx $
+    ../../../../client/crash_report_database_generic.cc
+
+build obj/client/libcrashpad_client.a: alink_thin $
+    obj/client/crashpad_client.annotation.o $
+    obj/client/crashpad_client.annotation_list.o $
+    obj/client/crashpad_client.crash_report_database.o $
+    obj/client/crashpad_client.crashpad_client_linux.o $
+    obj/client/crashpad_client.crashpad_info.o $
+    obj/client/crashpad_client.prune_crash_reports.o $
+    obj/client/crashpad_client.settings.o $
+    obj/client/crashpad_client.client_argv_handling.o $
+    obj/client/crashpad_client.crashpad_info_note.o $
+    obj/client/crashpad_client.crash_report_database_generic.o || $
+    obj/third_party/mini_chromium/mini_chromium/base/libbase.a

@@ -1,0 +1,9 @@
+// Copyright 2022 BugSplat. All Rights Reserved.
+
+#include "BugSplatUtils.h"
+
+void UBugSplatUtils::GenerateCrash()
+{
+	char *ptr = 0;
+	*ptr += 1;
+}

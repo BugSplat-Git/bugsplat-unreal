@@ -1,0 +1,66 @@
+build obj/client/crashpad_client_test.actions_depends.stamp: stamp $
+    obj/client/libcrashpad_client.a obj/compat/libcrashpad_compat.a $
+    crashpad_handler obj/snapshot/libcrashpad_snapshot.a $
+    obj/test/libcrashpad_googlemock_main.a obj/test/libcrashpad_test.a $
+    obj/third_party/googletest/libgooglemock.a $
+    obj/third_party/googletest/libgoogletest.a $
+    obj/third_party/mini_chromium/mini_chromium/base/libbase.a $
+    obj/util/libcrashpad_util.a $
+    obj/third_party/mini_chromium/mini_chromium/base/libbase.a
+
+defines = -D_FILE_OFFSET_BITS=64 -D__ANDROID_API__=21
+includes = -I../../../.. -I../../../../compat/non_mac $
+    -I../../../../compat/non_win -I../../../../compat/android $
+    -I../../../../compat/linux $
+    -I../../../../third_party/googletest/googletest/googlemock/include $
+    -I../../../../third_party/googletest/googletest/googletest/include $
+    -I../../../../third_party/mini_chromium/mini_chromium
+cflags = -fPIC -fno-exceptions -fno-strict-aliasing -fstack-protector-all $
+    -fvisibility=hidden -g -pipe -pthread -Wall -Werror -Wextra $
+    -Wno-unused-parameter -Wno-missing-field-initializers $
+    -Wexit-time-destructors -Wextra-semi -Wheader-hygiene $
+    -Wimplicit-fallthrough -Wsign-compare -Wstring-conversion $
+    -Wno-inconsistent-missing-override -O0
+cflags_c = 
+cflags_cc = -fno-rtti -fvisibility-inlines-hidden -std=c++14
+arflags = 
+
+build obj/client/crashpad_client_test.annotation_test.o: cxx $
+    ../../../../client/annotation_test.cc
+build obj/client/crashpad_client_test.annotation_list_test.o: cxx $
+    ../../../../client/annotation_list_test.cc
+build obj/client/crashpad_client_test.crash_report_database_test.o: cxx $
+    ../../../../client/crash_report_database_test.cc
+build obj/client/crashpad_client_test.crashpad_client_linux_test.o: cxx $
+    ../../../../client/crashpad_client_linux_test.cc
+build obj/client/crashpad_client_test.prune_crash_reports_test.o: cxx $
+    ../../../../client/prune_crash_reports_test.cc
+build obj/client/crashpad_client_test.settings_test.o: cxx $
+    ../../../../client/settings_test.cc
+build obj/client/crashpad_client_test.simple_address_range_bag_test.o: cxx $
+    ../../../../client/simple_address_range_bag_test.cc
+build obj/client/crashpad_client_test.simple_string_dictionary_test.o: cxx $
+    ../../../../client/simple_string_dictionary_test.cc
+
+ldflags = -fPIC -pthread -Wl,--as-needed -Wl,-z,noexecstack $
+    -static-libstdc++ -pie
+libs = -ldl -llog -lz
+build crashpad_client_test: link $
+    obj/client/crashpad_client_test.annotation_test.o $
+    obj/client/crashpad_client_test.annotation_list_test.o $
+    obj/client/crashpad_client_test.crash_report_database_test.o $
+    obj/client/crashpad_client_test.crashpad_client_linux_test.o $
+    obj/client/crashpad_client_test.prune_crash_reports_test.o $
+    obj/client/crashpad_client_test.settings_test.o $
+    obj/client/crashpad_client_test.simple_address_range_bag_test.o $
+    obj/client/crashpad_client_test.simple_string_dictionary_test.o $
+    obj/client/libcrashpad_client.a obj/compat/libcrashpad_compat.a $
+    obj/snapshot/libcrashpad_snapshot.a $
+    obj/test/libcrashpad_googlemock_main.a obj/test/libcrashpad_test.a $
+    obj/third_party/googletest/libgooglemock.a $
+    obj/third_party/googletest/libgoogletest.a obj/util/libcrashpad_util.a $
+    obj/third_party/mini_chromium/mini_chromium/base/libbase.a | $
+    crashpad_handler $
+    obj/third_party/mini_chromium/mini_chromium/base/libbase.a || $
+    obj/client/crashpad_client_test.actions_depends.stamp
+  ld = $ldxx

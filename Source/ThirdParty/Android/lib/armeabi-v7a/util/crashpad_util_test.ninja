@@ -1,0 +1,204 @@
+build obj/util/crashpad_util_test.actions_depends.stamp: stamp $
+    obj/util/libcrashpad_util.a obj/client/libcrashpad_client.a $
+    obj/compat/libcrashpad_compat.a obj/test/libcrashpad_googlemock_main.a $
+    obj/test/libcrashpad_test.a obj/third_party/googletest/libgooglemock.a $
+    obj/third_party/googletest/libgoogletest.a $
+    obj/third_party/mini_chromium/mini_chromium/base/libbase.a $
+    obj/third_party/mini_chromium/mini_chromium/base/libbase.a
+
+defines = -D_FILE_OFFSET_BITS=64 -D__ANDROID_API__=21 $
+    -DCRASHPAD_LSS_SOURCE_EMBEDDED -DCRASHPAD_ZLIB_SOURCE_SYSTEM
+includes = -I../../../.. -I../../../../compat/non_mac $
+    -I../../../../compat/non_win -I../../../../compat/android $
+    -I../../../../compat/linux $
+    -I../../../../third_party/googletest/googletest/googlemock/include $
+    -I../../../../third_party/googletest/googletest/googletest/include $
+    -I../../../../third_party/mini_chromium/mini_chromium
+cflags = -fPIC -fno-exceptions -fno-strict-aliasing -fstack-protector-all $
+    -fvisibility=hidden -g -pipe -pthread -Wall -Werror -Wextra $
+    -Wno-unused-parameter -Wno-missing-field-initializers $
+    -Wexit-time-destructors -Wextra-semi -Wheader-hygiene $
+    -Wimplicit-fallthrough -Wsign-compare -Wstring-conversion $
+    -Wno-inconsistent-missing-override -O0
+cflags_c = 
+cflags_cc = -fno-rtti -fvisibility-inlines-hidden -std=c++14
+arflags = 
+
+build obj/util/file/crashpad_util_test.delimited_file_reader_test.o: cxx $
+    ../../../../util/file/delimited_file_reader_test.cc
+build obj/util/file/crashpad_util_test.directory_reader_test.o: cxx $
+    ../../../../util/file/directory_reader_test.cc
+build obj/util/file/crashpad_util_test.file_io_test.o: cxx $
+    ../../../../util/file/file_io_test.cc
+build obj/util/file/crashpad_util_test.file_reader_test.o: cxx $
+    ../../../../util/file/file_reader_test.cc
+build obj/util/file/crashpad_util_test.filesystem_test.o: cxx $
+    ../../../../util/file/filesystem_test.cc
+build obj/util/file/crashpad_util_test.string_file_test.o: cxx $
+    ../../../../util/file/string_file_test.cc
+build obj/util/linux/crashpad_util_test.auxiliary_vector_test.o: cxx $
+    ../../../../util/linux/auxiliary_vector_test.cc
+build obj/util/linux/crashpad_util_test.memory_map_test.o: cxx $
+    ../../../../util/linux/memory_map_test.cc
+build obj/util/linux/crashpad_util_test.proc_stat_reader_test.o: cxx $
+    ../../../../util/linux/proc_stat_reader_test.cc
+build obj/util/linux/crashpad_util_test.proc_task_reader_test.o: cxx $
+    ../../../../util/linux/proc_task_reader_test.cc
+build obj/util/linux/crashpad_util_test.ptrace_broker_test.o: cxx $
+    ../../../../util/linux/ptrace_broker_test.cc
+build obj/util/linux/crashpad_util_test.ptracer_test.o: cxx $
+    ../../../../util/linux/ptracer_test.cc
+build obj/util/linux/crashpad_util_test.scoped_ptrace_attach_test.o: cxx $
+    ../../../../util/linux/scoped_ptrace_attach_test.cc
+build obj/util/linux/crashpad_util_test.socket_test.o: cxx $
+    ../../../../util/linux/socket_test.cc
+build obj/util/misc/crashpad_util_test.arraysize_test.o: cxx $
+    ../../../../util/misc/arraysize_test.cc
+build obj/util/misc/crashpad_util_test.capture_context_test.o: cxx $
+    ../../../../util/misc/capture_context_test.cc
+build obj/util/misc/crashpad_util_test.capture_context_test_util_linux.o: $
+    cxx ../../../../util/misc/capture_context_test_util_linux.cc
+build obj/util/misc/crashpad_util_test.clock_test.o: cxx $
+    ../../../../util/misc/clock_test.cc
+build obj/util/misc/crashpad_util_test.from_pointer_cast_test.o: cxx $
+    ../../../../util/misc/from_pointer_cast_test.cc
+build obj/util/misc/crashpad_util_test.initialization_state_dcheck_test.o: $
+    cxx ../../../../util/misc/initialization_state_dcheck_test.cc
+build obj/util/misc/crashpad_util_test.initialization_state_test.o: cxx $
+    ../../../../util/misc/initialization_state_test.cc
+build obj/util/misc/crashpad_util_test.paths_test.o: cxx $
+    ../../../../util/misc/paths_test.cc
+build obj/util/misc/crashpad_util_test.scoped_forbid_return_test.o: cxx $
+    ../../../../util/misc/scoped_forbid_return_test.cc
+build obj/util/misc/crashpad_util_test.random_string_test.o: cxx $
+    ../../../../util/misc/random_string_test.cc
+build obj/util/misc/crashpad_util_test.range_set_test.o: cxx $
+    ../../../../util/misc/range_set_test.cc
+build obj/util/misc/crashpad_util_test.reinterpret_bytes_test.o: cxx $
+    ../../../../util/misc/reinterpret_bytes_test.cc
+build obj/util/misc/crashpad_util_test.time_test.o: cxx $
+    ../../../../util/misc/time_test.cc
+build obj/util/misc/crashpad_util_test.uuid_test.o: cxx $
+    ../../../../util/misc/uuid_test.cc
+build obj/util/net/crashpad_util_test.http_body_gzip_test.o: cxx $
+    ../../../../util/net/http_body_gzip_test.cc
+build obj/util/net/crashpad_util_test.http_body_test.o: cxx $
+    ../../../../util/net/http_body_test.cc
+build obj/util/net/crashpad_util_test.http_body_test_util.o: cxx $
+    ../../../../util/net/http_body_test_util.cc
+build obj/util/net/crashpad_util_test.http_multipart_builder_test.o: cxx $
+    ../../../../util/net/http_multipart_builder_test.cc
+build obj/util/net/crashpad_util_test.url_test.o: cxx $
+    ../../../../util/net/url_test.cc
+build obj/util/numeric/crashpad_util_test.checked_address_range_test.o: cxx $
+    ../../../../util/numeric/checked_address_range_test.cc
+build obj/util/numeric/crashpad_util_test.checked_range_test.o: cxx $
+    ../../../../util/numeric/checked_range_test.cc
+build obj/util/numeric/crashpad_util_test.in_range_cast_test.o: cxx $
+    ../../../../util/numeric/in_range_cast_test.cc
+build obj/util/numeric/crashpad_util_test.int128_test.o: cxx $
+    ../../../../util/numeric/int128_test.cc
+build obj/util/posix/crashpad_util_test.process_info_test.o: cxx $
+    ../../../../util/posix/process_info_test.cc
+build obj/util/posix/crashpad_util_test.scoped_mmap_test.o: cxx $
+    ../../../../util/posix/scoped_mmap_test.cc
+build obj/util/posix/crashpad_util_test.signals_test.o: cxx $
+    ../../../../util/posix/signals_test.cc
+build obj/util/posix/crashpad_util_test.symbolic_constants_posix_test.o: $
+    cxx ../../../../util/posix/symbolic_constants_posix_test.cc
+build obj/util/process/crashpad_util_test.process_memory_range_test.o: cxx $
+    ../../../../util/process/process_memory_range_test.cc
+build obj/util/process/crashpad_util_test.process_memory_test.o: cxx $
+    ../../../../util/process/process_memory_test.cc
+build obj/util/stdlib/crashpad_util_test.aligned_allocator_test.o: cxx $
+    ../../../../util/stdlib/aligned_allocator_test.cc
+build obj/util/stdlib/crashpad_util_test.map_insert_test.o: cxx $
+    ../../../../util/stdlib/map_insert_test.cc
+build obj/util/stdlib/crashpad_util_test.string_number_conversion_test.o: $
+    cxx ../../../../util/stdlib/string_number_conversion_test.cc
+build obj/util/stdlib/crashpad_util_test.strlcpy_test.o: cxx $
+    ../../../../util/stdlib/strlcpy_test.cc
+build obj/util/stdlib/crashpad_util_test.strnlen_test.o: cxx $
+    ../../../../util/stdlib/strnlen_test.cc
+build obj/util/stdlib/crashpad_util_test.thread_safe_vector_test.o: cxx $
+    ../../../../util/stdlib/thread_safe_vector_test.cc
+build obj/util/string/crashpad_util_test.split_string_test.o: cxx $
+    ../../../../util/string/split_string_test.cc
+build obj/util/synchronization/crashpad_util_test.semaphore_test.o: cxx $
+    ../../../../util/synchronization/semaphore_test.cc
+build obj/util/thread/crashpad_util_test.thread_log_messages_test.o: cxx $
+    ../../../../util/thread/thread_log_messages_test.cc
+build obj/util/thread/crashpad_util_test.thread_test.o: cxx $
+    ../../../../util/thread/thread_test.cc
+build obj/util/thread/crashpad_util_test.worker_thread_test.o: cxx $
+    ../../../../util/thread/worker_thread_test.cc
+build obj/util/process/crashpad_util_test.process_memory_sanitized_test.o: $
+    cxx ../../../../util/process/process_memory_sanitized_test.cc
+
+ldflags = -fPIC -pthread -Wl,--as-needed -Wl,-z,noexecstack $
+    -static-libstdc++ -pie
+libs = -llog -ldl -lz
+build crashpad_util_test: link $
+    obj/util/file/crashpad_util_test.delimited_file_reader_test.o $
+    obj/util/file/crashpad_util_test.directory_reader_test.o $
+    obj/util/file/crashpad_util_test.file_io_test.o $
+    obj/util/file/crashpad_util_test.file_reader_test.o $
+    obj/util/file/crashpad_util_test.filesystem_test.o $
+    obj/util/file/crashpad_util_test.string_file_test.o $
+    obj/util/linux/crashpad_util_test.auxiliary_vector_test.o $
+    obj/util/linux/crashpad_util_test.memory_map_test.o $
+    obj/util/linux/crashpad_util_test.proc_stat_reader_test.o $
+    obj/util/linux/crashpad_util_test.proc_task_reader_test.o $
+    obj/util/linux/crashpad_util_test.ptrace_broker_test.o $
+    obj/util/linux/crashpad_util_test.ptracer_test.o $
+    obj/util/linux/crashpad_util_test.scoped_ptrace_attach_test.o $
+    obj/util/linux/crashpad_util_test.socket_test.o $
+    obj/util/misc/crashpad_util_test.arraysize_test.o $
+    obj/util/misc/crashpad_util_test.capture_context_test.o $
+    obj/util/misc/crashpad_util_test.capture_context_test_util_linux.o $
+    obj/util/misc/crashpad_util_test.clock_test.o $
+    obj/util/misc/crashpad_util_test.from_pointer_cast_test.o $
+    obj/util/misc/crashpad_util_test.initialization_state_dcheck_test.o $
+    obj/util/misc/crashpad_util_test.initialization_state_test.o $
+    obj/util/misc/crashpad_util_test.paths_test.o $
+    obj/util/misc/crashpad_util_test.scoped_forbid_return_test.o $
+    obj/util/misc/crashpad_util_test.random_string_test.o $
+    obj/util/misc/crashpad_util_test.range_set_test.o $
+    obj/util/misc/crashpad_util_test.reinterpret_bytes_test.o $
+    obj/util/misc/crashpad_util_test.time_test.o $
+    obj/util/misc/crashpad_util_test.uuid_test.o $
+    obj/util/net/crashpad_util_test.http_body_gzip_test.o $
+    obj/util/net/crashpad_util_test.http_body_test.o $
+    obj/util/net/crashpad_util_test.http_body_test_util.o $
+    obj/util/net/crashpad_util_test.http_multipart_builder_test.o $
+    obj/util/net/crashpad_util_test.url_test.o $
+    obj/util/numeric/crashpad_util_test.checked_address_range_test.o $
+    obj/util/numeric/crashpad_util_test.checked_range_test.o $
+    obj/util/numeric/crashpad_util_test.in_range_cast_test.o $
+    obj/util/numeric/crashpad_util_test.int128_test.o $
+    obj/util/posix/crashpad_util_test.process_info_test.o $
+    obj/util/posix/crashpad_util_test.scoped_mmap_test.o $
+    obj/util/posix/crashpad_util_test.signals_test.o $
+    obj/util/posix/crashpad_util_test.symbolic_constants_posix_test.o $
+    obj/util/process/crashpad_util_test.process_memory_range_test.o $
+    obj/util/process/crashpad_util_test.process_memory_test.o $
+    obj/util/stdlib/crashpad_util_test.aligned_allocator_test.o $
+    obj/util/stdlib/crashpad_util_test.map_insert_test.o $
+    obj/util/stdlib/crashpad_util_test.string_number_conversion_test.o $
+    obj/util/stdlib/crashpad_util_test.strlcpy_test.o $
+    obj/util/stdlib/crashpad_util_test.strnlen_test.o $
+    obj/util/stdlib/crashpad_util_test.thread_safe_vector_test.o $
+    obj/util/string/crashpad_util_test.split_string_test.o $
+    obj/util/synchronization/crashpad_util_test.semaphore_test.o $
+    obj/util/thread/crashpad_util_test.thread_log_messages_test.o $
+    obj/util/thread/crashpad_util_test.thread_test.o $
+    obj/util/thread/crashpad_util_test.worker_thread_test.o $
+    obj/util/process/crashpad_util_test.process_memory_sanitized_test.o $
+    obj/util/libcrashpad_util.a obj/client/libcrashpad_client.a $
+    obj/compat/libcrashpad_compat.a obj/test/libcrashpad_googlemock_main.a $
+    obj/test/libcrashpad_test.a obj/third_party/googletest/libgooglemock.a $
+    obj/third_party/googletest/libgoogletest.a $
+    obj/third_party/mini_chromium/mini_chromium/base/libbase.a | $
+    obj/third_party/mini_chromium/mini_chromium/base/libbase.a || $
+    obj/util/crashpad_util_test.actions_depends.stamp
+  ld = $ldxx
