@@ -57,16 +57,19 @@ void FBugSplatRuntimeModule::StartupModule()
 #endif
 
 #if PLATFORM_ANDROID
-	const FString Section = "/Script/AndroidRuntimeSettings.AndroidRuntimeSettings";
+	const FString AndroidSection = "/Script/AndroidRuntimeSettings.AndroidRuntimeSettings";
+	const FString BugSplatSection = "/Script/BugSplatRuntime.BugSplatEditorSettings";
 	const FString ConfigFileName = IFileManager::Get().ConvertToAbsolutePathForExternalAppForWrite(*(FPaths::ProjectConfigDir() + "DefaultEngine.ini"));
 	
 	FString androidPackageName;
 	FString androidPackageVersion;
-	GConfig->GetString(*Section, TEXT("PackageName"), androidPackageName, ConfigFileName);
-	GConfig->GetString(*Section, TEXT("VersionDisplayName"), androidPackageVersion, ConfigFileName);
+	GConfig->GetString(*AndroidSection, TEXT("PackageName"), androidPackageName, ConfigFileName);
+	GConfig->GetString(*BugSplatSection, TEXT("VersionDisplayName"), androidPackageVersion, ConfigFileName);
 
 	UE_LOG(LogBugsplat, Log, TEXT("BUGSPLAT PackageName: %s"), *androidPackageName);
 	UE_LOG(LogBugsplat, Log, TEXT("BUGSPLAT VersionDisplayName: %s"), *androidPackageVersion);
+
+	string version = string(TCHAR_TO_UTF8(*FString::Printf(TEXT("%s-android"), *androidPackageVersion)));
 
 	string dataDir = string(TCHAR_TO_UTF8(*FString::Printf(TEXT("/data/data/%s"), *androidPackageName)));
 
@@ -83,7 +86,7 @@ void FBugSplatRuntimeModule::StartupModule()
 	annotations["format"] = "minidump";
 	annotations["database"] = string(TCHAR_TO_UTF8(*BugSplatEditorSettings->BugSplatDatabase));
 	annotations["product"] = string(TCHAR_TO_UTF8(*BugSplatEditorSettings->BugSplatApp));
-	annotations["version"] = string(TCHAR_TO_UTF8(*androidPackageVersion));
+	annotations["version"] = version;
 
 	// Crashpad arguments
 	vector<string> arguments;
