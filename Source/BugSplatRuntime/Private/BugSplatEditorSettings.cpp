@@ -9,5 +9,7 @@ UBugSplatEditorSettings::UBugSplatEditorSettings(const FObjectInitializer& Objec
 	bUploadDebugSymbols = false;
 	BugSplatUser = TEXT("");
 	BugSplatPassword = TEXT("");
-	BugSplatVersion = TEXT("");	
+	BugSplatVersion = TEXT("");
+	BugSplatClientId = TEXT("");
+	BugSplatClientSecret = TEXT("");
 }

@@ -18,15 +18,21 @@ public:
 		Meta = (DisplayName = "Enable automatic symbols upload", ToolTip = "Flag indicating whether to upload iOS debug symbols automatically"))
 	bool bUploadDebugSymbols;
 
-	UPROPERTY(Config, EditAnywhere, Category = "IOS", Meta = (DisplayName = "User", ToolTip = "Username (required for debug symbols upload)"))
-	FString BugSplatUser;
-
-	UPROPERTY(Config, EditAnywhere, Category = "IOS", Meta = (DisplayName = "Password", ToolTip = "Password (required for debug symbols upload)"))
-	FString BugSplatPassword;
-
-	UPROPERTY(Config, EditAnywhere, Category = "IOS", Meta = (DisplayName = "Version", ToolTip = "Application version number"))
+	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "Version", ToolTip = "Application version number"))
 	FString BugSplatVersion;
 
-	UPROPERTY(Config, EditAnywhere, Category = "Android", Meta = (DisplayName = "App name", ToolTip = "Application name"))
+	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "User", ToolTip = "Username (required for debug symbols upload)"))
+	FString BugSplatUser;
+
+	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "Password", ToolTip = "Password (required for debug symbols upload)"))
+	FString BugSplatPassword;	
+
+	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "App name", ToolTip = "Application name"))
 	FString BugSplatApp;
+
+	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "Client ID", ToolTip = "Unique client identifier"))
+	FString BugSplatClientId;
+
+	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "Client secret", ToolTip = "Client secret"))
+	FString BugSplatClientSecret;
 };

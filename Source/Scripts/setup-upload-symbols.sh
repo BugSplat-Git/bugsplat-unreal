@@ -21,7 +21,7 @@ echo "BugSplat postprocessing: Input binaries path: $binariesPath"
 echo "BugSplat postprocessing: Input config path: $configPath"
 echo "BugSplat postprocessing: Input scripts path: $scriptsPath"
 
-export uploadSymbols=$(awk -F "=" '/bUploadDebugSymbolsIos/ {print $2}' ${configPath}/DefaultEngine.ini)
+export uploadSymbols=$(awk -F "=" '/bUploadDebugSymbols/ {print $2}' ${configPath}/DefaultEngine.ini)
 
 if [ -z "$uploadSymbols" ]; then
     echo "BugSplat postprocessing: Automatic symbols upload is disabled in plugin settings. Terminating..." 

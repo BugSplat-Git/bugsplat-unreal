@@ -44,6 +44,7 @@ public class BugSplat : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
+				"BugSplatRuntime",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

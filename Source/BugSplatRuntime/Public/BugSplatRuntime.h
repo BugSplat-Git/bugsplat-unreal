@@ -7,13 +7,17 @@
 
 class UBugSplatEditorSettings;
 
-class FBugSplatRuntimeModule : public IModuleInterface
+class BUGSPLATRUNTIME_API FBugSplatRuntimeModule : public IModuleInterface
 {
 public:
 
 	/** IModuleInterface implementation */
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
+
+	static FBugSplatRuntimeModule& Get();
+
+	UBugSplatEditorSettings* GetSettings() const;
 
 private:
 	UBugSplatEditorSettings* BugSplatEditorSettings;
