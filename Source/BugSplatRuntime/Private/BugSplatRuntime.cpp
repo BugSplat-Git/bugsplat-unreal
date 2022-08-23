@@ -7,6 +7,9 @@
 #include "UObject/Package.h"
 #include "UObject/UObjectGlobals.h"
 #include "CoreMinimal.h"
+#include "HAL/FileManager.h"
+#include "Misc/Paths.h"
+#include "Misc/ConfigCacheIni.h"
 
 #if PLATFORM_IOS
 #import <Foundation/Foundation.h>
