@@ -130,6 +130,16 @@ void FBugSplatRuntimeModule::ShutdownModule()
 	}
 }
 
+FBugSplatRuntimeModule& FBugSplatRuntimeModule::Get()
+{
+	return FModuleManager::LoadModuleChecked<FBugSplatRuntimeModule>("BugSplatRuntime");
+}
+
+UBugSplatEditorSettings* FBugSplatRuntimeModule::GetSettings() const
+{
+	return BugSplatEditorSettings;
+}
+
 #undef LOCTEXT_NAMESPACE
 	
 IMPLEMENT_MODULE(FBugSplatRuntimeModule, BugSplatRuntime)

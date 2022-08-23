@@ -29,4 +29,10 @@ public:
 
 	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "App name", ToolTip = "Application name"))
 	FString BugSplatApp;
+
+	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "Client ID", ToolTip = "Unique client identifier"))
+	FString BugSplatClientId;
+
+	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "Client secret", ToolTip = "Client secret"))
+	FString BugSplatClientSecret;
 };
