@@ -31,7 +31,7 @@ public:
 	bool bEnableCrashReportingIos;
 
 	UPROPERTY(Config, EditAnywhere, Category = "IOS",
-		Meta = (DisplayName = "Enable automatic symbols uploads", ToolTip = "Flag indicating whether to upload iOS debug symbols automatically"))
+		Meta = (DisplayName = "Enable automatic symbols uploads", ToolTip = "Flag indicating whether to upload iOS debug symbols automatically", EditCondition = "bEnableCrashReportingIos"))
 	bool bUploadDebugSymbolsIos;
 
 	UPROPERTY(Config, VisibleAnywhere, Category = "Android",
@@ -39,6 +39,6 @@ public:
 	bool bEnableCrashReportingAndroid;
 
 	UPROPERTY(Config, VisibleAnywhere, Category = "Android",
-		Meta = (DisplayName = "Enable automatic symbols uploads", ToolTip = "Flag indicating whether to upload Android debug symbols automatically (Android Support Coming Soon)"))
+		Meta = (DisplayName = "Enable automatic symbols uploads", ToolTip = "Flag indicating whether to upload Android debug symbols automatically (Android Support Coming Soon)", EditCondition = "bEnableCrashReportingAndroid"))
 	bool bUploadDebugSymbolsAndroid;
 };
