@@ -6,10 +6,11 @@ UBugSplatEditorSettings::UBugSplatEditorSettings(const FObjectInitializer& Objec
 	: Super(ObjectInitializer)
 {
 	BugSplatDatabase = TEXT("");
-	bUploadDebugSymbols = false;
 	BugSplatUser = TEXT("");
 	BugSplatPassword = TEXT("");
 	BugSplatVersion = TEXT("");
-	BugSplatClientId = TEXT("");
-	BugSplatClientSecret = TEXT("");
+	bEnableCrashReportingIos = true;
+	bUploadDebugSymbolsIos = true;
+	bEnableCrashReportingAndroid = false;
+	bUploadDebugSymbolsAndroid = false;
 }

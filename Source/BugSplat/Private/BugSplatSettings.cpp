@@ -70,8 +70,8 @@ void FBugSplatSettings::WriteSendPdbsToScript()
 	UBugSplatEditorSettings* runtimeSettings = FBugSplatRuntimeModule::Get().GetSettings();
 
 	args.Add(BUGSPLAT_SENDPDBS_DIR);
-	args.Add(runtimeSettings->BugSplatClientId);
-	args.Add(runtimeSettings->BugSplatClientSecret);
+	args.Add(runtimeSettings->BugSplatUser);
+	args.Add(runtimeSettings->BugSplatPassword);
 	args.Add(runtimeSettings->BugSplatDatabase);
 	args.Add(runtimeSettings->BugSplatApp);
 	args.Add(runtimeSettings->BugSplatVersion);

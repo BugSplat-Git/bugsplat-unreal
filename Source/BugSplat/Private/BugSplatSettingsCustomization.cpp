@@ -26,9 +26,10 @@ TSharedRef<IDetailCustomization> FBugSplatSettingsCustomization::MakeInstance()
 
 void FBugSplatSettingsCustomization::CustomizeDetails(IDetailLayoutBuilder& DetailBuilder)
 {
-	IDetailCategoryBuilder& CommonCategory = DetailBuilder.EditCategory(TEXT("Crash Reported configuration"));
+	IDetailCategoryBuilder& CommonCategory = DetailBuilder.EditCategory(TEXT("Crash Reporter Configuration"));
+	IDetailCategoryBuilder& DesktopCategory = DetailBuilder.EditCategory(TEXT("Desktop"));
 
-	CommonCategory.AddCustomRow(FText::FromString(TEXT("BugSplat")), false)
+	CommonCategory.AddCustomRow(FText::FromString(TEXT("BugSplatCRC")), false)
 		.WholeRowWidget
 		[
 			SNew(SVerticalBox)
@@ -51,25 +52,20 @@ void FBugSplatSettingsCustomization::CustomizeDetails(IDetailLayoutBuilder& Deta
 				.DecoratorStyleSet(&FCoreStyle::Get())
 				+ SRichTextBlock::HyperlinkDecorator(TEXT("browser"), FSlateHyperlinkRun::FOnClick::CreateStatic(&OnDocumentationLinkClicked))
 			]
+		];
+
+	DesktopCategory.AddCustomRow(FText::FromString(TEXT("BugSplatDesktop")), false)
+		.WholeRowWidget
+		[
+			SNew(SVerticalBox)
 			+ SVerticalBox::Slot()
-			.Padding(FMargin(0, 10, 0, 10))
+			.Padding(FMargin(0, 10, 5, 10))
 			.AutoHeight()
 			[
 				SNew(SHorizontalBox)
 				+ SHorizontalBox::Slot()
 				.AutoWidth()
-				.Padding(FMargin(0, 10, 10, 10))
-				[
-					SNew(SButton)
-					.HAlign(HAlign_Center)
-					.VAlign(VAlign_Center)
-					.ContentPadding(FMargin(8, 2))
-					.OnClicked_Raw(&FBugSplatModule::Get(), &FBugSplatModule::OnUpdateGlobalIni)
-					.Text(FText::FromString("Update Global INI"))
-				]
-				+ SHorizontalBox::Slot()
-				.AutoWidth()
-				.Padding(FMargin(10, 10, 10, 10))
+				.Padding(FMargin(0, 0, 5, 0))
 				[
 					SNew(SButton)
 					.HAlign(HAlign_Center)
@@ -80,7 +76,18 @@ void FBugSplatSettingsCustomization::CustomizeDetails(IDetailLayoutBuilder& Deta
 				]
 				+ SHorizontalBox::Slot()
 				.AutoWidth()
-				.Padding(FMargin(10, 10, 0, 10))
+				.Padding(FMargin(5, 0, 5, 0))
+				[
+					SNew(SButton)
+					.HAlign(HAlign_Center)
+					.VAlign(VAlign_Center)
+					.ContentPadding(FMargin(8, 2))
+					.OnClicked_Raw(&FBugSplatModule::Get(), &FBugSplatModule::OnUpdateGlobalIni)
+					.Text(FText::FromString("Update Global INI"))
+				]
+				+ SHorizontalBox::Slot()
+				.AutoWidth()
+				.Padding(FMargin(5, 0, 5, 0))
 				[
 					SNew(SButton)
 					.HAlign(HAlign_Center)

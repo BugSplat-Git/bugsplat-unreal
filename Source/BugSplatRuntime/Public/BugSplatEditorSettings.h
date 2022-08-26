@@ -14,10 +14,6 @@ public:
 	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "Database", ToolTip = "Database name"))
 	FString BugSplatDatabase;
 
-	UPROPERTY(Config, EditAnywhere, Category = "Common",
-		Meta = (DisplayName = "Enable automatic symbols upload", ToolTip = "Flag indicating whether to upload iOS debug symbols automatically"))
-	bool bUploadDebugSymbols;
-
 	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "Version", ToolTip = "Application version number"))
 	FString BugSplatVersion;
 
@@ -30,9 +26,19 @@ public:
 	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "App name", ToolTip = "Application name"))
 	FString BugSplatApp;
 
-	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "Client ID", ToolTip = "Unique client identifier"))
-	FString BugSplatClientId;
+	UPROPERTY(Config, EditAnywhere, Category = "IOS",
+		Meta = (DisplayName = "Enable iOS crash reporting", ToolTip = "Flag indicating whether to capture crashes on iOS"))
+	bool bEnableCrashReportingIos;
 
-	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "Client secret", ToolTip = "Client secret"))
-	FString BugSplatClientSecret;
+	UPROPERTY(Config, EditAnywhere, Category = "IOS",
+		Meta = (DisplayName = "Enable automatic symbols uploads", ToolTip = "Flag indicating whether to upload iOS debug symbols automatically"))
+	bool bUploadDebugSymbolsIos;
+
+	UPROPERTY(Config, VisibleAnywhere, Category = "Android",
+		Meta = (DisplayName = "Enable Android crash reporting", ToolTip = "Flag indicating whether to capture crashes on Android (Android Support Coming Soon)"))
+	bool bEnableCrashReportingAndroid;
+
+	UPROPERTY(Config, VisibleAnywhere, Category = "Android",
+		Meta = (DisplayName = "Enable automatic symbols uploads", ToolTip = "Flag indicating whether to upload Android debug symbols automatically (Android Support Coming Soon)"))
+	bool bUploadDebugSymbolsAndroid;
 };

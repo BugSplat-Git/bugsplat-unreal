@@ -20,5 +20,8 @@ public:
 	UBugSplatEditorSettings* GetSettings() const;
 
 private:
+	void SetupCrashReportingIos();
+	void SetupCrashReportingAndroid();
+
 	UBugSplatEditorSettings* BugSplatEditorSettings;
 };

@@ -52,66 +52,13 @@ void FBugSplatRuntimeModule::StartupModule()
 	}
 
 #if PLATFORM_IOS
-	dispatch_async(dispatch_get_main_queue(), ^
-	{
-		BugsplatStartupManager* bugsplatStartupManager = [[BugsplatStartupManager alloc] init];
-		[bugsplatStartupManager start];
-	});
+	if(BugSplatEditorSettings->bEnableCrashReportingIos)
+		SetupCrashReportingIos();
 #endif
 
 #if PLATFORM_ANDROID
-	const FString AndroidSection = "/Script/AndroidRuntimeSettings.AndroidRuntimeSettings";
-	const FString BugSplatSection = "/Script/BugSplatRuntime.BugSplatEditorSettings";
-	const FString ConfigFileName = IFileManager::Get().ConvertToAbsolutePathForExternalAppForWrite(*(FPaths::ProjectConfigDir() + "DefaultEngine.ini"));
-	
-	FString androidPackageName;
-	FString androidPackageVersion;
-	GConfig->GetString(*AndroidSection, TEXT("PackageName"), androidPackageName, ConfigFileName);
-	GConfig->GetString(*BugSplatSection, TEXT("VersionDisplayName"), androidPackageVersion, ConfigFileName);
-
-	UE_LOG(LogBugsplat, Log, TEXT("BUGSPLAT PackageName: %s"), *androidPackageName);
-	UE_LOG(LogBugsplat, Log, TEXT("BUGSPLAT VersionDisplayName: %s"), *androidPackageVersion);
-
-	string version = string(TCHAR_TO_UTF8(*FString::Printf(TEXT("%s-android"), *androidPackageVersion)));
-
-	string dataDir = string(TCHAR_TO_UTF8(*FString::Printf(TEXT("/data/data/%s"), *androidPackageName)));
-
-	// Crashpad file paths
-	FilePath handler(dataDir + "/lib/libcrashpad_handler.so");
-	FilePath reportsDir(dataDir + "/crashpad");
-	FilePath metricsDir(dataDir + "/crashpad");
-
-	// Crashpad upload URL for BugSplat database	
-	string url = string(TCHAR_TO_UTF8(*FString::Printf(TEXT("http://%s.bugsplat.com/post/bp/crash/crashpad.php"), *BugSplatEditorSettings->BugSplatDatabase)));
-
-	// Crashpad annotations
-	map<string, string> annotations;
-	annotations["format"] = "minidump";
-	annotations["database"] = string(TCHAR_TO_UTF8(*BugSplatEditorSettings->BugSplatDatabase));
-	annotations["product"] = string(TCHAR_TO_UTF8(*BugSplatEditorSettings->BugSplatApp));
-	annotations["version"] = version;
-
-	// Crashpad arguments
-	vector<string> arguments;
-	arguments.push_back("--no-rate-limit");
-
-	// Crashpad local database
-	unique_ptr<CrashReportDatabase> crashReportDatabase = CrashReportDatabase::Initialize(reportsDir);
-	if (crashReportDatabase == NULL) return;
-
-	// Enable automated crash uploads
-	Settings *settings = crashReportDatabase->GetSettings();
-	if (settings == NULL) return;
-	settings->SetUploadsEnabled(true);
-
-	// File paths of attachments to be uploaded with the minidump file at crash time - default bundle limit is 20MB
-	vector<FilePath> attachments;
-	FilePath attachment(dataDir + "/files/attachment.txt");
-	attachments.push_back(attachment);
-
-	// Start Crashpad crash handler
-	static CrashpadClient *client = new CrashpadClient();
-	client->StartHandlerAtCrash(handler, reportsDir, metricsDir, url, annotations, arguments, attachments);
+	if(BugSplatEditorSettings->bEnableCrashReportingAndroid)
+		SetupCrashReportingAndroid();
 #endif
 }
 
@@ -141,6 +88,67 @@ FBugSplatRuntimeModule& FBugSplatRuntimeModule::Get()
 UBugSplatEditorSettings* FBugSplatRuntimeModule::GetSettings() const
 {
 	return BugSplatEditorSettings;
+}
+
+void FBugSplatRuntimeModule::SetupCrashReportingIos()
+{
+#if PLATFORM_IOS
+	dispatch_async(dispatch_get_main_queue(), ^
+	{
+		BugsplatStartupManager* bugsplatStartupManager = [[BugsplatStartupManager alloc] init];
+		[bugsplatStartupManager start];
+	});
+#endif
+}
+
+void FBugSplatRuntimeModule::SetupCrashReportingAndroid()
+{
+#if PLATFORM_ANDROID
+	const FString AndroidSection = "/Script/AndroidRuntimeSettings.AndroidRuntimeSettings";
+	const FString ConfigFileName = IFileManager::Get().ConvertToAbsolutePathForExternalAppForWrite(*(FPaths::ProjectConfigDir() + "DefaultEngine.ini"));
+
+	FString androidPackageName;
+	GConfig->GetString(*AndroidSection, TEXT("PackageName"), androidPackageName, ConfigFileName);
+
+	string dataDir = string(TCHAR_TO_UTF8(*FString::Printf(TEXT("/data/data/%s"), *androidPackageName)));
+
+	// Crashpad file paths
+	FilePath handler(dataDir + "/lib/libcrashpad_handler.so");
+	FilePath reportsDir(dataDir + "/crashpad");
+	FilePath metricsDir(dataDir + "/crashpad");
+
+	// Crashpad upload URL for BugSplat database	
+	string url = string(TCHAR_TO_UTF8(*FString::Printf(TEXT("http://%s.bugsplat.com/post/bp/crash/crashpad.php"), *BugSplatEditorSettings->BugSplatDatabase)));
+
+	// Crashpad annotations
+	map<string, string> annotations;
+	annotations["format"] = "minidump";
+	annotations["database"] = string(TCHAR_TO_UTF8(*BugSplatEditorSettings->BugSplatDatabase));
+	annotations["product"] = string(TCHAR_TO_UTF8(*BugSplatEditorSettings->BugSplatApp));
+	annotations["version"] = string(TCHAR_TO_UTF8(*FString::Printf(TEXT("%s-android"), *BugSplatEditorSettings->BugSplatVersion)));
+
+	// Crashpad arguments
+	vector<string> arguments;
+	arguments.push_back("--no-rate-limit");
+
+	// Crashpad local database
+	unique_ptr<CrashReportDatabase> crashReportDatabase = CrashReportDatabase::Initialize(reportsDir);
+	if (crashReportDatabase == NULL) return;
+
+	// Enable automated crash uploads
+	Settings *settings = crashReportDatabase->GetSettings();
+	if (settings == NULL) return;
+	settings->SetUploadsEnabled(true);
+
+	// File paths of attachments to be uploaded with the minidump file at crash time - default bundle limit is 20MB
+	vector<FilePath> attachments;
+	FilePath attachment(dataDir + "/files/attachment.txt");
+	attachments.push_back(attachment);
+
+	// Start Crashpad crash handler
+	static CrashpadClient *client = new CrashpadClient();
+	client->StartHandlerAtCrash(handler, reportsDir, metricsDir, url, annotations, arguments, attachments);
+#endif
 }
 
 #undef LOCTEXT_NAMESPACE
