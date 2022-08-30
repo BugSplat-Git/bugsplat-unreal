@@ -21,16 +21,23 @@ echo "BugSplat postprocessing: Input binaries path: $binariesPath"
 echo "BugSplat postprocessing: Input config path: $configPath"
 echo "BugSplat postprocessing: Input scripts path: $scriptsPath"
 
-export uploadSymbols=$(awk -F "=" '/bUploadDebugSymbolsIos/ {print $2}' ${configPath}/DefaultEngine.ini)
+export reportCrashes=$(awk -F "=" '/bEnableCrashReportingIos/ {print $2}' ${configPath}/DefaultEngine.ini)
 
-if [ -z "$uploadSymbols" ]; then
-    echo "BugSplat postprocessing: Automatic symbols upload is disabled in plugin settings. Terminating..." 
-    exit
+# By default crash reporting for iOS is enabled and hence not included in DefaultEngine.ini
+if [ ! -z "$reportCrashes" ]; then
+    if [ $reportCrashes != "True" ]; then
+        echo "BugSplat postprocessing: Crash reporting is disabled in plugin settings. Terminating..." 
+        exit
+    fi
 fi
 
-if [ $uploadSymbols != "True" ]; then
-    echo "BugSplat postprocessing: Automatic symbols upload is disabled in plugin settings. Terminating..." 
-    exit
+export uploadSymbols=$(awk -F "=" '/bUploadDebugSymbolsIos/ {print $2}' ${configPath}/DefaultEngine.ini)
+
+if [ ! -z "$uploadSymbols" ]; then
+    if [ $uploadSymbols != "True" ]; then
+        echo "BugSplat postprocessing: Automatic symbols upload is disabled in plugin settings. Terminating..." 
+        exit
+    fi
 fi
 
 echo "BugSplat postprocessing: Copy ${targetName}.app to binaries root directory"

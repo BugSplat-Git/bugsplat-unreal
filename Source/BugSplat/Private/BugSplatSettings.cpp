@@ -5,79 +5,25 @@
 #include <Modules/BuildVersion.h>
 #include <Runtime/Core/Public/Misc/EngineVersionComparison.h>
 
+#include "BugSplatEditorSettings.h"
+#include "BugSplatRuntime.h"
+
 FBugSplatSettings::FBugSplatSettings(FString UProjectFilePath)
 {
 	FBugSplatSettings::UProjectFilePath = UProjectFilePath;
-	LoadSettingsFromConfigFile();
-}
-
-void FBugSplatSettings::SetAppName(const FText &NewAppName)
-{
-	AppName = NewAppName.ToString();
-	SaveSettingsToUProject();
-}
-
-void FBugSplatSettings::SetVersion(const FText &NewVersion)
-{
-	Version = NewVersion.ToString();
-	SaveSettingsToUProject();
-}
-
-void FBugSplatSettings::SetDatabase(const FText &NewDatabase)
-{
-	Database = NewDatabase.ToString();
-	SaveSettingsToUProject();
-}
-
-void FBugSplatSettings::SetClientID(const FText &NewClientID)
-{
-	ClientID = NewClientID.ToString();
-	SaveSettingsToUProject();
-}
-
-void FBugSplatSettings::SetClientSecret(const FText &NewPassword)
-{
-	ClientSecret = NewPassword.ToString();
-	SaveSettingsToUProject();
 }
 
 FString FBugSplatSettings::CreateBugSplatEndpointUrl()
 {
 	FStringFormatOrderedArguments args;
 
-	args.Add(Database);
-	args.Add(AppName);
-	args.Add(Version);
+	UBugSplatEditorSettings* runtimeSettings = FBugSplatRuntimeModule::Get().GetSettings();
+
+	args.Add(runtimeSettings->BugSplatDatabase);
+	args.Add(runtimeSettings->BugSplatApp);
+	args.Add(runtimeSettings->BugSplatVersion);
 
 	return *FString::Format(*BUGSPLAT_ENDPOINT_URL_FORMAT, args);
-}
-
-void FBugSplatSettings::LoadSettingsFromConfigFile()
-{
-	FString fileText;
-	TSharedPtr<FJsonObject> fileJson = MakeShareable(new FJsonObject());
-	FFileHelper::LoadFileToString(fileText, *UProjectFilePath);
-	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(fileText);
-	FJsonSerializer::Deserialize(Reader, fileJson);
-
-	FString outString;
-
-	if (!fileJson->TryGetStringField(DATABASE_TAG, outString))
-	{
-		FString empty = FString("");
-		Database = empty;
-		AppName = empty;
-		Version = empty;
-		ClientID = empty;
-		ClientSecret = empty;
-		return;
-	}
-
-	Database = fileJson->GetStringField(DATABASE_TAG);
-	AppName = fileJson->GetStringField(APP_NAME_TAG);
-	Version = fileJson->GetStringField(VERSION_TAG);
-	ClientID = fileJson->GetStringField(CLIENT_ID_TAG);
-	ClientSecret = fileJson->GetStringField(CLIENT_SECRET_TAG);
 }
 
 void FBugSplatSettings::UpdateCrashReportClientIni(FString DefaultEngineIniFilePath)
@@ -106,30 +52,6 @@ void FBugSplatSettings::UpdateCrashReportClientIni(FString DefaultEngineIniFileP
 	FMessageDialog::Debugf(FText::FromString("Configuration File Successfully Updated!"));
 }
 
-void FBugSplatSettings::SaveSettingsToUProject()
-{
-	FString fileText;
-
-	TSharedPtr<FJsonObject> fileJson = MakeShareable(new FJsonObject());
-	FFileHelper::LoadFileToString(fileText, *UProjectFilePath);
-	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(fileText);
-	FJsonSerializer::Deserialize(Reader, fileJson);
-
-	FString Text;
-	TSharedRef<FJsonObject> PluginJsonObject = fileJson.ToSharedRef();
-	TSharedRef<TJsonWriter<>> WriterRef = TJsonWriterFactory<>::Create(&Text);
-	TJsonWriter<> &Writer = WriterRef.Get();
-
-	PluginJsonObject->SetStringField(DATABASE_TAG, Database);
-	PluginJsonObject->SetStringField(APP_NAME_TAG, AppName);
-	PluginJsonObject->SetStringField(VERSION_TAG, Version);
-	PluginJsonObject->SetStringField(CLIENT_ID_TAG, ClientID);
-	PluginJsonObject->SetStringField(CLIENT_SECRET_TAG, ClientSecret);
-
-	FJsonSerializer::Serialize(PluginJsonObject, Writer);
-	FFileHelper::SaveStringToFile(Text, *UProjectFilePath);
-}
-
 void FBugSplatSettings::WriteSendPdbsToScript()
 {
 	FString PostBuildStepsConsoleCommandFormat =
@@ -145,12 +67,14 @@ void FBugSplatSettings::WriteSendPdbsToScript()
 
 	FStringFormatOrderedArguments args;
 
+	UBugSplatEditorSettings* runtimeSettings = FBugSplatRuntimeModule::Get().GetSettings();
+
 	args.Add(BUGSPLAT_SENDPDBS_DIR);
-	args.Add(ClientID);
-	args.Add(ClientSecret);
-	args.Add(AppName);
-	args.Add(Version);
-	args.Add(Database);
+	args.Add(runtimeSettings->BugSplatUser);
+	args.Add(runtimeSettings->BugSplatPassword);
+	args.Add(runtimeSettings->BugSplatDatabase);
+	args.Add(runtimeSettings->BugSplatApp);
+	args.Add(runtimeSettings->BugSplatVersion);
 	args.Add(FPaths::Combine(FPaths::ConvertRelativePathToFull(FPaths::ProjectDir()), FString("/Binaries/%1")));
 
 	FString FormattedString = *FString::Format(*PostBuildStepsConsoleCommandFormat, args);
@@ -178,7 +102,8 @@ void FBugSplatSettings::UpdateLocalIni()
 
 	FString Platforms[] = {
 		TEXT("Windows"),
-		TEXT("Linux")
+		TEXT("Linux"),
+		TEXT("Mac")
 	};
 	bool FoundAnyValidFolders = false;
 

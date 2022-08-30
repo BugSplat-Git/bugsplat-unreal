@@ -26,14 +26,16 @@ public:
 	/** IModuleInterface implementation */
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
-	
+
+	static FBugSplatModule& Get();
+
 	/** This function will be bound to Command (by default it will bring up plugin window) */
 	void PluginButtonClicked();
 
 	FReply OnUpdateGlobalIni();
 	FReply OnUpdateLocalIni();
 	FReply OnUpdateSendPdbsScript();
-	
+
 private:
 
 	void RegisterMenus();

@@ -7,6 +7,9 @@
 #include "UObject/Package.h"
 #include "UObject/UObjectGlobals.h"
 #include "CoreMinimal.h"
+#include "HAL/FileManager.h"
+#include "Misc/Paths.h"
+#include "Misc/ConfigCacheIni.h"
 
 #if PLATFORM_IOS
 #import <Foundation/Foundation.h>
@@ -49,24 +52,63 @@ void FBugSplatRuntimeModule::StartupModule()
 	}
 
 #if PLATFORM_IOS
+	if(BugSplatEditorSettings->bEnableCrashReportingIos)
+		SetupCrashReportingIos();
+#endif
+
+#if PLATFORM_ANDROID
+	if(BugSplatEditorSettings->bEnableCrashReportingAndroid)
+		SetupCrashReportingAndroid();
+#endif
+}
+
+void FBugSplatRuntimeModule::ShutdownModule()
+{
+	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
+	{
+		SettingsModule->UnregisterSettings("Project", "Plugins", "BugSplat");
+	}
+
+	if (!GExitPurge)
+	{
+		// If we're in exit purge, this object has already been destroyed
+		BugSplatEditorSettings->RemoveFromRoot();
+	}
+	else
+	{
+		BugSplatEditorSettings = nullptr;
+	}
+}
+
+FBugSplatRuntimeModule& FBugSplatRuntimeModule::Get()
+{
+	return FModuleManager::LoadModuleChecked<FBugSplatRuntimeModule>("BugSplatRuntime");
+}
+
+UBugSplatEditorSettings* FBugSplatRuntimeModule::GetSettings() const
+{
+	return BugSplatEditorSettings;
+}
+
+void FBugSplatRuntimeModule::SetupCrashReportingIos()
+{
+#if PLATFORM_IOS
 	dispatch_async(dispatch_get_main_queue(), ^
 	{
 		BugsplatStartupManager* bugsplatStartupManager = [[BugsplatStartupManager alloc] init];
 		[bugsplatStartupManager start];
 	});
 #endif
+}
 
+void FBugSplatRuntimeModule::SetupCrashReportingAndroid()
+{
 #if PLATFORM_ANDROID
-	const FString Section = "/Script/AndroidRuntimeSettings.AndroidRuntimeSettings";
+	const FString AndroidSection = "/Script/AndroidRuntimeSettings.AndroidRuntimeSettings";
 	const FString ConfigFileName = IFileManager::Get().ConvertToAbsolutePathForExternalAppForWrite(*(FPaths::ProjectConfigDir() + "DefaultEngine.ini"));
-	
-	FString androidPackageName;
-	FString androidPackageVersion;
-	GConfig->GetString(*Section, TEXT("PackageName"), androidPackageName, ConfigFileName);
-	GConfig->GetString(*Section, TEXT("VersionDisplayName"), androidPackageVersion, ConfigFileName);
 
-	UE_LOG(LogBugsplat, Log, TEXT("BUGSPLAT PackageName: %s"), *androidPackageName);
-	UE_LOG(LogBugsplat, Log, TEXT("BUGSPLAT VersionDisplayName: %s"), *androidPackageVersion);
+	FString androidPackageName;
+	GConfig->GetString(*AndroidSection, TEXT("PackageName"), androidPackageName, ConfigFileName);
 
 	string dataDir = string(TCHAR_TO_UTF8(*FString::Printf(TEXT("/data/data/%s"), *androidPackageName)));
 
@@ -83,7 +125,7 @@ void FBugSplatRuntimeModule::StartupModule()
 	annotations["format"] = "minidump";
 	annotations["database"] = string(TCHAR_TO_UTF8(*BugSplatEditorSettings->BugSplatDatabase));
 	annotations["product"] = string(TCHAR_TO_UTF8(*BugSplatEditorSettings->BugSplatApp));
-	annotations["version"] = string(TCHAR_TO_UTF8(*androidPackageVersion));
+	annotations["version"] = string(TCHAR_TO_UTF8(*FString::Printf(TEXT("%s-android"), *BugSplatEditorSettings->BugSplatVersion)));
 
 	// Crashpad arguments
 	vector<string> arguments;
@@ -107,24 +149,6 @@ void FBugSplatRuntimeModule::StartupModule()
 	static CrashpadClient *client = new CrashpadClient();
 	client->StartHandlerAtCrash(handler, reportsDir, metricsDir, url, annotations, arguments, attachments);
 #endif
-}
-
-void FBugSplatRuntimeModule::ShutdownModule()
-{
-	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
-	{
-		SettingsModule->UnregisterSettings("Project", "Plugins", "BugSplat");
-	}
-
-	if (!GExitPurge)
-	{
-		// If we're in exit purge, this object has already been destroyed
-		BugSplatEditorSettings->RemoveFromRoot();
-	}
-	else
-	{
-		BugSplatEditorSettings = nullptr;
-	}
 }
 
 #undef LOCTEXT_NAMESPACE

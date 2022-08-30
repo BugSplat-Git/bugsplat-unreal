@@ -14,4 +14,7 @@ class BUGSPLATRUNTIME_API UBugSplatUtils : public UBlueprintFunctionLibrary
 public:
 	UFUNCTION(BlueprintCallable, Category = "BugSplat")
 	static void GenerateCrash();
+
+	UFUNCTION(BlueprintCallable, Category = "BugSplat")
+	static void GenerateAssert();
 };

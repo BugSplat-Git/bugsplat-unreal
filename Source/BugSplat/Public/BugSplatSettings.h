@@ -1,6 +1,6 @@
 // Copyright 2022 BugSplat. All Rights Reserved.
 
-#pragma once
+#pragma once	
 
 #include "CoreMinimal.h"
 #include <EngineSharedPCH.h>
@@ -18,12 +18,6 @@ static const FString PACKAGED_BUILD_CONFIG_PATH_4_25_AND_OLDER = FString("Engine
 
 static const FString INI_FILE_NAME = FString("DefaultEngine.ini");
 
-static const FString DATABASE_TAG = FString("Database");
-static const FString APP_NAME_TAG = FString("AppName");
-static const FString VERSION_TAG = FString("AppVersion"); // "Version" is reserved for plugin version.
-static const FString CLIENT_ID_TAG = FString("ClientID");
-static const FString CLIENT_SECRET_TAG = FString("ClientSecret");
-
 static const FString WIN_64_LABEL = FString("Win64");
 static const FString POST_BUILD_STEPS_LABEL = FString("PostBuildSteps");
 
@@ -31,18 +25,6 @@ class FBugSplatSettings
 {
 public:
 	FBugSplatSettings(FString uProjectFilePath);
-
-	void SetAppName(const FText& AppName);
-	void SetVersion(const FText& Version);
-	void SetDatabase(const FText& Database);
-	void SetClientID(const FText& ClientID);
-	void SetClientSecret(const FText& ClientSecret);
-
-	FText GetAppName() { return FText::FromString(AppName); };
-	FText GetVersion() { return FText::FromString(Version); };
-	FText GetDatabase() { return FText::FromString(Database); };
-	FText GetClientID() { return FText::FromString(ClientID); };
-	FText GetClientSecret() { return FText::FromString(ClientSecret); };
 
 	FString CreateBugSplatEndpointUrl();
 
@@ -54,16 +36,7 @@ private:
 	FString GetPackagedBuildPlatformTarget(FString Platform);
 	FString GetPackagedBuildDefaultEngineIniRelativePath();
 	void CreateEmptyTextFile(FString FullPath);
-	void LoadSettingsFromConfigFile();
 	void UpdateCrashReportClientIni(FString iniFilePath);
-	void SaveSettingsToUProject();
 
 	FString UProjectFilePath;
-
-	FString Database;
-	FString AppName;
-	FString Version;
-	FString ClientID;
-	FString ClientSecret;
-
 };
