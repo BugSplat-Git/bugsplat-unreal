@@ -31,7 +31,7 @@ You may choose to add BugSplat to your Unreal Project manually, or through the U
 1. Navigate to your project folder, which contains your `[ProjectName].uproject` file.
 2. If it does not already exist, create a `Plugins` folder.
 3. Create a `BugSplat` folder in the `Plugins` folder and copy the contents of this repo into the `BugSplat` folder.
-4. In the Unreal Editor, ensure you can access the BugSplat plugin via `Edit > BugSplat`.
+4. In the Unreal Editor, ensure you can access the BugSplat plugin via `Edit > Project Settings` and scrolling to the `BugSplat` section under `Plugins`.
 
 ### Install from MarketPlace
 
