@@ -43,7 +43,7 @@ BugSplat's Unreal plugin currently supports adding crash reporting to Windows, m
 
 To get started, access the BugSplat plugin menu in the Unreal Editor via `Edit > Project Settings`. Scroll to the `BugSplat` section of `Project Settings` and add values for `Database`, `Application`,  `Version`, `User`, and `Password`:
 
-![BugSplat Unreal Project Settings](todo bg)
+![BugSplat Unreal Project Settings](.assets/bugsplat-project-settings.png)
 
 ### Desktop
 
@@ -59,9 +59,9 @@ In order to get function names and line numbers in crash reports you'll need to 
 
 ### Mobile
 
-> ℹ️ Before attempting to use the BugSplat plugin to capture crashes on Mobile please ensure you've completed the [iOS](https://docs.unrealengine.com/5.0/en-US/setting-up-an-unreal-engine-project-for-ios/) and [Android](https://docs.unrealengine.com/5.0/en-US/android-support-for-unreal-engine/) quickstart guides.
-
 Installing the BugSplat plugin will configure crash reporting and symbol uploads automatically on mobile platforms.
+
+Before attempting to use the BugSplat plugin to capture crashes on Mobile please ensure you've completed the [iOS](https://docs.unrealengine.com/5.0/en-US/setting-up-an-unreal-engine-project-for-ios/) and [Android](https://docs.unrealengine.com/5.0/en-US/android-support-for-unreal-engine/) quickstart guides.
 
 In order to get function names and line numbers in your iOS crash reports, please make the following changes in the `iOS` section of `Project Settings`
 
@@ -71,9 +71,9 @@ In order to get function names and line numbers in your iOS crash reports, pleas
 | Generate dSYMs as a bundle for third party crash tools | true |
 | Support bitcode in shipping | false |
 
-Additionally, have found that sometimes iOS applications won't crash while the USB cable is connected. If this happens, disconnect the USB cable and rerun the application to trigger a crash.
+Additionally, have found that sometimes iOS applications won't crash while the USB cable is connected. If this happens, disconnect the USB cable and re-run the application to trigger a crash.
 
-## Usage
+## 🏃 Usage
 
 Once you've installed the plugin, add the following C++ snippet to your game to generate a sample crash.
 
@@ -83,7 +83,7 @@ UE_LOG(LogTemp, Fatal, TEXT("BugSplat!"));
 
 Run your application and submit a crash report.
 
-On Desktops submit the crash report via Unreal's CrashReportClient dialog that appears at crash time. We have developed a handy guide on how you can customize the Unreal CrashReportClient dialog that is available [here](https://www.bugsplat.com/blog/game-dev/customizing-unreal-engine-crash-dialog/). 
+On Desktops, submit a crash report via the Unreal CrashReportClient dialog that appears at crash time. We have developed a handy guide on how you can customize the Unreal CrashReportClient dialog that is available [here](https://www.bugsplat.com/blog/game-dev/customizing-unreal-engine-crash-dialog/). 
 
 On iOS, after a crash occurs, restart the game and tap the `Send Report` option when prompted.
 
