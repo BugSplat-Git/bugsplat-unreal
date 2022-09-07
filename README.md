@@ -71,7 +71,7 @@ In order to get function names and line numbers in your iOS crash reports, pleas
 | Generate dSYMs as a bundle for third party crash tools | true |
 | Support bitcode in shipping | false |
 
-Additionally, have found that sometimes iOS applications won't crash while the USB cable is connected. If this happens, disconnect the USB cable and re-run the application to trigger a crash.
+Note that sometimes iOS applications won't crash while the USB cable is connected. If this happens, disconnect the USB cable and re-run the application to trigger a crash.
 
 ## 🏃 Usage
 
