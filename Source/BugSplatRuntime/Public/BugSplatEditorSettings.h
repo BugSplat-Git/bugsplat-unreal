@@ -14,17 +14,17 @@ public:
 	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "Database", ToolTip = "Database name"))
 	FString BugSplatDatabase;
 
+	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "Application", ToolTip = "Application name"))
+	FString BugSplatApp;
+
 	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "Version", ToolTip = "Application version number"))
 	FString BugSplatVersion;
 
-	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "User", ToolTip = "Username (required for debug symbols upload)"))
+	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "User", ToolTip = "Username (required for debug symbol uploads)"))
 	FString BugSplatUser;
 
-	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "Password", ToolTip = "Password (required for debug symbols upload)"))
+	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "Password", ToolTip = "Password (required for debug symbol uploads)"))
 	FString BugSplatPassword;	
-
-	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "App name", ToolTip = "Application name"))
-	FString BugSplatApp;
 
 	UPROPERTY(Config, EditAnywhere, Category = "IOS",
 		Meta = (DisplayName = "Enable iOS crash reporting", ToolTip = "Flag indicating whether to capture crashes on iOS"))
