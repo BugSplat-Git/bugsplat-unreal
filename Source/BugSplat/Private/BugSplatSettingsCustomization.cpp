@@ -40,7 +40,7 @@ void FBugSplatSettingsCustomization::CustomizeDetails(IDetailLayoutBuilder& Deta
 			[
 				SNew(STextBlock)
 				.AutoWrapText(true)
-				.Text(FText::FromString("Integrate your game with BugSplat crash reporting by filling in the fields below. This plugin can configure crash reporting for a packaged game (required for shipping builds) or the global engine DefaultEngine.ini (optional but useful for development). Additionally, this plugin can add a PostBuild step for symbol uploads which is required to calculate function names and line numbers in crash reports."))
+				.Text(FText::FromString("This plugin enables uploading of crash reports and debug symbols to BugSplat on both Desktop and Mobile platforms. To configure crash reporting and symbol uploads, start by filling in the Database, Application, Version, User, and Password fields below.\n\nFor Desktop, the BugSplat plugin can configure crash reporting in packaged games (required for shipping builds) or globally for the current engine's DefaultEngine.ini file (optional but useful for development). To configure crash reporting for Desktop, click either the \"Update Game INI\" or \"Update Global INI\" buttons below. When using the \"Update Game INI\" option, navigate to the root directory of your packaged game when prompted. Windows symbol uploads can be configured by adding a script to the PostBuildSteps section of the .uproject file via the \"Add Symbol Uploads\" button.\n\nTo add crash reporting and symbol uploads for Mobile games, simply click the appropriate checkboxes below."))
 			]
 			+ SVerticalBox::Slot()
 			.VAlign(VAlign_Top)
