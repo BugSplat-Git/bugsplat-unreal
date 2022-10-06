@@ -59,9 +59,9 @@ void FBugSplatSettings::WriteSendPdbsToScript()
 			"\"{0}\" "	 // Send PDBS Endpoint
 			"/u {1} "	 // Username
 			"/p {2} "	 // Password
-			"/a {3} "	 // AppName
-			"/v {4} "	 // Version
-			"/b {5} "	 // Database
+			"/b {3} "	 // Database
+			"/a {4} "	 // Application
+			"/v {5} "	 // Version
 			"/d \"{6}\"" // Project Directory
 		);
 
