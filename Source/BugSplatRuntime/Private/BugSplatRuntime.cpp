@@ -17,6 +17,10 @@
 #endif
 
 #if PLATFORM_ANDROID
+#include "Android/AndroidJNI.h"
+#include "Android/AndroidApplication.h"
+#include "Android/AndroidJava.h"
+
 #include <jni.h>
 #include <string>
 #include <unistd.h>
@@ -104,16 +108,24 @@ void FBugSplatRuntimeModule::SetupCrashReportingIos()
 void FBugSplatRuntimeModule::SetupCrashReportingAndroid()
 {
 #if PLATFORM_ANDROID
-	const FString AndroidSection = "/Script/AndroidRuntimeSettings.AndroidRuntimeSettings";
-	const FString ConfigFileName = IFileManager::Get().ConvertToAbsolutePathForExternalAppForWrite(*(FPaths::ProjectConfigDir() + "DefaultEngine.ini"));
+	JNIEnv* Env = FAndroidApplication::GetJavaEnv();
 
-	FString androidPackageName;
-	GConfig->GetString(*AndroidSection, TEXT("PackageName"), androidPackageName, ConfigFileName);
+	auto Activity = FJavaWrapper::GameActivityThis;
+	jclass ActivityClass = Env->GetObjectClass(Activity);
 
-	string dataDir = string(TCHAR_TO_UTF8(*FString::Printf(TEXT("/data/data/%s"), *androidPackageName)));
+	jmethodID GetAppInfoMethod = Env->GetMethodID(ActivityClass, "getApplicationInfo", "()Landroid/content/pm/ApplicationInfo;");
+
+	jobject ApplicationInfo = Env->CallObjectMethod(Activity, GetAppInfoMethod);
+	jclass ApplicationInfoClass = Env->GetObjectClass(ApplicationInfo);
+
+	jfieldID DataDirFieldId = Env->GetFieldID(ApplicationInfoClass, "dataDir", "Ljava/lang/String;");
+	jfieldID LibDirFieldId = Env->GetFieldID(ApplicationInfoClass, "nativeLibraryDir", "Ljava/lang/String;");
+
+	string dataDir = Env->GetStringUTFChars(static_cast<jstring>(Env->GetObjectField(ApplicationInfo, DataDirFieldId)), nullptr);
+	string libDir = Env->GetStringUTFChars(static_cast<jstring>(Env->GetObjectField(ApplicationInfo, LibDirFieldId)), nullptr);
 
 	// Crashpad file paths
-	FilePath handler(dataDir + "/lib/libcrashpad_handler.so");
+	FilePath handler(libDir + "/libcrashpad_handler.so");
 	FilePath reportsDir(dataDir + "/crashpad");
 	FilePath metricsDir(dataDir + "/crashpad");
 
