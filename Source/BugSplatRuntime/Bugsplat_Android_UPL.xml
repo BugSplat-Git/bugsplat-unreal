@@ -21,10 +21,9 @@
                 <insert>
                     android {
                         packagingOptions{
-                            doNotStrip "*/armeabi/*.so"
-                            doNotStrip "*/armeabi-v7a/*.so"
-                            doNotStrip "*/x86/*.so"
-                            doNotStrip "*/x86_64/*.so"
+                            jniLibs {
+                                keepDebugSymbols += ['*/armeabi/*.so', '*/armeabi-v7a/*.so', '*/x86_64/*.so']
+                            }
                         }
                     }
                 </insert>

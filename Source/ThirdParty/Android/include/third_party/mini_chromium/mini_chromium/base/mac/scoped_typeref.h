@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MINI_CHROMIUM_BASE_MAC_SCOPED_TYPEREF_H_
 #define MINI_CHROMIUM_BASE_MAC_SCOPED_TYPEREF_H_
 
-#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/scoped_policy.h"
 
@@ -42,7 +41,7 @@ class ScopedTypeRef {
     return *this;
   }
 
-  T* InitializeInto() WARN_UNUSED_RESULT {
+  [[nodiscard]] T* InitializeInto() {
     DCHECK(!object_);
     return &object_;
   }
@@ -71,7 +70,7 @@ class ScopedTypeRef {
     object_ = temp;
   }
 
-  T release() WARN_UNUSED_RESULT {
+  [[nodiscard]] T release() {
     T temp = object_;
     object_ = Traits::InvalidValue();
     return temp;

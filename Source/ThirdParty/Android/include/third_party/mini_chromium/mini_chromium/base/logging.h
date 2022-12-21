@@ -1,4 +1,4 @@
-// Copyright 2006-2008 The Chromium Authors. All rights reserved.
+// Copyright 2006-2008 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,11 +14,43 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 
 namespace logging {
+
+// A bitmask of potential logging destinations.
+using LoggingDestination = uint32_t;
+
+// Specifies where logs will be written. Multiple destinations can be specified
+// with bitwise OR.
+// Unless destination is LOG_NONE, all logs with severity ERROR and above will
+// be written to stderr in addition to the specified destination.
+enum : LoggingDestination {
+  LOG_NONE = 0,
+  LOG_TO_FILE = 1 << 0,
+  LOG_TO_SYSTEM_DEBUG_LOG = 1 << 1,
+  LOG_TO_STDERR = 1 << 2,
+
+  LOG_TO_ALL = LOG_TO_FILE | LOG_TO_SYSTEM_DEBUG_LOG | LOG_TO_STDERR,
+
+#if BUILDFLAG(IS_WIN)
+  LOG_DEFAULT = LOG_TO_FILE,
+#elif BUILDFLAG(IS_FUCHSIA)
+  LOG_DEFAULT = LOG_TO_SYSTEM_DEBUG_LOG,
+#elif BUILDFLAG(IS_POSIX)
+  LOG_DEFAULT = LOG_TO_SYSTEM_DEBUG_LOG | LOG_TO_STDERR,
+#endif
+};
+
+struct LoggingSettings {
+  LoggingDestination logging_dest = LOG_DEFAULT;
+};
+
+// Sets the logging destination.
+//
+// TODO(jperaza): LOG_TO_FILE is not yet supported.
+bool InitLogging(const LoggingSettings& settings);
 
 typedef int LogSeverity;
 const LogSeverity LOG_VERBOSE = -1;
@@ -52,12 +84,12 @@ static inline int GetVlogLevel(const char*) {
   return std::numeric_limits<int>::max();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // This is just ::GetLastError, but out-of-line to avoid including windows.h in
 // such a widely used place.
 unsigned long GetLastSystemErrorCode();
 std::string SystemErrorCodeToString(unsigned long error_code);
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 static inline int GetLastSystemErrorCode() {
   return errno;
 }
@@ -73,6 +105,10 @@ class LogMessage {
              const char* file_path,
              int line,
              std::string* result);
+
+  LogMessage(const LogMessage&) = delete;
+  LogMessage& operator=(const LogMessage&) = delete;
+
   ~LogMessage();
 
   std::ostream& stream() { return stream_; }
@@ -85,8 +121,6 @@ class LogMessage {
   size_t message_start_;
   const int line_;
   LogSeverity severity_;
-
-  DISALLOW_COPY_AND_ASSIGN(LogMessage);
 };
 
 class LogMessageVoidify {
@@ -96,7 +130,7 @@ class LogMessageVoidify {
   void operator&(const std::ostream&) const {}
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 class Win32ErrorLogMessage : public LogMessage {
  public:
   Win32ErrorLogMessage(const char* function,
@@ -104,14 +138,16 @@ class Win32ErrorLogMessage : public LogMessage {
                        int line,
                        LogSeverity severity,
                        unsigned long err);
+
+  Win32ErrorLogMessage(const Win32ErrorLogMessage&) = delete;
+  Win32ErrorLogMessage& operator=(const Win32ErrorLogMessage&) = delete;
+
   ~Win32ErrorLogMessage();
 
  private:
   unsigned long err_;
-
-  DISALLOW_COPY_AND_ASSIGN(Win32ErrorLogMessage);
 };
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 class ErrnoLogMessage : public LogMessage {
  public:
   ErrnoLogMessage(const char* function,
@@ -119,12 +155,14 @@ class ErrnoLogMessage : public LogMessage {
                   int line,
                   LogSeverity severity,
                   int err);
+
+  ErrnoLogMessage(const ErrnoLogMessage&) = delete;
+  ErrnoLogMessage& operator=(const ErrnoLogMessage&) = delete;
+
   ~ErrnoLogMessage();
 
  private:
   int err_;
-
-  DISALLOW_COPY_AND_ASSIGN(ErrnoLogMessage);
 };
 #endif
 
@@ -168,7 +206,7 @@ class ErrnoLogMessage : public LogMessage {
 #define COMPACT_GOOGLE_LOG_DFATAL \
     COMPACT_GOOGLE_LOG_EX_DFATAL(LogMessage)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 // wingdi.h defines ERROR 0. We don't want to include windows.h here, and we
 // want to allow "LOG(ERROR)", which will expand to LOG_0.
@@ -184,7 +222,7 @@ namespace logging {
 const LogSeverity LOG_0 = LOG_ERROR;
 }  // namespace logging
 
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 #define LAZY_STREAM(stream, condition) \
     !(condition) ? (void) 0 : ::logging::LogMessageVoidify() & (stream)
@@ -199,14 +237,14 @@ const LogSeverity LOG_0 = LOG_ERROR;
     logging::LogMessage(FUNCTION_SIGNATURE, __FILE__, __LINE__, \
                         -verbose_level).stream()
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define PLOG_STREAM(severity) COMPACT_GOOGLE_LOG_EX_ ## severity( \
     Win32ErrorLogMessage, ::logging::GetLastSystemErrorCode()).stream()
 #define VPLOG_STREAM(verbose_level)                                       \
     logging::Win32ErrorLogMessage(FUNCTION_SIGNATURE, __FILE__, __LINE__, \
                                   -verbose_level,                         \
                                   ::logging::GetLastSystemErrorCode()).stream()
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 #define PLOG_STREAM(severity) COMPACT_GOOGLE_LOG_EX_ ## severity( \
     ErrnoLogMessage, ::logging::GetLastSystemErrorCode()).stream()
 #define VPLOG_STREAM(verbose_level) \
@@ -271,5 +309,9 @@ const LogSeverity LOG_0 = LOG_ERROR;
 
 #undef assert
 #define assert(condition) DLOG_ASSERT(condition)
+
+namespace std {
+ostream& operator<<(ostream& out, const u16string& str);
+}  // namespace std
 
 #endif  // MINI_CHROMIUM_BASE_LOGGING_H_
