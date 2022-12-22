@@ -15,19 +15,5 @@
         </if>
     </resourceCopies>
 
-    <buildGradleAdditions>
-        <if condition="bEnableCrashReporting">
-            <true>
-                <insert>
-                    android {
-                        packagingOptions{
-                            jniLibs {
-                                keepDebugSymbols += ['*/armeabi/*.so', '*/armeabi-v7a/*.so', '*/x86_64/*.so']
-                            }
-                        }
-                    }
-                </insert>
-            </true>
-        </if>
-    </buildGradleAdditions>
+
 </root>
