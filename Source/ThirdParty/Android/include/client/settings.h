@@ -28,6 +28,10 @@
 #include "util/ios/scoped_background_task.h"
 #endif  // BUILDFLAG(IS_IOS)
 
+#ifndef CRASHPAD_FLOCK_ALWAYS_SUPPORTED
+#define CRASHPAD_FLOCK_ALWAYS_SUPPORTED 0
+#endif
+
 namespace crashpad {
 
 namespace internal {
@@ -66,7 +70,7 @@ constexpr double kUploadReportTimeoutSeconds = 60;
 //! should be retrieved via CrashReportDatabase::GetSettings().
 class Settings {
  public:
-  static inline constexpr char kLockfileExtension[] = ".__lock__";
+  static constexpr char kLockfileExtension[] = ".__lock__";
 
   Settings();
 

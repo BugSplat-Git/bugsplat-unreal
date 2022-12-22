@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#ifndef CRASHPAD_FLOCK_ALWAYS_SUPPORTED
+#define CRASHPAD_FLOCK_ALWAYS_SUPPORTED 0
+#endif
+
 #ifndef CRASHPAD_UTIL_FILE_FILE_IO_H_
 #define CRASHPAD_UTIL_FILE_FILE_IO_H_
 
