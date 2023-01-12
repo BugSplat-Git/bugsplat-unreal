@@ -1,1 +1,1 @@
-"C:/Users/bobby/Desktop/BugSplat/MyUnrealCrasher427//Plugins/BugSplat/Source/Scripts/bin/SendPdbs.exe" /u fred@bugsplat.com /p Flintstone /b fred /a MyUnrealCrasher /v 1.0.0 /d "C:/Users/bobby/Desktop/BugSplat/MyUnrealCrasher427//Binaries/%1"
+echo BugSplat has not been configured, so no PDBS will be uploaded!
