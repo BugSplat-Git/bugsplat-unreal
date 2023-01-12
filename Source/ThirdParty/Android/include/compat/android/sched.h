@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 #ifndef CRASHPAD_COMPAT_ANDROID_SCHED_H_
 #define CRASHPAD_COMPAT_ANDROID_SCHED_H_
 
-#include_next "sched.h"
+#include_next <sched.h>
 
 // Android 5.0.0 (API 21) NDK
 
