@@ -1,4 +1,4 @@
-// Copyright 2006-2008 The Chromium Authors. All rights reserved.
+// Copyright 2006-2008 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,12 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 #include <pthread.h>
 #endif
 
-#include "base/macros.h"
 
 namespace base {
 namespace internal {
@@ -23,13 +22,17 @@ namespace internal {
 // should instead use Lock.
 class LockImpl {
  public:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   typedef CRITICAL_SECTION NativeHandle;
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   typedef pthread_mutex_t NativeHandle;
 #endif
 
   LockImpl();
+
+  LockImpl(const LockImpl&) = delete;
+  LockImpl& operator=(const LockImpl&) = delete;
+
   ~LockImpl();
 
   // If the lock is not held, take it and return true.  If the lock is already
@@ -50,8 +53,6 @@ class LockImpl {
 
  private:
   NativeHandle native_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockImpl);
 };
 
 }  // namespace internal

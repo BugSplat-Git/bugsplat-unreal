@@ -1,15 +1,15 @@
 {
 	"FileVersion": 3,
 	"Version": "1.2",
-	"VersionName": "1.0",
+	"VersionName": "1.2",
 	"FriendlyName": "",
 	"Description": "BugSplat provides crash reporting for Unreal projects, and gives invaluable insight into the issues tripping up your users.",
-	"Category": "BugSplat",
+	"Category": "Crash Reporting",
 	"CreatedBy": "BugSplat",
-	"CreatedByURL": "http://bugsplat.com",
-	"DocsURL": "",
+	"CreatedByURL": "https://www.bugsplat.com",
+	"DocsURL": "https://docs.bugsplat.com/introduction/getting-started/integrations/game-development/unreal-engine#unreal-engine-plugin",
 	"MarketplaceURL": "",
-	"SupportURL": "",
+	"SupportURL": "https://www.bugsplat.com",
 	"EnabledByDefault": true,
 	"CanContainContent": true,
 	"IsBetaVersion": false,
@@ -27,8 +27,7 @@
 			"WhitelistPlatforms": [ "Win64", "Mac", "Android", "IOS", "Linux" ]
 		}
 	],
-	"PostBuildSteps":
-	{
+	"PostBuildSteps": {
 		"Win64": [
 			"call \"$(ProjectDir)\\Plugins\\BugSplat\\Source\\Scripts\\BugSplat.bat\" $(TargetPlatform)"
 		],

@@ -1,4 +1,4 @@
-// Copyright 2008 The Chromium Authors. All rights reserved.
+// Copyright 2008 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include "base/logging.h"
 #include "build/build_config.h"
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include <CoreText/CoreText.h>
 #else
 #include <ApplicationServices/ApplicationServices.h>
@@ -134,7 +134,7 @@ CF_CAST_DECL(CGColor);
 CF_CAST_DECL(CTFont);
 CF_CAST_DECL(CTRun);
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 CF_CAST_DECL(SecACL);
 CF_CAST_DECL(SecTrustedApplication);
 #endif

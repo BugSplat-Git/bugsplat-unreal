@@ -1,4 +1,5 @@
 #!/bin/bash
+# Copyright (C) BugSplat. All Rights Reserved.
 
 export targetPlatform=$1
 export targetName=$2

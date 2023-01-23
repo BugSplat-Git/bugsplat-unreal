@@ -15,20 +15,5 @@
         </if>
     </resourceCopies>
 
-    <buildGradleAdditions>
-        <if condition="bEnableCrashReporting">
-            <true>
-                <insert>
-                    android {
-                        packagingOptions{
-                            doNotStrip "*/armeabi/*.so"
-                            doNotStrip "*/armeabi-v7a/*.so"
-                            doNotStrip "*/x86/*.so"
-                            doNotStrip "*/x86_64/*.so"
-                        }
-                    }
-                </insert>
-            </true>
-        </if>
-    </buildGradleAdditions>
+
 </root>

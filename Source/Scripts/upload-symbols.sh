@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # (Above line comes out when placing in Xcode scheme)
-#
+# Copyright (C) BugSplat. All Rights Reserved.
 
 OPT="value"
 opts=":hf:"

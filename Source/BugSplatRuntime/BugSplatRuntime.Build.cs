@@ -88,22 +88,22 @@ public class BugSplatRuntime : ModuleRules
 
 			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "armeabi-v7a", "base", "libbase.a"));
 			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "arm64-v8a", "base", "libbase.a"));
-			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "x86", "base", "libbase.a"));
 			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "x86_64", "base", "libbase.a"));
 
-			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "armeabi-v7a", "client", "libcrashpad_client.a"));
-			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "arm64-v8a", "client", "libcrashpad_client.a"));
-			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "x86", "client", "libcrashpad_client.a"));
-			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "x86_64", "client", "libcrashpad_client.a"));
+			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "armeabi-v7a", "client", "libcommon.a"));
+			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "arm64-v8a", "client", "libcommon.a"));
+			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "x86_64", "client", "libcommon.a"));
 
-			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "armeabi-v7a", "util", "libcrashpad_util.a"));
-			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "arm64-v8a", "util", "libcrashpad_util.a"));
-			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "x86", "util", "libcrashpad_util.a"));
-			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "x86_64", "util", "libcrashpad_util.a"));
+			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "armeabi-v7a", "client", "libclient.a"));
+			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "arm64-v8a", "client", "libclient.a"));
+			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "x86_64", "client", "libclient.a"));
+
+			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "armeabi-v7a", "util", "libutil.a"));
+			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "arm64-v8a", "util", "libutil.a"));
+			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "x86_64", "util", "libutil.a"));
 
 			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "armeabi-v7a", "libcrashpad_handler.so"));
 			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "arm64-v8a", "libcrashpad_handler.so"));
-			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "x86", "libcrashpad_handler.so"));
 			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "x86_64", "libcrashpad_handler.so"));
 
 			PublicIncludePaths.Add(AndroidDependenciesIncludePath);
