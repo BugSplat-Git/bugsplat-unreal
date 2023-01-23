@@ -20,19 +20,6 @@
 #include "Android/AndroidJNI.h"
 #include "Android/AndroidApplication.h"
 #include "Android/AndroidJava.h"
-
-#include <jni.h>
-#include <string>
-#include <unistd.h>
-#include "client/crashpad_client.h"
-#include "client/crash_report_database.h"
-#include "client/settings.h"
-#endif
-
-#if PLATFORM_ANDROID
-using namespace base;
-using namespace crashpad;
-using namespace std;
 #endif
 
 #define LOCTEXT_NAMESPACE "FBugSplatRuntimeModule"
@@ -58,11 +45,13 @@ void FBugSplatRuntimeModule::StartupModule()
 #if PLATFORM_IOS
 	if(BugSplatEditorSettings->bEnableCrashReportingIos)
 		SetupCrashReportingIos();
-#endif
+#endif	
 
 #if PLATFORM_ANDROID
-	if(BugSplatEditorSettings->bEnableCrashReportingAndroid)
-		SetupCrashReportingAndroid();
+	if (!BugSplatEditorSettings->bEnableCrashReportingAndroid)
+		return;
+
+	SetupCrashReportingAndroid();
 #endif
 }
 
@@ -111,55 +100,17 @@ void FBugSplatRuntimeModule::SetupCrashReportingAndroid()
 	JNIEnv* Env = FAndroidApplication::GetJavaEnv();
 
 	auto Activity = FJavaWrapper::GameActivityThis;
-	jclass ActivityClass = Env->GetObjectClass(Activity);
 
-	jmethodID GetAppInfoMethod = Env->GetMethodID(ActivityClass, "getApplicationInfo", "()Landroid/content/pm/ApplicationInfo;");
+	jclass BridgeClass = FAndroidApplication::FindJavaClass("com/ninevastudios/bugsplatunitylib/BugSplatBridge");
+	jmethodID InitBugSplatMethod = FJavaWrapper::FindStaticMethod(Env, BridgeClass, "initBugSplat", "(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V", false);
 
-	jobject ApplicationInfo = Env->CallObjectMethod(Activity, GetAppInfoMethod);
-	jclass ApplicationInfoClass = Env->GetObjectClass(ApplicationInfo);
+	auto dataBaseString = Env->NewStringUTF(TCHAR_TO_UTF8(*BugSplatEditorSettings->BugSplatDatabase));
+	auto appString = Env->NewStringUTF(TCHAR_TO_UTF8(*BugSplatEditorSettings->BugSplatApp));
+	auto versionBaseString = Env->NewStringUTF(TCHAR_TO_UTF8(*BugSplatEditorSettings->BugSplatVersion));
 
-	jfieldID DataDirFieldId = Env->GetFieldID(ApplicationInfoClass, "dataDir", "Ljava/lang/String;");
-	jfieldID LibDirFieldId = Env->GetFieldID(ApplicationInfoClass, "nativeLibraryDir", "Ljava/lang/String;");
+	Env->CallStaticVoidMethod(BridgeClass, InitBugSplatMethod, dataBaseString, appString, versionBaseString);
 
-	string dataDir = Env->GetStringUTFChars(static_cast<jstring>(Env->GetObjectField(ApplicationInfo, DataDirFieldId)), nullptr);
-	string libDir = Env->GetStringUTFChars(static_cast<jstring>(Env->GetObjectField(ApplicationInfo, LibDirFieldId)), nullptr);
-
-	// Crashpad file paths
-	FilePath handler(libDir + "/libcrashpad_handler.so");
-	FilePath reportsDir(dataDir + "/crashpad");
-	FilePath metricsDir(dataDir + "/crashpad");
-
-	// Crashpad upload URL for BugSplat database	
-	string url = string(TCHAR_TO_UTF8(*FString::Printf(TEXT("http://%s.bugsplat.com/post/bp/crash/crashpad.php"), *BugSplatEditorSettings->BugSplatDatabase)));
-
-	// Crashpad annotations
-	map<string, string> annotations;
-	annotations["format"] = "minidump";
-	annotations["database"] = string(TCHAR_TO_UTF8(*BugSplatEditorSettings->BugSplatDatabase));
-	annotations["product"] = string(TCHAR_TO_UTF8(*BugSplatEditorSettings->BugSplatApp));
-	annotations["version"] = string(TCHAR_TO_UTF8(*FString::Printf(TEXT("%s-android"), *BugSplatEditorSettings->BugSplatVersion)));
-
-	// Crashpad arguments
-	vector<string> arguments;
-	arguments.push_back("--no-rate-limit");
-
-	// Crashpad local database
-	unique_ptr<CrashReportDatabase> crashReportDatabase = CrashReportDatabase::Initialize(reportsDir);
-	if (crashReportDatabase == NULL) return;
-
-	// Enable automated crash uploads
-	Settings *settings = crashReportDatabase->GetSettings();
-	if (settings == NULL) return;
-	settings->SetUploadsEnabled(true);
-
-	// File paths of attachments to be uploaded with the minidump file at crash time - default bundle limit is 20MB
-	vector<FilePath> attachments;
-	FilePath attachment(dataDir + "/files/attachment.txt");
-	attachments.push_back(attachment);
-
-	// Start Crashpad crash handler
-	static CrashpadClient *client = new CrashpadClient();
-	client->StartHandlerAtCrash(handler, reportsDir, metricsDir, url, annotations, arguments, attachments);
+	Env->DeleteLocalRef(BridgeClass);
 #endif
 }
 

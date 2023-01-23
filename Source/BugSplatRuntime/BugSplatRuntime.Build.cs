@@ -82,36 +82,6 @@ public class BugSplatRuntime : ModuleRules
 
 			AdditionalPropertiesForReceipt.Add("AndroidPlugin", Path.Combine(PluginPath, "Bugsplat_Android_UPL.xml"));
 			
-			string AndroidDependenciesPath = Path.Combine(ModuleDirectory, "..", "ThirdParty", "Android");
-			string AndroidDependenciesIncludePath = Path.Combine(AndroidDependenciesPath, "include");
-			string AndroidDependenciesLibPath = Path.Combine(AndroidDependenciesPath, "lib");
-
-			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "armeabi-v7a", "base", "libbase.a"));
-			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "arm64-v8a", "base", "libbase.a"));
-			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "x86_64", "base", "libbase.a"));
-
-			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "armeabi-v7a", "client", "libcommon.a"));
-			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "arm64-v8a", "client", "libcommon.a"));
-			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "x86_64", "client", "libcommon.a"));
-
-			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "armeabi-v7a", "client", "libclient.a"));
-			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "arm64-v8a", "client", "libclient.a"));
-			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "x86_64", "client", "libclient.a"));
-
-			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "armeabi-v7a", "util", "libutil.a"));
-			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "arm64-v8a", "util", "libutil.a"));
-			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "x86_64", "util", "libutil.a"));
-
-			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "armeabi-v7a", "libcrashpad_handler.so"));
-			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "arm64-v8a", "libcrashpad_handler.so"));
-			PublicAdditionalLibraries.Add(Path.Combine(AndroidDependenciesLibPath, "x86_64", "libcrashpad_handler.so"));
-
-			PublicIncludePaths.Add(AndroidDependenciesIncludePath);
-			
-			string AndroidDependenciesThirdPartyIncludePath = Path.Combine(AndroidDependenciesIncludePath, "third_party", "mini_chromium", "mini_chromium");
-			
-			PublicIncludePaths.Add(AndroidDependenciesThirdPartyIncludePath);
-			
 			PublicDefinitions.Add("DOXYGEN=0");
 		}
 	}

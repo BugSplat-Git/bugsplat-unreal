@@ -7,13 +7,13 @@
         <setBoolFromProperty result="bUploadSymbols" ini="Engine" section="/Script/BugSplatRuntime.BugSplatEditorSettings" property="bUploadDebugSymbolsAndroid" default="false" />
     </init>
 
-    <resourceCopies>
-        <if condition="bEnableCrashReporting">
-            <true>
-                <copyDir src="$S(PluginDir)/../ThirdParty/Android/lib/$S(Architecture)" dst="$S(BuildDir)/libs/$S(Architecture)" />
-            </true>
-        </if>
-    </resourceCopies>
+    <prebuildCopies>
+      <if condition="bEnableCrashReporting">
+        <true>
+          <copyFile src="$S(PluginDir)/../ThirdParty/Android/bugsplatunitylib-release.aar" dst="$S(BuildDir)/gradle/app/libs/bugsplatunitylib-release.aar" />
+        </true>
+      </if>
+    </prebuildCopies>
 
 
 </root>
