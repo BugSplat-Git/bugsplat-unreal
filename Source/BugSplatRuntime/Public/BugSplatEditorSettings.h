@@ -24,7 +24,13 @@ public:
 	FString BugSplatUser;
 
 	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "Password", ToolTip = "Password (required for debug symbol uploads)"))
-	FString BugSplatPassword;	
+	FString BugSplatPassword;
+
+	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "ClientId", ToolTip = "Client ID (required for debug symbol uploads)"))
+	FString BugSplatClientId;
+
+	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "ClientSecret", ToolTip = "Client secret (required for debug symbol uploads)"))
+	FString BugSplatClientSecret;
 
 	UPROPERTY(Config, EditAnywhere, Category = "IOS",
 		Meta = (DisplayName = "Enable iOS crash reporting", ToolTip = "Flag indicating whether to capture crashes on iOS"))

@@ -11,6 +11,6 @@ UBugSplatEditorSettings::UBugSplatEditorSettings(const FObjectInitializer& Objec
 	BugSplatVersion = TEXT("");
 	bEnableCrashReportingIos = true;
 	bUploadDebugSymbolsIos = true;
-	bEnableCrashReportingAndroid = false;
-	bUploadDebugSymbolsAndroid = false;
+	bEnableCrashReportingAndroid = true;
+	bUploadDebugSymbolsAndroid = true;
 }
