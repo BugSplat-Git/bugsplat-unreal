@@ -69,7 +69,7 @@ sed -i .backup 's/username/'$bugSplatUser'/g' $HOME/.bugsplat.conf
 sed -i .backup 's/password/'$bugSplatPassword'/g' $HOME/.bugsplat.conf
 
 echo "BugSplat postprocessing: Run debug symbols upload script"
-$scriptsPath/upload-symbols.sh -f $binariesPath/$targetName.zip
+$scriptsPath/upload-symbols-ios.sh -f $binariesPath/$targetName.zip
 
 echo "BugSplat postprocessing: Clean up temporaries"
 
