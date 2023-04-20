@@ -32,6 +32,15 @@
                 mavenCentral()
             }
         </insert>
+
+        <if condition="bUploadSymbols">
+            <true>
+                <log text="BugSplat postprocessing: Start debug symbols upload for Android"/>
+                <insert>
+                    
+                </insert>
+            </true>
+        </if>
     </buildGradleAdditions>
 
 </root>
