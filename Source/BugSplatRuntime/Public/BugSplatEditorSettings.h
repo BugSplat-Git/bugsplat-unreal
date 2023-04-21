@@ -44,7 +44,7 @@ public:
 		Meta = (DisplayName = "Enable Android crash reporting", ToolTip = "Flag indicating whether to capture crashes on Android (Android Support Coming Soon)"))
 	bool bEnableCrashReportingAndroid;
 
-	UPROPERTY(Config, VisibleAnywhere, Category = "Android",
+	UPROPERTY(Config, EditAnywhere, Category = "Android",
 		Meta = (DisplayName = "Enable automatic symbols uploads", ToolTip = "Flag indicating whether to upload Android debug symbols automatically (Android Support Coming Soon)", EditCondition = "bEnableCrashReportingAndroid"))
 	bool bUploadDebugSymbolsAndroid;
 };
