@@ -78,7 +78,7 @@
                             return 'symbol-upload-win.exe'
                         }
                         if (Os.isFamily(Os.FAMILY_MAC)) {
-                            return 'symbol-upload-mac'
+                            return 'symbol-upload-macos'
                         }
                         return '';
                     }
