@@ -24,7 +24,13 @@ public:
 	FString BugSplatUser;
 
 	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "Password", ToolTip = "Password (required for debug symbol uploads)"))
-	FString BugSplatPassword;	
+	FString BugSplatPassword;
+
+	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "ClientId", ToolTip = "Client ID (required for debug symbol uploads)"))
+	FString BugSplatClientId;
+
+	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "ClientSecret", ToolTip = "Client secret (required for debug symbol uploads)"))
+	FString BugSplatClientSecret;
 
 	UPROPERTY(Config, EditAnywhere, Category = "IOS",
 		Meta = (DisplayName = "Enable iOS crash reporting", ToolTip = "Flag indicating whether to capture crashes on iOS"))
@@ -38,7 +44,7 @@ public:
 		Meta = (DisplayName = "Enable Android crash reporting", ToolTip = "Flag indicating whether to capture crashes on Android (Android Support Coming Soon)"))
 	bool bEnableCrashReportingAndroid;
 
-	UPROPERTY(Config, VisibleAnywhere, Category = "Android",
+	UPROPERTY(Config, EditAnywhere, Category = "Android",
 		Meta = (DisplayName = "Enable automatic symbols uploads", ToolTip = "Flag indicating whether to upload Android debug symbols automatically (Android Support Coming Soon)", EditCondition = "bEnableCrashReportingAndroid"))
 	bool bUploadDebugSymbolsAndroid;
 };

@@ -3,8 +3,27 @@
     <init>
         <log text="BugSplat SDK Android UPL initialization"/>
 
-        <setBoolFromProperty result="bEnableCrashReporting" ini="Engine" section="/Script/BugSplatRuntime.BugSplatEditorSettings" property="bEnableCrashReportingAndroid" default="false" />
-        <setBoolFromProperty result="bUploadSymbols" ini="Engine" section="/Script/BugSplatRuntime.BugSplatEditorSettings" property="bUploadDebugSymbolsAndroid" default="false" />
+        <setBoolFromProperty result="bEnableCrashReporting" ini="Engine" section="/Script/BugSplatRuntime.BugSplatEditorSettings" property="bEnableCrashReportingAndroid" default="true" />
+        <setBoolFromProperty result="bUploadSymbols" ini="Engine" section="/Script/BugSplatRuntime.BugSplatEditorSettings" property="bUploadDebugSymbolsAndroid" default="true" />
+
+        <setStringFromProperty result="bugsplatDatabase" ini="Engine" section="/Script/BugSplatRuntime.BugSplatEditorSettings" property="BugSplatDatabase" />
+        <setStringFromProperty result="bugsplatApp" ini="Engine" section="/Script/BugSplatRuntime.BugSplatEditorSettings" property="BugSplatApp" />
+        <setStringFromProperty result="bugsplatVersion" ini="Engine" section="/Script/BugSplatRuntime.BugSplatEditorSettings" property="BugSplatVersion" />
+        <setStringFromProperty result="bugsplatClientId" ini="Engine" section="/Script/BugSplatRuntime.BugSplatEditorSettings" property="BugSplatClientId" />
+        <setStringFromProperty result="bugsplatClientSecret" ini="Engine" section="/Script/BugSplatRuntime.BugSplatEditorSettings" property="BugSplatClientSecret" />
+
+        <setString result="uploaderDirPath" value="$S(AbsPluginDir)/../ThirdParty/SymUploader/"/>
+
+        <setBoolIsEqual result="bIsShipping" arg1="$S(Configuration)" arg2="Shipping"/>
+
+        <if condition="bIsShipping">
+            <true>
+                <setString result="artifactsDirPath" value="$S(BuildDir)/gradle/app/build/intermediates/merged_native_libs/release/out/lib/$S(Architecture)"/>
+            </true>
+            <false>
+                <setString result="artifactsDirPath" value="$S(BuildDir)/gradle/app/build/intermediates/merged_native_libs/debug/out/lib/$S(Architecture)"/>
+            </false>
+        </if>
     </init>
 
     <prebuildCopies>
@@ -32,6 +51,62 @@
                 mavenCentral()
             }
         </insert>
+
+        <if condition="bUploadSymbols">
+            <true>
+                <log text="BugSplat postprocessing: Start debug symbols upload for Android"/>
+                <insert>
+                    import org.apache.tools.ant.taskdefs.condition.Os
+
+                    def checkExecResult(execResult, failText, standardOutput) {
+                        if (execResult) {
+                            if (execResult.getExitValue() != 0) {
+                                throw new GradleException('Non-zero exit value: ' + execResult.getExitValue())
+                            }
+                            if (standardOutput.toString().contains(failText)) {
+                                throw new GradleException('"' + failText + '" string in output: ' + standardOutput.toString())
+                            }
+                        } else {
+                            throw new GradleException('Returned a null execResult object')
+                        }
+                    }
+
+                    def getUploaderExecName() {
+                        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                            return 'symbol-upload-win.exe'
+                        }
+                        if (Os.isFamily(Os.FAMILY_MAC)) {
+                            return 'symbol-upload-macos'
+                        }
+                        return '';
+                    }
+
+                    task uploadSymbols(type:Exec) {
+                        def uploaderExec = '</insert><insertValue value="$S(uploaderDirPath)"/><insert>' + getUploaderExecName()                        
+                        def artifactsDirPath = '</insert><insertValue value="$S(artifactsDirPath)"/><insert>'
+                        def bugsplatDatabase = '</insert><insertValue value="$S(bugsplatDatabase)"/><insert>'
+                        def bugsplatApp = '</insert><insertValue value="$S(bugsplatApp)"/><insert>'
+                        def bugsplatVersion = '</insert><insertValue value="$S(bugsplatVersion)"/><insert>-android'
+                        def bugsplatClientId = '</insert><insertValue value="$S(bugsplatClientId)"/><insert>'
+                        def bugsplatClientSecret = '</insert><insertValue value="$S(bugsplatClientSecret)"/><insert>'
+
+                        standardOutput = new ByteArrayOutputStream();
+
+                        commandLine uploaderExec, '-b', bugsplatDatabase, '-a', bugsplatApp, '-v', bugsplatVersion, '-f', '**/*.so', '-d', artifactsDirPath, '-i', bugsplatClientId, '-s', bugsplatClientSecret
+
+                        doLast {
+                            checkExecResult(execResult, 'Error', standardOutput);
+                        }
+                    }
+
+                    tasks.whenTaskAdded { task ->
+                        if (task.name == 'ue4CompleteDebug' || task.name == 'ue4CompleteRelease') {
+                            task.finalizedBy 'uploadSymbols'
+                        }
+                    }
+                </insert>
+            </true>
+        </if>
     </buildGradleAdditions>
 
 </root>

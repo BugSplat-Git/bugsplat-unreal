@@ -104,14 +104,10 @@ void FBugSplatRuntimeModule::SetupCrashReportingAndroid()
 	jclass BridgeClass = FAndroidApplication::FindJavaClass("com/ninevastudios/bugsplatunitylib/BugSplatBridge");
 	jmethodID InitBugSplatMethod = FJavaWrapper::FindStaticMethod(Env, BridgeClass, "initBugSplat", "(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V", false);
 
-	auto dataBaseString = Env->NewStringUTF(TCHAR_TO_UTF8(*BugSplatEditorSettings->BugSplatDatabase));
-	auto appString = Env->NewStringUTF(TCHAR_TO_UTF8(*BugSplatEditorSettings->BugSplatApp));
-	auto versionBaseString = Env->NewStringUTF(TCHAR_TO_UTF8(*BugSplatEditorSettings->BugSplatVersion));
-
 	Env->CallStaticVoidMethod(BridgeClass, InitBugSplatMethod, FJavaWrapper::GameActivityThis,
 		*FJavaClassObject::GetJString(BugSplatEditorSettings->BugSplatDatabase),
 		*FJavaClassObject::GetJString(BugSplatEditorSettings->BugSplatApp),
-		*FJavaClassObject::GetJString(BugSplatEditorSettings->BugSplatVersion));
+		*FJavaClassObject::GetJString(FString::Printf(TEXT("%s-android"), *BugSplatEditorSettings->BugSplatVersion)));
 
 	Env->DeleteLocalRef(BridgeClass);
 #endif
