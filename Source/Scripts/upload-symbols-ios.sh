@@ -124,3 +124,6 @@ PRODUCT_NAME=$(/usr/libexec/PlistBuddy -c "Print CFBundleExecutable" "${APP}/Inf
 echo "App version: ${APP_VERSION}"
 
 $UPLOADER -b $BUGSPLAT_DATABASE -a $PRODUCT_NAME -v "$APP_VERSION" -f "**/*.{app,dSYM}" -d $UNZIP_LOCATION  -i $BUGSPLAT_CLIENT_ID -s "$BUGSPLAT_CLIENT_SECRET"
+
+rm -rf $UNZIP_LOCATION
+rm $ZIPFILE
