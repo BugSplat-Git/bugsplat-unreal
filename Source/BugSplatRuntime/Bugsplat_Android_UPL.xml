@@ -100,7 +100,12 @@
                     }
 
                     tasks.whenTaskAdded { task ->
-                        if (task.name == 'ue4CompleteDebug' || task.name == 'ue4CompleteRelease') {
+                        if (
+                          task.name == 'ue4CompleteDebug' ||
+                          task.name == 'ue4CompleteRelease' ||
+                          task.name == 'ueCompleteDebug' ||
+                          task.name == 'ueCompleteRelease'
+                        ) {
                             task.finalizedBy 'uploadSymbols'
                         }
                     }
