@@ -24,8 +24,6 @@
                 <setString result="artifactsDirPath" value="$S(BuildDir)/gradle/app/build/intermediates/merged_native_libs/debug/out/lib/$S(Architecture)"/>
             </false>
         </if>
-
-        <log text="$S(uploaderPathWin)"/>
     </init>
 
     <prebuildCopies>
