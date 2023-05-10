@@ -82,8 +82,6 @@ $scriptsPath/upload-symbols-ios.sh -f $binariesPath/$targetName.zip -u $uploader
 
 echo "BugSplat postprocessing: Clean up temporaries"
 
-# rm -r $binariesPath/$targetName.app
-# rm -r $binariesPath/$targetName.zip
 rm $HOME/.bugsplat.conf
 rm $HOME/.bugsplat.conf.backup
 
