@@ -73,9 +73,11 @@ if [ -z "$bugSplatClientSecret" ]; then
     echo "BugSplat postprocessing: bugSplatClientSecret variable is empty"
 fi
 
+export bugSplatClientSecretEsc=$(echo "$bugSplatClientSecret" | sed 's/\//\\\//g')
+
 sed -i .backup 's/database/'$bugSplatDatabase'/g' $HOME/.bugsplat.conf
 sed -i .backup 's/clientId/'$bugSplatClientId'/g' $HOME/.bugsplat.conf
-sed -i .backup 's/clientSecret/'$bugSplatClientSecret'/g' $HOME/.bugsplat.conf
+sed -i .backup 's/clientSecret/'$bugSplatClientSecretEsc'/g' $HOME/.bugsplat.conf
 
 echo "BugSplat postprocessing: Run debug symbols upload script"
 $scriptsPath/upload-symbols-ios.sh -f $binariesPath/$targetName.zip -u $uploaderPath
