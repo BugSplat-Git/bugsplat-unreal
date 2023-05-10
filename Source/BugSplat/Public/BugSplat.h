@@ -34,7 +34,7 @@ public:
 
 	FReply OnUpdateGlobalIni();
 	FReply OnUpdateLocalIni();
-	FReply OnUpdateSendPdbsScript();
+	FReply OnUpdateWindowsSymbolUploadScript();
 
 private:
 

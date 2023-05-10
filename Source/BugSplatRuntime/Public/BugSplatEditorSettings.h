@@ -20,12 +20,6 @@ public:
 	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "Version", ToolTip = "Application version number"))
 	FString BugSplatVersion;
 
-	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "User", ToolTip = "Username (required for debug symbol uploads)"))
-	FString BugSplatUser;
-
-	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "Password", ToolTip = "Password (required for debug symbol uploads)"))
-	FString BugSplatPassword;
-
 	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "ClientId", ToolTip = "Client ID (required for debug symbol uploads)"))
 	FString BugSplatClientId;
 
@@ -41,10 +35,10 @@ public:
 	bool bUploadDebugSymbolsIos;
 
 	UPROPERTY(Config, EditAnywhere, Category = "Android",
-		Meta = (DisplayName = "Enable Android crash reporting", ToolTip = "Flag indicating whether to capture crashes on Android (Android Support Coming Soon)"))
+		Meta = (DisplayName = "Enable Android crash reporting", ToolTip = "Flag indicating whether to capture crashes on Android"))
 	bool bEnableCrashReportingAndroid;
 
 	UPROPERTY(Config, EditAnywhere, Category = "Android",
-		Meta = (DisplayName = "Enable automatic symbols uploads", ToolTip = "Flag indicating whether to upload Android debug symbols automatically (Android Support Coming Soon)", EditCondition = "bEnableCrashReportingAndroid"))
+		Meta = (DisplayName = "Enable automatic symbols uploads", ToolTip = "Flag indicating whether to upload Android debug symbols automatically", EditCondition = "bEnableCrashReportingAndroid"))
 	bool bUploadDebugSymbolsAndroid;
 };

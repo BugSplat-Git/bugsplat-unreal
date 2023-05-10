@@ -52,30 +52,32 @@ void FBugSplatSettings::UpdateCrashReportClientIni(FString DefaultEngineIniFileP
 	FMessageDialog::Debugf(FText::FromString("Configuration File Successfully Updated!"));
 }
 
-void FBugSplatSettings::WriteSendPdbsToScript()
+void FBugSplatSettings::WriteSymbolUploadScript()
 {
 	FString PostBuildStepsConsoleCommandFormat =
 		FString(
-			"\"{0}\" "	 // Send PDBS Endpoint
-			"/u {1} "	 // Username
-			"/p {2} "	 // Password
-			"/b {3} "	 // Database
-			"/a {4} "	 // Application
-			"/v {5} "	 // Version
-			"/d \"{6}\"" // Project Directory
+			"\"{0}\" "	 // Uploader Path
+			"-i {1} "	 // Client ID
+			"-s {2} "	 // Client Secret
+			"-b {3} "	 // Database
+			"-a {4} "	 // Application
+			"-v {5} "	 // Version
+			"-d \"{6}\"" // Project Directory
+			"-f \"{7}\"" // File Pattern
 		);
 
 	FStringFormatOrderedArguments args;
 
 	UBugSplatEditorSettings* runtimeSettings = FBugSplatRuntimeModule::Get().GetSettings();
 
-	args.Add(BUGSPLAT_SENDPDBS_DIR);
-	args.Add(runtimeSettings->BugSplatUser);
-	args.Add(runtimeSettings->BugSplatPassword);
+	args.Add(BUGSPLAT_SYMBOL_UPLOADER_PATH);
+	args.Add(runtimeSettings->BugSplatClientId);
+	args.Add(runtimeSettings->BugSplatClientSecret);
 	args.Add(runtimeSettings->BugSplatDatabase);
 	args.Add(runtimeSettings->BugSplatApp);
 	args.Add(runtimeSettings->BugSplatVersion);
 	args.Add(FPaths::Combine(FPaths::ConvertRelativePathToFull(FPaths::ProjectDir()), FString("/Binaries/%1")));
+	args.Add("**/*.{pdb,dll,exe}");
 
 	FString FormattedString = *FString::Format(*PostBuildStepsConsoleCommandFormat, args);
 	FFileHelper::SaveStringToFile(FormattedString, *BUGSPLAT_BASH_DIR);
