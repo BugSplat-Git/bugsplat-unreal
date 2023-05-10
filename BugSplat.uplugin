@@ -28,6 +28,9 @@
 		}
 	],
 	"PostBuildSteps": {
+		"Win64": [
+			"call \"$(ProjectDir)\\Plugins\\BugSplat\\Source\\Scripts\\BugSplat.bat\" $(TargetPlatform)"
+		],
 		"Mac": [
 			"sh $(PluginDir)/Source/Scripts/setup-upload-symbols-ios.sh $(TargetPlatform) $(TargetName) $(ProjectDir) $(PluginDir)"
 		]
