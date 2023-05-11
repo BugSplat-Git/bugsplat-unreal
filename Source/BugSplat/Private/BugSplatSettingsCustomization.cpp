@@ -40,7 +40,7 @@ void FBugSplatSettingsCustomization::CustomizeDetails(IDetailLayoutBuilder& Deta
 			[
 				SNew(STextBlock)
 				.AutoWrapText(true)
-				.Text(FText::FromString("This plugin enables uploading of crash reports and debug symbols to BugSplat on both Desktop and Mobile platforms. To configure crash reporting and symbol uploads, start by filling in the Database, Application, Version, User, and Password fields below.\n\nFor Desktop, the BugSplat plugin can configure crash reporting in packaged games (required for shipping builds) or globally for the current engine's DefaultEngine.ini file (optional but useful for development). To configure crash reporting for Desktop, click either the \"Update Game INI\" or \"Update Global INI\" buttons below. When using the \"Update Game INI\" option, navigate to the root directory of your packaged game when prompted. Windows symbol uploads can be configured by adding a script to the PostBuildSteps section of the .uproject file via the \"Add Symbol Uploads\" button.\n\nTo add crash reporting and symbol uploads for Mobile games, simply click the appropriate checkboxes below."))
+				.Text(FText::FromString("This plugin enables uploading of crash reports and debug symbols to BugSplat on both Desktop and Mobile platforms. To configure crash reporting and symbol uploads, start by filling in the Database, Application, Version, Client ID, and Client Secret fields below.\n\nFor Desktop, the BugSplat plugin can configure crash reporting in packaged games (required for shipping builds) or globally for the current engine's DefaultEngine.ini file (optional but useful for development). To configure crash reporting for Desktop, click either the \"Update Game INI\" or \"Update Global INI\" buttons below. When using the \"Update Game INI\" option, navigate to the root directory of your packaged game when prompted. Windows symbol uploads can be configured by adding a script to the PostBuildSteps section of the .uproject file via the \"Add Symbol Uploads\" button.\n\nTo add crash reporting and symbol uploads for Mobile games, simply click the appropriate checkboxes below."))
 			]
 			+ SVerticalBox::Slot()
 			.VAlign(VAlign_Top)
@@ -93,7 +93,7 @@ void FBugSplatSettingsCustomization::CustomizeDetails(IDetailLayoutBuilder& Deta
 					.HAlign(HAlign_Center)
 					.VAlign(VAlign_Center)
 					.ContentPadding(FMargin(8, 2))
-					.OnClicked_Raw(&FBugSplatModule::Get(), &FBugSplatModule::OnUpdateSendPdbsScript)
+					.OnClicked_Raw(&FBugSplatModule::Get(), &FBugSplatModule::OnUpdateWindowsSymbolUploadScript)
 					.Text(FText::FromString("Add Symbol Uploads"))
 				]
 			]

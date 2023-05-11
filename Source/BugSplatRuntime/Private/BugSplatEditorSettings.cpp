@@ -6,8 +6,8 @@ UBugSplatEditorSettings::UBugSplatEditorSettings(const FObjectInitializer& Objec
 	: Super(ObjectInitializer)
 {
 	BugSplatDatabase = TEXT("");
-	BugSplatUser = TEXT("");
-	BugSplatPassword = TEXT("");
+	BugSplatClientId = TEXT("");
+	BugSplatClientSecret = TEXT("");
 	BugSplatVersion = TEXT("");
 	bEnableCrashReportingIos = true;
 	bUploadDebugSymbolsIos = true;

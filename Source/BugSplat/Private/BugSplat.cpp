@@ -66,9 +66,9 @@ FReply FBugSplatModule::OnUpdateLocalIni()
 	return FReply::Handled();
 }
 
-FReply FBugSplatModule::OnUpdateSendPdbsScript()
+FReply FBugSplatModule::OnUpdateWindowsSymbolUploadScript()
 {
-	BugSplatSettings->WriteSendPdbsToScript();
+	BugSplatSettings->WriteSymbolUploadScript();
 	return FReply::Handled();
 }
 
