@@ -62,7 +62,8 @@ void FBugSplatSettings::WriteSymbolUploadScript()
 			"/b {3} "	 // Database
 			"/a {4} "	 // Application
 			"/v {5} "	 // Version
-			"/d \"{6}\"" // Project Directory
+			"/d \"{6}\" " // Project Directory
+			"/s"		  // Search Subdirectories
 		);
 
 	FStringFormatOrderedArguments args;
