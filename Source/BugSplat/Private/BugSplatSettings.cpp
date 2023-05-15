@@ -57,13 +57,13 @@ void FBugSplatSettings::WriteSymbolUploadScript()
 	FString PostBuildStepsConsoleCommandFormat =
 		FString(
 			"\"{0}\" "	 // Uploader Path
-			"/u {1} "	 // Client ID
-			"/p {2} "	 // Client Secret
-			"/b {3} "	 // Database
-			"/a {4} "	 // Application
-			"/v {5} "	 // Version
-			"/d \"{6}\" " // Project Directory
-			"/s"		  // Search Subdirectories
+			"-i {1} "	 // Client ID
+			"-s {2} "	 // Client Secret
+			"-b {3} "	 // Database
+			"-a {4} "	 // Application
+			"-v {5} "	 // Version
+			"-d \"{6}\" " // Project Directory
+			"-f \"{7}\" " // File Pattern
 		);
 
 	FStringFormatOrderedArguments args;
@@ -77,6 +77,7 @@ void FBugSplatSettings::WriteSymbolUploadScript()
 	args.Add(runtimeSettings->BugSplatApp);
 	args.Add(runtimeSettings->BugSplatVersion);
 	args.Add(FPaths::Combine(FPaths::ConvertRelativePathToFull(FPaths::ProjectDir()), FString("/Binaries/%1")));
+	args.Add("**/*.{pdb,dll,exe}");
 
 	FString FormattedString = *FString::Format(*PostBuildStepsConsoleCommandFormat, args);
 	FFileHelper::SaveStringToFile(FormattedString, *BUGSPLAT_BASH_DIR);
