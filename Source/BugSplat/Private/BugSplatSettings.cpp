@@ -76,7 +76,7 @@ void FBugSplatSettings::WriteSymbolUploadScript()
 	args.Add(runtimeSettings->BugSplatDatabase);
 	args.Add(runtimeSettings->BugSplatApp);
 	args.Add(runtimeSettings->BugSplatVersion);
-	args.Add(FPaths::Combine(FPaths::ConvertRelativePathToFull(FPaths::ProjectDir()), FString("/Binaries/%1")));
+	args.Add(FPaths::Combine(FPaths::ConvertRelativePathToFull(FPaths::ProjectDir()), "Binaries"));
 	args.Add("**/*.{pdb,dll,exe}");
 
 	FString FormattedString = *FString::Format(*PostBuildStepsConsoleCommandFormat, args);

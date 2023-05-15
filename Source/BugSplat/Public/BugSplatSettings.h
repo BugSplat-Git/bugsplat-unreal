@@ -18,9 +18,6 @@ static const FString PACKAGED_BUILD_CONFIG_PATH_4_25_AND_OLDER = FString("Engine
 
 static const FString INI_FILE_NAME = FString("DefaultEngine.ini");
 
-static const FString WIN_64_LABEL = FString("Win64");
-static const FString POST_BUILD_STEPS_LABEL = FString("PostBuildSteps");
-
 class FBugSplatSettings
 {
 public:
