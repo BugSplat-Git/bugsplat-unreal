@@ -39,9 +39,11 @@ Coming soon 🙂
 
 ## ⚙️ Configuration
 
-BugSplat's Unreal plugin currently supports adding crash reporting to Windows, macOS, Linux, and iOS games. With a few clicks, the BugSplat plugin can be configured to automatically upload symbol files so crash report stack traces display function names and line numbers. Support for Android is coming soon!
+BugSplat's Unreal plugin currently supports adding crash reporting to Windows, macOS, Linux, Android, and iOS games. With a few clicks, the BugSplat plugin can be configured to automatically upload symbol files so crash report stack traces display function names and line numbers.
 
-To get started, access the BugSplat plugin menu in the Unreal Editor via `Edit > Project Settings`. Scroll to the `BugSplat` section of `Project Settings` and add values for `Database`, `Application`,  `Version`, `User`, and `Password`:
+To get started, generate a Client ID and Client Secret via the [Integrations](https://app.bugsplat.com/v2/settings/database/integrations) page.
+
+Next, open the BugSplat plugin menu in the Unreal Editor via `Edit > Project Settings`. Scroll to the `BugSplat` section of `Project Settings` and add values for `Database`, `Application`,  `Version`, `Client ID`, and `Client Secret`:
 
 ![BugSplat Unreal Project Settings](.assets/bugsplat-project-settings.png)
 
@@ -59,7 +61,7 @@ In order to get function names and line numbers in crash reports you'll need to 
 
 ### Mobile
 
-Installing the BugSplat plugin will configure crash reporting and symbol uploads automatically on mobile platforms.
+Select the `Add symbol uploads` and `Add crash reporting` checkboxes in the `Mobile` section of the plugin dialog. Once enabled, the BugSplat plugin will configure crash reporting and symbol uploads automatically on mobile platforms.
 
 Before attempting to use the BugSplat plugin to capture crashes on Mobile please ensure you've completed the [iOS](https://docs.unrealengine.com/5.0/en-US/setting-up-an-unreal-engine-project-for-ios/) and [Android](https://docs.unrealengine.com/5.0/en-US/android-support-for-unreal-engine/) quickstart guides.
 
