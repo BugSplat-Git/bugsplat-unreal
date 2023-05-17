@@ -45,7 +45,7 @@ To get started, generate a Client ID and Client Secret via the [Integrations](ht
 
 Next, open the BugSplat plugin menu in the Unreal Editor via `Edit > Project Settings`. Scroll to the `BugSplat` section of `Project Settings` and add values for `Database`, `Application`,  `Version`, `Client ID`, and `Client Secret`:
 
-![BugSplat Unreal Project Settings](.assets/bugsplat-project-settings.png)
+![BugSplat Unreal Project Settings](https://github.com/BugSplat-Git/bugsplat-unreal/assets/2646053/73104468-29ac-4c3a-ab43-96dfe8b7e96c)
 
 ### Desktop
 
@@ -53,7 +53,8 @@ For Desktop, the BugSplat plugin has the ability to modify the [DefaultEngine.in
 
 BugSplat recommends configuring the crash reporting independently for each packaged build. To configure crash reporting in a packaged build select `Update Game INI`. When prompted, navigate to the root directory of your packaged build that contains the folder `Windows` or `WindowsNoEditor`. Note that you will need to **repeat this step and update the version information every time you create a packaged version of your game**. For production scenarios consider automating this step with a script on your build machine.
 
-![Packaged Directory File Browser](.assets/packaged-directory.png)
+![Packaged Directory File Browser](https://github.com/BugSplat-Git/bugsplat-unreal/assets/2646053/4cd8e3c6-26b5-4341-a17b-3d5a18b078a0)
+
 
 Alternatively, BugSplat can be configured to collect crash reports in the editor and all games built with the current engine. To configure BugSplat for the current engine, select `Update Global INI`. Note that updating the global `DefaultEngine.ini` file **will affect all projects using the same engine build**.
 
@@ -93,7 +94,7 @@ Once you've submitted a crash report navigate to the [Crashes](https://app.bugsp
 
 If everything is configured correctly, you should see something that resembles the following:
 
-![BugSplat Crash Page](.assets/unreal-crash.png)
+<img width="1728" alt="BugSplat Crash Page" src="https://github.com/BugSplat-Git/bugsplat-unreal/assets/2646053/e577b6e9-4b8e-4b9a-8a56-556909c58069">
 
 ## 🧑‍💻 Contributing
 
