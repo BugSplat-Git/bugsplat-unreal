@@ -70,10 +70,8 @@ Plugins/*/Intermediate/*
 # Cache files for the editor to use
 DerivedDataCache/*
 
-# Ignore SendPdbs
-!Source/Scripts/bin/SendPdbs.exe
-!Source/Scripts/bin/AWSSDK.Core.dll
-!Source/Scripts/bin/AWSSDK.S3.dll
+# Ignore auto-generated upload script
+Source/Scripts/BugSplat.bat
 
 # Mac OS
 .DS_Store
