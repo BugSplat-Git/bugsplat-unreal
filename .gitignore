@@ -75,3 +75,6 @@ Source/Scripts/BugSplat.bat
 
 # Mac OS
 .DS_Store
+
+# Symbol Upload temp files
+Source/Scripts/tmp
