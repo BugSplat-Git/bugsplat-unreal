@@ -28,9 +28,7 @@ You may choose to add BugSplat through the Unreal Marketplace or add the plugin 
 
 ### Install from Marketplace
 
-<a href="https://www.unrealengine.com/marketplace/en-US/product/bugsplat">
-    <img width="200" alt="BugSplat Unreal Marketplace Thumbnail" src="https://github.com/BugSplat-Git/bugsplat-unreal/assets/2646053/97a05b2b-5609-4778-952d-eebd2b6e6b45">
-</a>
+[Install BugSplat from the Unreal Marketplace](https://www.unrealengine.com/marketplace/en-US/product/bugsplat)
 
 ### Install Manually
 
