@@ -24,18 +24,20 @@ Before diving into the plugin, please complete the following tasks:
 
 ## 🏗 Installation 
 
-You may choose to add BugSplat to your Unreal Project manually, or through the Unreal Marketplace.
+You may choose to add BugSplat through the Unreal Marketplace or add the plugin to your Unreal project manually.
 
-### Install manually
+### Install from Marketplace
+
+<a href="https://www.unrealengine.com/marketplace/en-US/product/bugsplat">
+    <img width="200" alt="BugSplat Unreal Marketplace Thumbnail" src="https://github.com/BugSplat-Git/bugsplat-unreal/assets/2646053/97a05b2b-5609-4778-952d-eebd2b6e6b45">
+</a>
+
+### Install Manually
 
 1. Navigate to your project folder, which contains your `[ProjectName].uproject` file.
 2. If it does not already exist, create a `Plugins` folder.
 3. Create a `BugSplat` folder in the `Plugins` folder and copy the contents of this repo into the `BugSplat` folder.
-4. In the Unreal Editor, ensure you can access the BugSplat plugin via `Edit > Project Settings` and scrolling to the `BugSplat` section under `Plugins`.
-
-### Install from MarketPlace
-
-Coming soon 🙂
+4. In the Unreal Editor, ensure you can access the BugSplat plugin via `Edit > Project Settings` and scroll to the `BugSplat` section under `Plugins`.
 
 ## ⚙️ Configuration
 
