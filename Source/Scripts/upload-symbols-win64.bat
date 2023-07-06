@@ -1,4 +1,4 @@
-echo off
+@echo off
 
 set targetPlatform=%1
 set projectDir=%2

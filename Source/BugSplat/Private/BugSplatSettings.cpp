@@ -54,7 +54,7 @@ void FBugSplatSettings::UpdateCrashReportClientIni(FString DefaultEngineIniFileP
 
 void FBugSplatSettings::WriteSymbolUploadScript()
 {
-	FString SetCurrentPlatfrom = FString("set targetPlatform=%1");
+	FString SetCurrentPlatfrom = FString("@echo off\nset targetPlatform=%1");
 	FString TargetPlatformNullGuard = FString("if \"%targetPlatform%\"==\"\" (\n\techo \"BugSplat [ERROR]: symbol upload invocation missing target platform...\"\n\texit /b\n)");
 	FString EditorPlatformGuard = FString("if \"%targetPlatform%\"==\"Editor\" (\n\techo \"BugSplat [INFO]: Editor build detected, skipping symbol uploads...\"\n\texit /b\n)");
 	UBugSplatEditorSettings* RuntimeSettings = FBugSplatRuntimeModule::Get().GetSettings();
