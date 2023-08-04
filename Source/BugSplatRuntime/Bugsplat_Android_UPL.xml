@@ -81,8 +81,18 @@
                         return '';
                     }
 
+                    def getDumpSymExecName() {
+                        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                            return 'android-dump-syms-win.exe'
+                        }
+                        if (Os.isFamily(Os.FAMILY_MAC)) {
+                            return 'android-dump-syms-macos'
+                        }
+                        return '';
+                    }
+
                     task uploadSymbols(type:Exec) {
-                        def uploaderExec = '</insert><insertValue value="$S(uploaderDirPath)"/><insert>' + getUploaderExecName()                        
+                        def uploaderExec = '</insert><insertValue value="$S(uploaderDirPath)"/><insert>' + getUploaderExecName()
                         def artifactsDirPath = '</insert><insertValue value="$S(artifactsDirPath)"/><insert>'
                         def bugsplatDatabase = '</insert><insertValue value="$S(bugsplatDatabase)"/><insert>'
                         def bugsplatApp = '</insert><insertValue value="$S(bugsplatApp)"/><insert>'
@@ -92,11 +102,30 @@
 
                         standardOutput = new ByteArrayOutputStream();
 
-                        commandLine uploaderExec, '-b', bugsplatDatabase, '-a', bugsplatApp, '-v', bugsplatVersion, '-f', '**/*.so', '-d', artifactsDirPath, '-i', bugsplatClientId, '-s', bugsplatClientSecret
+                        commandLine uploaderExec, '-b', bugsplatDatabase, '-a', bugsplatApp, '-v', bugsplatVersion, '-f', '**/*.{so,sym}', '-d', artifactsDirPath, '-i', bugsplatClientId, '-s', bugsplatClientSecret
 
                         doLast {
                             checkExecResult(execResult, 'Error', standardOutput);
                         }
+                    }
+
+                    task dumpSymbols(type:Exec) {
+                        def dumpSymExec = '</insert><insertValue value="$S(uploaderDirPath)"/><insert>' + getDumpSymExecName()
+                        def artifactsDirPath = '</insert><insertValue value="$S(artifactsDirPath)"/><insert>'
+                        def bugsplatDatabase = '</insert><insertValue value="$S(bugsplatDatabase)"/><insert>'
+                        def bugsplatClientId = '</insert><insertValue value="$S(bugsplatClientId)"/><insert>'
+                        def bugsplatClientSecret = '</insert><insertValue value="$S(bugsplatClientSecret)"/><insert>'
+                        def libUnrealPath = '</insert><insertValue value="$S(artifactsDirPath)"/><insert>' + '/libUnreal.so'
+
+                        standardOutput = new ByteArrayOutputStream();
+
+                        commandLine dumpSymExec, libUnrealPath, '-b', bugsplatDatabase, '-i', bugsplatClientId, '-s', bugsplatClientSecret
+
+                        doLast {
+                            checkExecResult(execResult, 'Error', standardOutput);
+                        }
+
+                        finalizedBy uploadSymbols
                     }
 
                     tasks.whenTaskAdded { task ->
@@ -106,7 +135,7 @@
                           task.name == 'ueCompleteDebug' ||
                           task.name == 'ueCompleteRelease'
                         ) {
-                            task.finalizedBy 'uploadSymbols'
+                            task.finalizedBy 'dumpSymbols'
                         }
                     }
                 </insert>
