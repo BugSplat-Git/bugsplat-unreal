@@ -78,6 +78,9 @@
                         if (Os.isFamily(Os.FAMILY_MAC)) {
                             return 'symbol-upload-macos'
                         }
+                        if (Os.isFamily(Os.FAMILY_MAC)) {
+                            return 'symbol-upload-linux'
+                        }
                         return '';
                     }
 
@@ -87,6 +90,9 @@
                         }
                         if (Os.isFamily(Os.FAMILY_MAC)) {
                             return 'android-dump-syms-macos'
+                        }
+                        if (Os.isFamily(Os.FAMILY_UNIX)) {
+                            return 'android-dump-syms-linux'
                         }
                         return '';
                     }
