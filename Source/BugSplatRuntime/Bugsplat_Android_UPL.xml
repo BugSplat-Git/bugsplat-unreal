@@ -96,6 +96,10 @@
                         }
                         return '';
                     }
+                    
+                    def deleteFiles(deleteDirPath, fileType) {
+                        delete fileTree(dir: deleteDirPath, include: fileType)
+                    }
 
                     def uploaderExec = '</insert><insertValue value="$S(uploaderDirPath)"/><insert>' + getUploaderExecName()
                     def dumpSymExec = '</insert><insertValue value="$S(uploaderDirPath)"/><insert>' + getDumpSymExecName()
@@ -106,6 +110,12 @@
                     def bugsplatClientId = '</insert><insertValue value="$S(bugsplatClientId)"/><insert>'
                     def bugsplatClientSecret = '</insert><insertValue value="$S(bugsplatClientSecret)"/><insert>'
 
+                    task cleanUpSymbols() {
+                        doLast {
+                            deleteFiles(artifactsDirPath, '*.sym')
+                        }
+                    }
+
                     task uploadSymbols(type:Exec) {
                         standardOutput = new ByteArrayOutputStream();
 
@@ -114,6 +124,8 @@
                         doLast {
                             checkExecResult(execResult, 'Error', standardOutput);
                         }
+
+                        finalizedBy cleanUpSymbols
                     }
 
                     task dumpSymbols(type:Exec) {
