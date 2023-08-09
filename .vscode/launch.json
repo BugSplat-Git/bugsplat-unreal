@@ -9,7 +9,6 @@
             "name": "Package",
             "type": "node",
             "program": "${workspaceFolder}/package.ts",
-            "args": "5.0",
             "cwd": "${workspaceFolder}",
             "runtimeExecutable": "/usr/local/bin/deno",
             "runtimeArgs": [
