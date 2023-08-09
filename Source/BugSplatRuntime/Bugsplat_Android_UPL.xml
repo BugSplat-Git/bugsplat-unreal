@@ -78,25 +78,66 @@
                         if (Os.isFamily(Os.FAMILY_MAC)) {
                             return 'symbol-upload-macos'
                         }
+                        if (Os.isFamily(Os.FAMILY_MAC)) {
+                            return 'symbol-upload-linux'
+                        }
                         return '';
                     }
 
-                    task uploadSymbols(type:Exec) {
-                        def uploaderExec = '</insert><insertValue value="$S(uploaderDirPath)"/><insert>' + getUploaderExecName()                        
-                        def artifactsDirPath = '</insert><insertValue value="$S(artifactsDirPath)"/><insert>'
-                        def bugsplatDatabase = '</insert><insertValue value="$S(bugsplatDatabase)"/><insert>'
-                        def bugsplatApp = '</insert><insertValue value="$S(bugsplatApp)"/><insert>'
-                        def bugsplatVersion = '</insert><insertValue value="$S(bugsplatVersion)"/><insert>-android'
-                        def bugsplatClientId = '</insert><insertValue value="$S(bugsplatClientId)"/><insert>'
-                        def bugsplatClientSecret = '</insert><insertValue value="$S(bugsplatClientSecret)"/><insert>'
+                    def getDumpSymExecName() {
+                        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                            return 'android-dump-syms-win.exe'
+                        }
+                        if (Os.isFamily(Os.FAMILY_MAC)) {
+                            return 'android-dump-syms-macos'
+                        }
+                        if (Os.isFamily(Os.FAMILY_UNIX)) {
+                            return 'android-dump-syms-linux'
+                        }
+                        return '';
+                    }
+                    
+                    def deleteFiles(deleteDirPath, fileType) {
+                        delete fileTree(dir: deleteDirPath, include: fileType)
+                    }
 
+                    def uploaderExec = '</insert><insertValue value="$S(uploaderDirPath)"/><insert>' + getUploaderExecName()
+                    def dumpSymExec = '</insert><insertValue value="$S(uploaderDirPath)"/><insert>' + getDumpSymExecName()
+                    def artifactsDirPath = '</insert><insertValue value="$S(artifactsDirPath)"/><insert>'
+                    def bugsplatDatabase = '</insert><insertValue value="$S(bugsplatDatabase)"/><insert>'
+                    def bugsplatApp = '</insert><insertValue value="$S(bugsplatApp)"/><insert>'
+                    def bugsplatVersion = '</insert><insertValue value="$S(bugsplatVersion)"/><insert>-android'
+                    def bugsplatClientId = '</insert><insertValue value="$S(bugsplatClientId)"/><insert>'
+                    def bugsplatClientSecret = '</insert><insertValue value="$S(bugsplatClientSecret)"/><insert>'
+
+                    task cleanUpSymbols() {
+                        doLast {
+                            deleteFiles(artifactsDirPath, '*.sym')
+                        }
+                    }
+
+                    task uploadSymbols(type:Exec) {
                         standardOutput = new ByteArrayOutputStream();
 
-                        commandLine uploaderExec, '-b', bugsplatDatabase, '-a', bugsplatApp, '-v', bugsplatVersion, '-f', '**/*.so', '-d', artifactsDirPath, '-i', bugsplatClientId, '-s', bugsplatClientSecret
+                        commandLine uploaderExec, '-b', bugsplatDatabase, '-a', bugsplatApp, '-v', bugsplatVersion, '-f', '**/*.sym', '-d', artifactsDirPath, '-i', bugsplatClientId, '-s', bugsplatClientSecret
 
                         doLast {
                             checkExecResult(execResult, 'Error', standardOutput);
                         }
+
+                        finalizedBy cleanUpSymbols
+                    }
+
+                    task dumpSymbols(type:Exec) {
+                        standardOutput = new ByteArrayOutputStream();
+
+                        commandLine dumpSymExec, '-b', bugsplatDatabase, '-i', bugsplatClientId, '-s', bugsplatClientSecret, '-f', '**/*.so', '-d', artifactsDirPath
+
+                        doLast {
+                            checkExecResult(execResult, 'Error', standardOutput);
+                        }
+
+                        finalizedBy uploadSymbols
                     }
 
                     tasks.whenTaskAdded { task ->
@@ -106,7 +147,7 @@
                           task.name == 'ueCompleteDebug' ||
                           task.name == 'ueCompleteRelease'
                         ) {
-                            task.finalizedBy 'uploadSymbols'
+                            task.finalizedBy 'dumpSymbols'
                         }
                     }
                 </insert>
