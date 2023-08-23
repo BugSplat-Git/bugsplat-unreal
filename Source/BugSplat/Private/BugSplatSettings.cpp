@@ -19,9 +19,11 @@ FString FBugSplatSettings::CreateBugSplatEndpointUrl()
 
 	UBugSplatEditorSettings* runtimeSettings = FBugSplatRuntimeModule::Get().GetSettings();
 
+	FString Space = " ";
+	FString EncodedSpace = "%20";
 	args.Add(runtimeSettings->BugSplatDatabase);
-	args.Add(runtimeSettings->BugSplatApp);
-	args.Add(runtimeSettings->BugSplatVersion);
+	args.Add(runtimeSettings->BugSplatApp.Replace(*Space, *EncodedSpace));
+	args.Add(runtimeSettings->BugSplatVersion.Replace(*Space, *EncodedSpace));
 
 	return *FString::Format(*BUGSPLAT_ENDPOINT_URL_FORMAT, args);
 }
@@ -68,8 +70,8 @@ void FBugSplatSettings::WriteSymbolUploadScript()
 			"-i {4} "	  // Client ID
 			"-s {5} "	  // Client Secret
 			"-b {6} "	  // Database
-			"-a {7} "	  // Application
-			"-v {8} "	  // Version
+			"-a \"{7}\" " // Application
+			"-v \"{8}\" " // Version
 			"-d \"{9}\" " // Project Directory
 			"-f \"{10}\" " // File Pattern
 		);
