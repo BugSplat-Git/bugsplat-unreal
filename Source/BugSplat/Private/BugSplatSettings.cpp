@@ -72,8 +72,8 @@ void FBugSplatSettings::WriteSymbolUploadScript()
 			"-b {6} "	  // Database
 			"-a \"{7}\" " // Application
 			"-v \"{8}\" " // Version
-			"-d \"{9}\" " // Project Directory
-			"-f \"{10}\" " // File Pattern
+			"-d \"{9}/%targetPlatform%\" " // Output Directory
+			"-f \"{10}\" "	// File Pattern
 		);
 
 	FStringFormatOrderedArguments args;
