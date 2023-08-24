@@ -1,4 +1,4 @@
-// Copyright 2022 BugSplat. All Rights Reserved.
+// Copyright 2023 BugSplat. All Rights Reserved.
 
 #include "BugSplat.h"
 #include "BugSplatSettings.h"

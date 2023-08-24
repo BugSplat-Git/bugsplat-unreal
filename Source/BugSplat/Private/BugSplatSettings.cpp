@@ -1,4 +1,4 @@
-// Copyright 2022 BugSplat. All Rights Reserved.
+// Copyright 2023 BugSplat. All Rights Reserved.
 
 #include "BugSplatSettings.h"
 #include <Developer/DesktopPlatform/Public/DesktopPlatformModule.h>
@@ -63,17 +63,17 @@ void FBugSplatSettings::WriteSymbolUploadScript()
 
 	FString PostBuildStepsConsoleCommandFormat =
 		FString(
-			"{0}\n"		  // Set Platform
-			"{1}\n"		  // Target Platform Null Guard
-			"{2}\n"		  // Editor Platform Guard
-			"\"{3}\" "	  // Uploader Path
-			"-i {4} "	  // Client ID
-			"-s {5} "	  // Client Secret
-			"-b {6} "	  // Database
-			"-a \"{7}\" " // Application
-			"-v \"{8}\" " // Version
+			"{0}\n"		   // Set Platform
+			"{1}\n"		   // Target Platform Null Guard
+			"{2}\n"		   // Editor Platform Guard
+			"\"{3}\" "	   // Uploader Path
+			"-i {4} "	   // Client ID
+			"-s {5} "	   // Client Secret
+			"-b {6} "	   // Database
+			"-a \"{7}\" "  // Application
+			"-v \"{8}\" "  // Version
 			"-d \"{9}/%targetPlatform%\" " // Output Directory
-			"-f \"{10}\" "	// File Pattern
+			"-f \"{10}\" " // File Pattern
 		);
 
 	FStringFormatOrderedArguments args;
