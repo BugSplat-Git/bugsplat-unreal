@@ -1,7 +1,7 @@
 {
     "FileVersion": 3,
     "Version": "1.2",
-    "VersionName": "0.2.7",
+    "VersionName": "0.2.8",
     "FriendlyName": "BugSplat",
     "Description": "BugSplat provides crash reporting for Unreal projects, and gives invaluable insight into the issues tripping up your users.",
     "Category": "Code Plugins",
@@ -40,6 +40,5 @@
         "Mac": [
             "sh $(PluginDir)/Source/Scripts/setup-upload-symbols-ios.sh $(TargetPlatform) $(TargetName) $(ProjectDir) $(PluginDir)"
         ]
-    },
-    "EngineVersion": "5.2.0"
+    }
 }
