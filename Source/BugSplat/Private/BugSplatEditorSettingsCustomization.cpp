@@ -26,10 +26,18 @@ TSharedRef<IDetailCustomization> FBugSplatEditorSettingsCustomization::MakeInsta
 
 void FBugSplatEditorSettingsCustomization::CustomizeDetails(IDetailLayoutBuilder& DetailBuilder)
 {
-	IDetailCategoryBuilder& CommonCategory = DetailBuilder.EditCategory(TEXT("Crash Reporter Configuration"));
-	IDetailCategoryBuilder& DesktopCategory = DetailBuilder.EditCategory(TEXT("Desktop"));
+	IDetailCategoryBuilder& AboutCategory = DetailBuilder.EditCategory(TEXT("About"));
+	IDetailCategoryBuilder& ToolsCategory = DetailBuilder.EditCategory(TEXT("Tools"));
 
-	CommonCategory.AddCustomRow(FText::FromString(TEXT("BugSplatCRC")), false)
+	FSimpleDelegate UpdateBugSplatSettings = FSimpleDelegate::CreateRaw(&FBugSplatModule::Get(), &FBugSplatModule::OnUpdateBugSplatSettings);
+	DetailBuilder.GetProperty("BugSplatDatabase").Get().SetOnPropertyValueChanged(UpdateBugSplatSettings);
+	DetailBuilder.GetProperty("BugSplatApp").Get().SetOnPropertyValueChanged(UpdateBugSplatSettings);
+	DetailBuilder.GetProperty("BugSplatVersion").Get().SetOnPropertyValueChanged(UpdateBugSplatSettings);
+	DetailBuilder.GetProperty("BugSplatClientId").Get().SetOnPropertyValueChanged(UpdateBugSplatSettings);
+	DetailBuilder.GetProperty("BugSplatSecret").Get().SetOnPropertyValueChanged(UpdateBugSplatSettings);
+	DetailBuilder.GetProperty("bUploadDebugSymbols").Get().SetOnPropertyValueChanged(UpdateBugSplatSettings);
+
+	AboutCategory.AddCustomRow(FText::FromString(TEXT("About")), false)
 		.WholeRowWidget
 		[
 			SNew(SVerticalBox)
@@ -40,7 +48,7 @@ void FBugSplatEditorSettingsCustomization::CustomizeDetails(IDetailLayoutBuilder
 			[
 				SNew(STextBlock)
 				.AutoWrapText(true)
-				.Text(FText::FromString("This plugin enables uploading of crash reports and debug symbols to BugSplat on both Desktop and Mobile platforms. To configure crash reporting and symbol uploads, start by filling in the Database, Application, Version, Client ID, and Client Secret fields below.\n\nFor Desktop, the BugSplat plugin can configure crash reporting in packaged games (required for shipping builds) or globally for the current engine's DefaultEngine.ini file (optional but useful for development). To configure crash reporting for Desktop, click either the \"Update Game INI\" or \"Update Global INI\" buttons below. When using the \"Update Game INI\" option, navigate to the root directory of your packaged game when prompted. Windows symbol uploads can be configured by adding a script to the PostBuildSteps section of the .uproject file via the \"Add Symbol Uploads\" button.\n\nTo add crash reporting and symbol uploads for Mobile games, simply click the appropriate checkboxes below."))
+				.Text(FText::FromString("This plugin enables uploading of crash reports and debug symbols to BugSplat for Desktop and Mobile platforms.\n\nTo configure crash reporting and symbol uploads, start by filling in the Database, Application, Version, Client ID, and Client Secret fields below. When \"Update Engine DataRouterUrl\" is enabled BugSplat will automatically update DataRouterUrl to point CrashReportClient uploads to BugSplat for Desktop crash reporting. Ensure \"Enable automatic symbol uploads\" is enabled or upload symbols yourself to ensure that crash reports contain function name and line number information.\n\nTo add crash reporting for Android and iOS games, simply click the appropriate checkboxes below.\n\nPlease note!\n\nEnabling \"Update Engine DataRouterUrl\" will change the engine's DefaultEngine.ini file. This is a global change that will affect all projects that are built with this instance of the engine. If you don't want to update the engine's configuration file you can use the \"Update Packaged Game INI\" to configure the crash reporter after your build has completed."))
 			]
 			+ SVerticalBox::Slot()
 			.VAlign(VAlign_Top)
@@ -54,10 +62,19 @@ void FBugSplatEditorSettingsCustomization::CustomizeDetails(IDetailLayoutBuilder
 			]
 		];
 
-	DesktopCategory.AddCustomRow(FText::FromString(TEXT("BugSplatDesktop")), false)
+	ToolsCategory.AddCustomRow(FText::FromString(TEXT("Tools")), false)
 		.WholeRowWidget
 		[
 			SNew(SVerticalBox)
+			+ SVerticalBox::Slot()
+			.VAlign(VAlign_Top)
+			.Padding(FMargin(0, 10, 0, 10))
+			.AutoHeight()
+			[
+				SNew(STextBlock)
+				.AutoWrapText(true)
+				.Text(FText::FromString("The following buttons are provided for convenience and clicking them is not required."))
+			]
 			+ SVerticalBox::Slot()
 			.Padding(FMargin(0, 10, 5, 10))
 			.AutoHeight()
@@ -72,29 +89,8 @@ void FBugSplatEditorSettingsCustomization::CustomizeDetails(IDetailLayoutBuilder
 					.VAlign(VAlign_Center)
 					.ContentPadding(FMargin(8, 2))
 					.OnClicked_Raw(&FBugSplatModule::Get(), &FBugSplatModule::OnUpdateLocalIni)
-					.Text(FText::FromString("Update Game INI"))
-				]
-				+ SHorizontalBox::Slot()
-				.AutoWidth()
-				.Padding(FMargin(5, 0, 5, 0))
-				[
-					SNew(SButton)
-					.HAlign(HAlign_Center)
-					.VAlign(VAlign_Center)
-					.ContentPadding(FMargin(8, 2))
-					.OnClicked_Raw(&FBugSplatModule::Get(), &FBugSplatModule::OnUpdateGlobalIni)
-					.Text(FText::FromString("Update Global INI"))
-				]
-				+ SHorizontalBox::Slot()
-				.AutoWidth()
-				.Padding(FMargin(5, 0, 5, 0))
-				[
-					SNew(SButton)
-					.HAlign(HAlign_Center)
-					.VAlign(VAlign_Center)
-					.ContentPadding(FMargin(8, 2))
-					.OnClicked_Raw(&FBugSplatModule::Get(), &FBugSplatModule::OnUpdateWindowsSymbolUploadScript)
-					.Text(FText::FromString("Add Symbol Uploads"))
+					.Text(FText::FromString("Update Packaged Game INI"))
+					.ToolTipText(FText::FromString("Useful if you have disabled \"Update Engine DataRouterUrl\" or would like to overwrite the configuration of a packaged game manually."))
 				]
 			]
 		];

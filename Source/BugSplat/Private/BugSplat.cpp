@@ -12,6 +12,8 @@
 #include <Runtime/Projects/Public/PluginDescriptor.h>
 #include <EngineSharedPCH.h>
 #include <Editor/MainFrame/Public/Interfaces/IMainFrameModule.h>
+#include <BugSplatEditorSettings.h>
+#include "BugSplatRuntime.h"
 
 static const FName BugSplatTabName("BugSplat");
 
@@ -40,7 +42,7 @@ void FBugSplatModule::StartupModule()
 
 void FBugSplatModule::ShutdownModule()
 {
-	delete BugSplatSettings;
+	delete BugSplatCrashReportClient;
 	delete BugSplatSymbols;
 
 	if (FModuleManager::Get().IsModuleLoaded("PropertyEditor"))
@@ -55,21 +57,15 @@ FBugSplatModule& FBugSplatModule::Get()
 	return FModuleManager::LoadModuleChecked<FBugSplatModule>("BugSplat");
 }
 
-FReply FBugSplatModule::OnUpdateGlobalIni()
+void FBugSplatModule::OnUpdateBugSplatSettings()
 {
-	BugSplatSettings->UpdateGlobalIni();
-	return FReply::Handled();
+	BugSplatCrashReportClient->UpdateEngineSettings();
+	BugSplatSymbols->UpdateSymbolUploadsSettings();
 }
 
 FReply FBugSplatModule::OnUpdateLocalIni()
 {
-	BugSplatSettings->UpdateLocalIni();
-	return FReply::Handled();
-}
-
-FReply FBugSplatModule::OnUpdateWindowsSymbolUploadScript()
-{
-	BugSplatSymbols->WriteSymbolUploadScript();
+	BugSplatCrashReportClient->UpdatePackagedBuildSettings();
 	return FReply::Handled();
 }
 

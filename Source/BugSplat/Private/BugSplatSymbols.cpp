@@ -13,12 +13,34 @@ FBugSplatSymbols::FBugSplatSymbols()
 
 }
 
-void FBugSplatSymbols::WriteSymbolUploadScript()
+
+// TODO BG Mac/Linux uploads
+
+void FBugSplatSymbols::UpdateSymbolUploadsSettings()
 {
-	FString SetCurrentPlatfrom = FString("@echo off\nset targetPlatform=%1");
-	FString TargetPlatformNullGuard = FString("if \"%targetPlatform%\"==\"\" (\n\techo \"BugSplat [ERROR]: symbol upload invocation missing target platform...\"\n\texit /b\n)");
-	FString EditorPlatformGuard = FString("if \"%targetPlatform%\"==\"Editor\" (\n\techo \"BugSplat [INFO]: Editor build detected, skipping symbol uploads...\"\n\texit /b\n)");
+	FString SymbolUploadScript = TEXT("echo \"BugSplat [INFO]: Symbol uploads not configured, skipping...\"");
+
 	UBugSplatEditorSettings* RuntimeSettings = FBugSplatRuntimeModule::Get().GetSettings();
+
+	if (RuntimeSettings->HasValidSymbolUploadSettings() && RuntimeSettings->bUploadDebugSymbols)
+	{
+		SymbolUploadScript = CreateSymbolUploadScript(
+			RuntimeSettings->BugSplatDatabase,
+			RuntimeSettings->BugSplatApp,
+			RuntimeSettings->BugSplatVersion,
+			RuntimeSettings->BugSplatClientId,
+			RuntimeSettings->BugSplatClientSecret
+		);
+	}
+
+	WriteSymbolUploadScript(SymbolUploadScript);
+}
+
+FString FBugSplatSymbols::CreateSymbolUploadScript(FString Database, FString App, FString Version, FString ClientId, FString ClientSecret)
+{
+	FString SetCurrentPlatfrom = TEXT("@echo off\nset targetPlatform=%1\nset targetName=%2\n");
+	FString TargetPlatformNullGuard = TEXT("if \"%targetPlatform%\"==\"\" (\n\techo \"BugSplat [ERROR]: Symbol upload invocation missing target platform...\"\n\texit /b\n)");
+	FString EditorPlatformGuard = TEXT("set isEditor=0\nif \"%targetPlatform%\"==\"Editor\" set isEditor=1\nif \"%targetPlatform%\"==\"WindowsEditor\" set isEditor=1\nif \"%targetPlatform%\"==\"DevelopmentEditor\" set isEditor=1\nif \"%targetName:~-6%\"==\"Editor\" set isEditor=1\nif %isEditor%==1 (\n\techo \"BugSplat [INFO]: Editor build detected, skipping symbol uploads...\"\n\texit /b\n)");
 
 	FString PostBuildStepsConsoleCommandFormat =
 		FString(
@@ -40,15 +62,18 @@ void FBugSplatSymbols::WriteSymbolUploadScript()
 	args.Add(TargetPlatformNullGuard);
 	args.Add(EditorPlatformGuard);
 	args.Add(BUGSPLAT_SYMBOL_UPLOADER_PATH);
-	args.Add(RuntimeSettings->BugSplatClientId);
-	args.Add(RuntimeSettings->BugSplatClientSecret);
-	args.Add(RuntimeSettings->BugSplatDatabase);
-	args.Add(RuntimeSettings->BugSplatApp);
-	args.Add(RuntimeSettings->BugSplatVersion);
+	args.Add(ClientId);
+	args.Add(ClientSecret);
+	args.Add(Database);
+	args.Add(App);
+	args.Add(Version);
 	args.Add(FPaths::Combine(FPaths::ConvertRelativePathToFull(FPaths::ProjectDir()), "Binaries"));
 	args.Add("**/*.{pdb,dll,exe}");
 	
-	FString UploadSymbolsScript = FString::Format(*PostBuildStepsConsoleCommandFormat, args);
-	FFileHelper::SaveStringToFile(UploadSymbolsScript, *BUGSPLAT_BASH_DIR);
-	FMessageDialog::Debugf(FText::FromString("Symbol uploads added successfully!"));
+	return FString::Format(*PostBuildStepsConsoleCommandFormat, args);
+}
+
+void FBugSplatSymbols::WriteSymbolUploadScript(FString Contents)
+{
+	FFileHelper::SaveStringToFile(Contents, *BUGSPLAT_BASH_DIR);
 }

@@ -11,34 +11,41 @@ class BUGSPLATRUNTIME_API UBugSplatEditorSettings : public UObject
 	GENERATED_UCLASS_BODY()
 
 public:
-	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "Database", ToolTip = "Database name"))
+#if WITH_EDITOR
+	virtual bool CanEditChange(const FProperty* InProperty) const override;
+#endif
+
+	bool HasValidCrashReporterSettings(void) const;
+	bool HasValidSymbolUploadSettings(void) const;
+
+	UPROPERTY(Config, EditAnywhere, Category = "Settings", Meta = (DisplayName = "Database", ToolTip = "Database name"))
 	FString BugSplatDatabase;
 
-	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "Application", ToolTip = "Application name"))
+	UPROPERTY(Config, EditAnywhere, Category = "Settings", Meta = (DisplayName = "Application", ToolTip = "Application name"))
 	FString BugSplatApp;
 
-	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "Version", ToolTip = "Application version number"))
+	UPROPERTY(Config, EditAnywhere, Category = "Settings", Meta = (DisplayName = "Version", ToolTip = "Application version number"))
 	FString BugSplatVersion;
 
-	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "ClientId", ToolTip = "Client ID (required for debug symbol uploads)"))
+	UPROPERTY(Config, EditAnywhere, Category = "Settings", Meta = (DisplayName = "Client Id", ToolTip = "OAuth Client ID (required for debug symbol uploads)"))
 	FString BugSplatClientId;
 
-	UPROPERTY(Config, EditAnywhere, Category = "Common", Meta = (DisplayName = "ClientSecret", ToolTip = "Client secret (required for debug symbol uploads)"))
+	UPROPERTY(Config, EditAnywhere, Category = "Settings", Meta = (DisplayName = "Client Secret", ToolTip = "OAuth Client Secret (required for debug symbol uploads)"))
 	FString BugSplatClientSecret;
 
-	UPROPERTY(Config, EditAnywhere, Category = "IOS",
-		Meta = (DisplayName = "Enable iOS crash reporting", ToolTip = "Flag indicating whether to capture crashes on iOS"))
+	UPROPERTY(Config, EditAnywhere, Category = "Settings",
+		Meta = (DisplayName = "Update Engine DataRouterUrl", ToolTip = "Automatically update engine's DefaultEngine.ini when Database, Application, or Version chages"))
+	bool bUpdateEngineDataRouterUrl;
+
+	UPROPERTY(Config, EditAnywhere, Category = "Settings",
+		Meta = (DisplayName = "Enable Automatic Symbol Uploads", ToolTip = "Flag indicating whether to upload debug symbols automatically"))
+	bool bUploadDebugSymbols;
+
+	UPROPERTY(Config, EditAnywhere, Category = "Settings",
+		Meta = (DisplayName = "Enable Android Crash Reporting", ToolTip = "Flag indicating whether to capture crashes on Android"))
+		bool bEnableCrashReportingAndroid;
+
+	UPROPERTY(Config, EditAnywhere, Category = "Settings",
+		Meta = (DisplayName = "Enable iOS Crash Reporting", ToolTip = "Flag indicating whether to capture crashes on iOS"))
 	bool bEnableCrashReportingIos;
-
-	UPROPERTY(Config, EditAnywhere, Category = "IOS",
-		Meta = (DisplayName = "Enable automatic symbols uploads", ToolTip = "Flag indicating whether to upload iOS debug symbols automatically", EditCondition = "bEnableCrashReportingIos"))
-	bool bUploadDebugSymbolsIos;
-
-	UPROPERTY(Config, EditAnywhere, Category = "Android",
-		Meta = (DisplayName = "Enable Android crash reporting", ToolTip = "Flag indicating whether to capture crashes on Android"))
-	bool bEnableCrashReportingAndroid;
-
-	UPROPERTY(Config, EditAnywhere, Category = "Android",
-		Meta = (DisplayName = "Enable automatic symbols uploads", ToolTip = "Flag indicating whether to upload Android debug symbols automatically", EditCondition = "bEnableCrashReportingAndroid"))
-	bool bUploadDebugSymbolsAndroid;
 };

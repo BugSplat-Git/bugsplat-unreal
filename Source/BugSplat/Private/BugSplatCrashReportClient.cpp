@@ -13,22 +13,20 @@ FBugSplatCrashReportClient::FBugSplatCrashReportClient()
 
 }
 
-FString FBugSplatCrashReportClient::CreateBugSplatEndpointUrl()
+FString FBugSplatCrashReportClient::CreateBugSplatEndpointUrl(FString Database, FString App, FString Version)
 {
 	FStringFormatOrderedArguments args;
 
-	UBugSplatEditorSettings* runtimeSettings = FBugSplatRuntimeModule::Get().GetSettings();
-
 	FString Space = " ";
 	FString EncodedSpace = "%20";
-	args.Add(runtimeSettings->BugSplatDatabase);
-	args.Add(runtimeSettings->BugSplatApp.Replace(*Space, *EncodedSpace));
-	args.Add(runtimeSettings->BugSplatVersion.Replace(*Space, *EncodedSpace));
+	args.Add(Database);
+	args.Add(App.Replace(*Space, *EncodedSpace));
+	args.Add(Version.Replace(*Space, *EncodedSpace));
 
 	return *FString::Format(*BUGSPLAT_ENDPOINT_URL_FORMAT, args);
 }
 
-void FBugSplatCrashReportClient::UpdateCrashReportClientIni(FString DefaultEngineIniFilePath)
+void FBugSplatCrashReportClient::UpdateCrashReportClientIni(FString Database, FString App, FString Version, FString DefaultEngineIniFilePath)
 {
 	if (!FPaths::FileExists(DefaultEngineIniFilePath))
 	{
@@ -40,26 +38,41 @@ void FBugSplatCrashReportClient::UpdateCrashReportClientIni(FString DefaultEngin
 
 	ini.LoadFile(DefaultEngineIniFilePath);
 
-	FString sectionTag = FString(TEXT("CrashReportClient"));
+	FString SectionTag = FString(TEXT("CrashReportClient"));
 
-	FString dataRouterUrlConfigTag = FString(TEXT("DataRouterUrl"));
-	FString dataRouterUrlValue = CreateBugSplatEndpointUrl();
+	FString DataRouterUrlConfigTag = FString(TEXT("DataRouterUrl"));
+	FString DataRouterUrlValue = CreateBugSplatEndpointUrl(Database, App, Version);
 
-	FString crashReportClientVersionConfigTag = FString(TEXT("CrashReportClientVersion"));
-	FString crashReportClientVersionValue = FString(TEXT("1.0"));
+	FString CrashReportClientVersionConfigTag = FString(TEXT("CrashReportClientVersion"));
+	FString CrashReportClientVersionValue = FString(TEXT("1.0"));
 
-	ini.SetString(*sectionTag, *dataRouterUrlConfigTag, *dataRouterUrlValue, DefaultEngineIniFilePath);
-	ini.SetString(*sectionTag, *crashReportClientVersionConfigTag, *crashReportClientVersionValue, DefaultEngineIniFilePath);
-
-	FMessageDialog::Debugf(FText::FromString("Configuration File Successfully Updated!"));
+	ini.SetString(*SectionTag, *DataRouterUrlConfigTag, *DataRouterUrlValue, DefaultEngineIniFilePath);
+	ini.SetString(*SectionTag, *CrashReportClientVersionConfigTag, *CrashReportClientVersionValue, DefaultEngineIniFilePath);
 }
 
-void FBugSplatCrashReportClient::UpdateGlobalIni()
+void FBugSplatCrashReportClient::UpdateEngineSettings()
 {
-	UpdateCrashReportClientIni(*GLOBAL_CRASH_REPORT_CLIENT_CONFIG_PATH);
+	UBugSplatEditorSettings* RuntimeSettings = FBugSplatRuntimeModule::Get().GetSettings();
+	
+	if (!RuntimeSettings->HasValidCrashReporterSettings())
+	{
+		return;
+	}
+
+	if (!RuntimeSettings->bUpdateEngineDataRouterUrl)
+	{
+		return;
+	}
+
+	UpdateCrashReportClientIni(
+		RuntimeSettings->BugSplatDatabase,
+		RuntimeSettings->BugSplatApp,
+		RuntimeSettings->BugSplatVersion,
+		*GLOBAL_CRASH_REPORT_CLIENT_CONFIG_PATH
+	);
 }
 
-void FBugSplatCrashReportClient::UpdateLocalIni()
+void FBugSplatCrashReportClient::UpdatePackagedBuildSettings()
 {
 	FString PackagedBuildFolderPath;
 
@@ -69,6 +82,14 @@ void FBugSplatCrashReportClient::UpdateLocalIni()
 			FPaths::GetProjectFilePath(),
 			PackagedBuildFolderPath))
 	{
+		return;
+	}
+
+	UBugSplatEditorSettings* RuntimeSettings = FBugSplatRuntimeModule::Get().GetSettings();
+
+	if (!RuntimeSettings->HasValidCrashReporterSettings())
+	{
+		FMessageDialog::Debugf(FText::FromString("Invalid settings, update plugin fields and try again."));
 		return;
 	}
 
@@ -114,13 +135,21 @@ void FBugSplatCrashReportClient::UpdateLocalIni()
 			}
 		}
 
-		UpdateCrashReportClientIni(DefaultEngineIniFilePath);
+		UpdateCrashReportClientIni(
+			RuntimeSettings->BugSplatDatabase,
+			RuntimeSettings->BugSplatApp,
+			RuntimeSettings->BugSplatVersion,
+			DefaultEngineIniFilePath
+		);
 	}
 
 	if (!FoundAnyValidFolders)
 	{
 		FMessageDialog::Debugf(FText::FromString("Could not find any packaged build directories to update. Please specify the root directory of a valid packaged build."));
+		return;
 	}
+	
+	FMessageDialog::Debugf(FText::FromString("Packaged build settings updated successfully!"));
 }
 
 void FBugSplatCrashReportClient::CreateEmptyTextFile(FString FullPath)
