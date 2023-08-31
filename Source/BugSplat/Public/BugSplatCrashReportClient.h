@@ -15,10 +15,10 @@ static const FString PACKAGED_BUILD_CONFIG_PATH_4_25_AND_OLDER = FString("Engine
 
 static const FString INI_FILE_NAME = FString("DefaultEngine.ini");
 
-class FBugSplatSettings
+class FBugSplatCrashReportClient
 {
 public:
-	FBugSplatSettings();
+	FBugSplatCrashReportClient();
 
 	FString CreateBugSplatEndpointUrl();
 
