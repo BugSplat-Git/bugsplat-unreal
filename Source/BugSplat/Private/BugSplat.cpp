@@ -41,6 +41,7 @@ void FBugSplatModule::StartupModule()
 void FBugSplatModule::ShutdownModule()
 {
 	delete BugSplatSettings;
+	delete BugSplatSymbols;
 
 	if (FModuleManager::Get().IsModuleLoaded("PropertyEditor"))
 	{
@@ -68,7 +69,7 @@ FReply FBugSplatModule::OnUpdateLocalIni()
 
 FReply FBugSplatModule::OnUpdateWindowsSymbolUploadScript()
 {
-	BugSplatSettings->WriteSymbolUploadScript();
+	BugSplatSymbols->WriteSymbolUploadScript();
 	return FReply::Handled();
 }
 
