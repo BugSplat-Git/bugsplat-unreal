@@ -1,6 +1,6 @@
 // Copyright 2023 BugSplat. All Rights Reserved.
 
-#include "BugSplatSettingsCustomization.h"
+#include "BugSplatEditorSettingsCustomization.h"
 #include "BugSplat.h"
 
 #include "DetailCategoryBuilder.h"
@@ -19,12 +19,12 @@ static void OnDocumentationLinkClicked(const FSlateHyperlinkRun::FMetadata& Meta
 	}
 }
 
-TSharedRef<IDetailCustomization> FBugSplatSettingsCustomization::MakeInstance()
+TSharedRef<IDetailCustomization> FBugSplatEditorSettingsCustomization::MakeInstance()
 {
-	return MakeShareable(new FBugSplatSettingsCustomization);
+	return MakeShareable(new FBugSplatEditorSettingsCustomization);
 }
 
-void FBugSplatSettingsCustomization::CustomizeDetails(IDetailLayoutBuilder& DetailBuilder)
+void FBugSplatEditorSettingsCustomization::CustomizeDetails(IDetailLayoutBuilder& DetailBuilder)
 {
 	IDetailCategoryBuilder& CommonCategory = DetailBuilder.EditCategory(TEXT("Crash Reporter Configuration"));
 	IDetailCategoryBuilder& DesktopCategory = DetailBuilder.EditCategory(TEXT("Desktop"));
