@@ -5,7 +5,7 @@
         <copyDir src="$S(PluginDir)/../ThirdParty/IOS/Bugsplat.framework" dst="$S(BuildDir)/Frameworks/Bugsplat.framework" />
 
         <setBoolFromProperty result="bEnableCrashReporting" ini="Engine" section="/Script/BugSplatRuntime.BugSplatEditorSettings" property="bEnableCrashReportingIos" default="true" />
-        <setBoolFromProperty result="bUploadSymbols" ini="Engine" section="/Script/BugSplatRuntime.BugSplatEditorSettings" property="bUploadDebugSymbolsIos" default="true" />
+        <setBoolFromProperty result="bUploadSymbols" ini="Engine" section="/Script/BugSplatRuntime.BugSplatEditorSettings" property="bUploadDebugSymbols" default="true" />
 
         <setStringFromProperty result="DatabaseName" ini="Engine" section="/Script/BugSplatRuntime.BugSplatEditorSettings" property="BugSplatDatabase"/>
         <setStringFromProperty result="VersionNumber" ini="Engine" section="/Script/BugSplatRuntime.BugSplatEditorSettings" property="BugSplatVersion"/>

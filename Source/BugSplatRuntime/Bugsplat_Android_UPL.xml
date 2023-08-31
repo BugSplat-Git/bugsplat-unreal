@@ -4,7 +4,7 @@
         <log text="BugSplat SDK Android UPL initialization"/>
 
         <setBoolFromProperty result="bEnableCrashReporting" ini="Engine" section="/Script/BugSplatRuntime.BugSplatEditorSettings" property="bEnableCrashReportingAndroid" default="true" />
-        <setBoolFromProperty result="bUploadSymbols" ini="Engine" section="/Script/BugSplatRuntime.BugSplatEditorSettings" property="bUploadDebugSymbolsAndroid" default="true" />
+        <setBoolFromProperty result="bUploadSymbols" ini="Engine" section="/Script/BugSplatRuntime.BugSplatEditorSettings" property="bUploadDebugSymbols" default="true" />
 
         <setStringFromProperty result="bugsplatDatabase" ini="Engine" section="/Script/BugSplatRuntime.BugSplatEditorSettings" property="BugSplatDatabase" />
         <setStringFromProperty result="bugsplatApp" ini="Engine" section="/Script/BugSplatRuntime.BugSplatEditorSettings" property="BugSplatApp" />
