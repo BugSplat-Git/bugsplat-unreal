@@ -15,6 +15,9 @@ class FBugSplatSymbols
 public:
 	FBugSplatSymbols();
 
-	void WriteSymbolUploadScript();
+	void UpdateSymbolUploadsSettings();
+	FString CreateSymbolUploadScript(FString Database, FString App, FString Version, FString ClientId, FString ClientSecret);
 
+private:
+	void WriteSymbolUploadScript(FString contents);
 };

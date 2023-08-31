@@ -20,14 +20,15 @@ class FBugSplatCrashReportClient
 public:
 	FBugSplatCrashReportClient();
 
-	FString CreateBugSplatEndpointUrl();
-
-	void UpdateLocalIni();
-	void UpdateGlobalIni();
+	void UpdatePackagedBuildSettings();
+	void UpdateEngineSettings();
 
 private:
+	FString CreateBugSplatEndpointUrl(FString Database, FString App, FString Version);
+	void CreateEmptyTextFile(FString FullPath);
+
 	FString GetPackagedBuildPlatformTarget(FString Platform);
 	FString GetPackagedBuildDefaultEngineIniRelativePath();
-	void CreateEmptyTextFile(FString FullPath);
-	void UpdateCrashReportClientIni(FString iniFilePath);
+
+	void UpdateCrashReportClientIni(FString Database, FString App, FString Version, FString DefaultEngineIniFilePath);
 };

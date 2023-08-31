@@ -6,11 +6,36 @@ UBugSplatEditorSettings::UBugSplatEditorSettings(const FObjectInitializer& Objec
 	: Super(ObjectInitializer)
 {
 	BugSplatDatabase = TEXT("");
+	BugSplatApp = TEXT("");
+	BugSplatVersion = TEXT("");
 	BugSplatClientId = TEXT("");
 	BugSplatClientSecret = TEXT("");
-	BugSplatVersion = TEXT("");
+	bUpdateEngineDataRouterUrl = true;
+	bUploadDebugSymbols = true;
 	bEnableCrashReportingIos = true;
-	bUploadDebugSymbolsIos = true;
 	bEnableCrashReportingAndroid = true;
-	bUploadDebugSymbolsAndroid = true;
 }
+
+bool UBugSplatEditorSettings::HasValidCrashReporterSettings() const
+{
+	return !BugSplatDatabase.IsEmpty() && !BugSplatApp.IsEmpty() && !BugSplatVersion.IsEmpty();
+}
+
+bool UBugSplatEditorSettings::HasValidSymbolUploadSettings() const
+{
+	return !BugSplatDatabase.IsEmpty() && !BugSplatApp.IsEmpty() && !BugSplatVersion.IsEmpty() && !BugSplatClientId.IsEmpty() && !BugSplatClientSecret.IsEmpty();
+}
+
+#if WITH_EDITOR
+bool UBugSplatEditorSettings::CanEditChange(const FProperty* InProperty) const
+{
+	const bool ParentVal = Super::CanEditChange(InProperty);
+
+	if (InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UBugSplatEditorSettings, bUploadDebugSymbols))
+	{
+		return ParentVal && HasValidSymbolUploadSettings();
+	}
+
+	return ParentVal;
+}
+#endif
