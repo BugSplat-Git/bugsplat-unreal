@@ -4,13 +4,8 @@
 
 #include "CoreMinimal.h"
 #include <EngineSharedPCH.h>
-#include "Interfaces/IPluginManager.h"
-
-static const FString PLUGIN_BASE_DIR = FPaths::ConvertRelativePathToFull(IPluginManager::Get().FindPlugin(TEXT("BugSplat"))->GetBaseDir());
 
 static const FString BUGSPLAT_ENDPOINT_URL_FORMAT = FString("https://{0}.bugsplat.com/post/ue4/{1}/{2}");
-static const FString BUGSPLAT_SYMBOL_UPLOADER_PATH = *FPaths::Combine(PLUGIN_BASE_DIR, FString("/Source/ThirdParty/SymUploader/symbol-upload-win.exe"));
-static const FString BUGSPLAT_BASH_DIR = *FPaths::Combine(FPaths::ProjectDir(), FString("Plugins/BugSplat/Source/Scripts/BugSplat.bat"));
 
 static const FString GLOBAL_CRASH_REPORT_CLIENT_CONFIG_PATH = *FPaths::Combine(FPaths::EngineDir(), FString("Programs/CrashReportClient/Config/DefaultEngine.ini"));
 
@@ -29,7 +24,6 @@ public:
 
 	void UpdateLocalIni();
 	void UpdateGlobalIni();
-	void WriteSymbolUploadScript();
 
 private:
 	FString GetPackagedBuildPlatformTarget(FString Platform);
