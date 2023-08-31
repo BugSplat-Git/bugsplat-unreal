@@ -2,7 +2,7 @@
 
 #include "BugSplat.h"
 #include "BugSplatCrashReportClient.h"
-#include "BugSplatSettingsCustomization.h"
+#include "BugSplatEditorSettingsCustomization.h"
 #include "LevelEditor.h"
 #include "Widgets/Docking/SDockTab.h"
 #include "Widgets/Layout/SBox.h"
@@ -33,7 +33,7 @@ void FBugSplatModule::StartupModule()
 	auto& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 	PropertyModule.RegisterCustomClassLayout(
 		"BugSplatEditorSettings",
-		FOnGetDetailCustomizationInstance::CreateStatic(&FBugSplatSettingsCustomization::MakeInstance));
+		FOnGetDetailCustomizationInstance::CreateStatic(&FBugSplatEditorSettingsCustomization::MakeInstance));
 
 	PropertyModule.NotifyCustomizationModuleChanged();
 }

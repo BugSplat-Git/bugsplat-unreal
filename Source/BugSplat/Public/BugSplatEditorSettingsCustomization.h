@@ -8,7 +8,7 @@
 class SErrorText;
 class IPropertyHandle;
 
-class FBugSplatSettingsCustomization : public IDetailCustomization
+class FBugSplatEditorSettingsCustomization : public IDetailCustomization
 {
 public:
 	static TSharedRef<IDetailCustomization> MakeInstance();
