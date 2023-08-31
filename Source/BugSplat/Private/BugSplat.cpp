@@ -1,7 +1,7 @@
 // Copyright 2023 BugSplat. All Rights Reserved.
 
 #include "BugSplat.h"
-#include "BugSplatSettings.h"
+#include "BugSplatCrashReportClient.h"
 #include "BugSplatSettingsCustomization.h"
 #include "LevelEditor.h"
 #include "Widgets/Docking/SDockTab.h"

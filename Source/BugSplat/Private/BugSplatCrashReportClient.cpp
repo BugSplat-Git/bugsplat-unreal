@@ -1,6 +1,6 @@
 // Copyright 2023 BugSplat. All Rights Reserved.
 
-#include "BugSplatSettings.h"
+#include "BugSplatCrashReportClient.h"
 #include <Developer/DesktopPlatform/Public/DesktopPlatformModule.h>
 #include <Modules/BuildVersion.h>
 #include <Runtime/Core/Public/Misc/EngineVersionComparison.h>
@@ -8,12 +8,12 @@
 #include "BugSplatEditorSettings.h"
 #include "BugSplatRuntime.h"
 
-FBugSplatSettings::FBugSplatSettings()
+FBugSplatCrashReportClient::FBugSplatCrashReportClient()
 {
 
 }
 
-FString FBugSplatSettings::CreateBugSplatEndpointUrl()
+FString FBugSplatCrashReportClient::CreateBugSplatEndpointUrl()
 {
 	FStringFormatOrderedArguments args;
 
@@ -28,7 +28,7 @@ FString FBugSplatSettings::CreateBugSplatEndpointUrl()
 	return *FString::Format(*BUGSPLAT_ENDPOINT_URL_FORMAT, args);
 }
 
-void FBugSplatSettings::UpdateCrashReportClientIni(FString DefaultEngineIniFilePath)
+void FBugSplatCrashReportClient::UpdateCrashReportClientIni(FString DefaultEngineIniFilePath)
 {
 	if (!FPaths::FileExists(DefaultEngineIniFilePath))
 	{
@@ -54,12 +54,12 @@ void FBugSplatSettings::UpdateCrashReportClientIni(FString DefaultEngineIniFileP
 	FMessageDialog::Debugf(FText::FromString("Configuration File Successfully Updated!"));
 }
 
-void FBugSplatSettings::UpdateGlobalIni()
+void FBugSplatCrashReportClient::UpdateGlobalIni()
 {
 	UpdateCrashReportClientIni(*GLOBAL_CRASH_REPORT_CLIENT_CONFIG_PATH);
 }
 
-void FBugSplatSettings::UpdateLocalIni()
+void FBugSplatCrashReportClient::UpdateLocalIni()
 {
 	FString PackagedBuildFolderPath;
 
@@ -123,18 +123,18 @@ void FBugSplatSettings::UpdateLocalIni()
 	}
 }
 
-void FBugSplatSettings::CreateEmptyTextFile(FString FullPath)
+void FBugSplatCrashReportClient::CreateEmptyTextFile(FString FullPath)
 {
 	FString Empty = FString("");
 	FFileHelper::SaveStringToFile(Empty, *FullPath);
 }
 
-FString FBugSplatSettings::GetPackagedBuildPlatformTarget(FString Platform)
+FString FBugSplatCrashReportClient::GetPackagedBuildPlatformTarget(FString Platform)
 {
 	return ENGINE_MAJOR_VERSION >= 5 ? Platform : Platform + TEXT("NoEditor");
 }
 
-FString FBugSplatSettings::GetPackagedBuildDefaultEngineIniRelativePath()
+FString FBugSplatCrashReportClient::GetPackagedBuildDefaultEngineIniRelativePath()
 {
 	if (ENGINE_MAJOR_VERSION == 5)
 	{

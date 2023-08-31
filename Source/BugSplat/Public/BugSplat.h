@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 #include <Runtime/SlateCore/Public/Widgets/SUserWidget.h>
-#include "BugSplatSettings.h"
+#include "BugSplatCrashReportClient.h"
 #include "BugSplatSymbols.h"
 
 class FBugSplatModule : public IModuleInterface
@@ -27,6 +27,6 @@ public:
 
 private:
 	TSharedPtr<class FUICommandList> PluginCommands;
-	FBugSplatSettings* BugSplatSettings;
+	FBugSplatCrashReportClient* BugSplatSettings;
 	FBugSplatSymbols* BugSplatSymbols;
 };
