@@ -32,8 +32,8 @@ You may choose to add BugSplat through the Unreal Marketplace or add the plugin 
 
 ### Install Manually
 
-1. Navigate to your project folder, which contains your `[ProjectName].uproject` file.
-2. If it does not already exist, create a `Plugins` folder.
+1. Navigate to your project folder containing your `[ProjectName].uproject` file.
+2. Create a `Plugins` folder if it does not already exist.
 3. Create a `BugSplat` folder in the `Plugins` folder and copy the contents of this repo into the `BugSplat` folder.
 4. In the Unreal Editor, ensure you can access the BugSplat plugin via `Edit > Project Settings` and scroll to the `BugSplat` section under `Plugins`.
 
@@ -45,37 +45,31 @@ To get started, generate a Client ID and Client Secret via the [Integrations](ht
 
 Next, open the BugSplat plugin menu in the Unreal Editor via `Edit > Project Settings`. Scroll to the `BugSplat` section of `Project Settings` and add values for `Database`, `Application`,  `Version`, `Client ID`, and `Client Secret`:
 
-<img width="1259" alt="BugSplat Unreal Plugin Settings" src="https://github.com/BugSplat-Git/bugsplat-unreal/assets/2646053/9997a602-4c1f-4b62-becf-5df264c9d70c">
-
-Be sure to also update your project settings to enable `Include Crash Reporter` and `Include Debug Files in Shipping Builds`:
-
-<img width="1126" alt="BugSplat Unreal Project Settings" src="https://github.com/BugSplat-Git/bugsplat-unreal/assets/2646053/55680b90-58fb-4afe-9169-a953f756f4d5">
+<img width="1126" alt="BugSplat Unreal Plugin Settings" src="https://github.com/BugSplat-Git/bugsplat-unreal/assets/2646053/c386a288-31e7-475d-adb8-9bef0506272b">
 
 ### Desktop
 
-For Desktop, the BugSplat plugin has the ability to modify the [DefaultEngine.ini](https://docs.unrealengine.com/5.0/en-US/configuration-files-in-unreal-engine/) file for both a packaged build or the global engine so that crashes are posted to BugSplat. Additionally, the BugSplat plugin can add a [PostBuildStep](https://docs.unrealengine.com/5.0/en-US/unreal-engine-build-tool-target-reference/) that will upload Windows [symbol files](https://docs.bugsplat.com/introduction/development/working-with-symbol-files) to BugSplat after each build.
+BugSplat leverages Unreal's `CrashReportClient` to provide crash reporting for Windows, macOS, and Linux games. Be sure to update your project settings and enable `Include Crash Reporter` and `Include Debug Files in Shipping Builds`:
 
-BugSplat recommends configuring the crash reporting independently for each packaged build. To configure crash reporting in a packaged build select `Update Game INI`. When prompted, navigate to the root directory of your packaged build that contains the folder `Windows` or `WindowsNoEditor`. Note that you will need to **repeat this step and update the version information every time you create a packaged version of your game**. For production scenarios consider automating this step with a script on your build machine.
+<img width="1126" alt="BugSplat Unreal Project Settings" src="https://github.com/BugSplat-Git/bugsplat-unreal/assets/2646053/55680b90-58fb-4afe-9169-a953f756f4d5">
 
-![Packaged Directory File Browser](https://github.com/BugSplat-Git/bugsplat-unreal/assets/2646053/4cd8e3c6-26b5-4341-a17b-3d5a18b078a0)
+To configure `CrashReportClient` to post to BugSplat, the `DataRouterUrl` value needs to be added to `DefaultEngine.ini`. The `bugsplat-unreal` plugin automatically updates the value for `DataRouterUrl` when the `Update Engine DefaultEngine.ini` option is enabled. Please note the `DataRouterUrl` value is global and is shared across all packaged builds created by the affected engine. To override the `DataRouterUrl` value a package build uses, you may optionally use the `Update Packaged Game INI` button under the `Tools` section.
 
-Alternatively, BugSplat can be configured to collect crash reports in the editor and all games built with the current engine. To configure BugSplat for the current engine, select `Update Global INI`. Note that updating the global `DefaultEngine.ini` file **will affect all projects using the same engine build**.
+In order to get function names and line numbers in crash reports, you'll need to upload your game's `.exe`, `.dll`, and `.pdb` files. To upload debug symbols for reach build, ensure that the `Enable Automatic Symbol Uploads` option is selected. When selected, a script to execute [symbol-upload](https://github.com/BugSplat-Git/symbol-upload) will be added to the `PostBuildSteps` field in `BugSplat.uplugin`. The symbol upload script will run automatically when your game is built.
 
-In order to get function names and line numbers in crash reports you'll need to upload your game's `.exe`, `.dll`, and `.pdb` files. To upload symbol files to BugSplat, select the `Add Symbol Uploads` button. The `Add Symbol Uploads` button will generate a bash script which uploads your project's [symbol files](https://docs.bugsplat.com/introduction/development/working-with-symbol-files) to BugSplat. A script to execute [SendPdbs.exe](https://docs.bugsplat.com/education/faq/using-sendpdbs-to-automatically-upload-symbol-files) will be added to the `PostBuildSteps` field in `BugSplat.uplugin` and will run automatically when your game is built.
+### iOS
 
-### Mobile
+Before attempting to use the BugSplat plugin to capture crashes on Mobile, please ensure you've completed the [iOS](https://docs.unrealengine.com/5.0/en-US/setting-up-an-unreal-engine-project-for-ios/) and [Android](https://docs.unrealengine.com/5.0/en-US/android-support-for-unreal-engine/) quickstart guides.
 
-Select the `Add symbol uploads` and `Add crash reporting` checkboxes in the `Mobile` section of the plugin dialog. Once enabled, the BugSplat plugin will configure crash reporting and symbol uploads automatically on mobile platforms.
-
-Before attempting to use the BugSplat plugin to capture crashes on Mobile please ensure you've completed the [iOS](https://docs.unrealengine.com/5.0/en-US/setting-up-an-unreal-engine-project-for-ios/) and [Android](https://docs.unrealengine.com/5.0/en-US/android-support-for-unreal-engine/) quickstart guides.
-
-In order to get function names and line numbers in your iOS crash reports, please make the following changes in the `iOS` section of `Project Settings`
+In order to get function names and line numbers in your iOS crash reports, please make the following changes in the `iOS` section of `Project Settings`.
 
 | Option | Value |
 |--------|-------|
 | Generate dSYMs for code debugging and profiling| true |
-| Generate dSYMs as a bundle for third party crash tools | true |
+| Generate dSYMs as a bundle for third-party crash tools | true |
 | Support bitcode in shipping | false |
+
+To enable crash reporting, ensure the `Enable iOS Crash Reporting` and `Enable Android Crash Reporting` options are selected.
 
 Note that sometimes iOS applications won't crash while the USB cable is connected. If this happens, disconnect the USB cable and re-run the application to trigger a crash.
 
@@ -91,9 +85,9 @@ Run your application and submit a crash report.
 
 On Desktops, submit a crash report via the Unreal CrashReportClient dialog that appears at crash time. We have developed a handy guide on how you can customize the Unreal CrashReportClient dialog that is available [here](https://www.bugsplat.com/blog/game-dev/customizing-unreal-engine-crash-dialog/). 
 
-On iOS, after a crash occurs, restart the game and tap the `Send Report` option when prompted.
+On iOS, after a crash occurs, restart the game and tap the `Send Report` option when prompted. On Android, crashes are submitted automatically at crash time.
 
-Once you've submitted a crash report navigate to the [Crashes](https://app.bugsplat.com/v2/crashes) page. On the Crashes page, click the link in the ID column.
+Once you've submitted a crash report, navigate to the [Crashes](https://app.bugsplat.com/v2/crashes) page. On the Crashes page, click the link in the ID column.
 
 If everything is configured correctly, you should see something that resembles the following:
 
