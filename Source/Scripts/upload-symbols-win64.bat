@@ -2,6 +2,7 @@
 
 set targetPlatform=%1
 set projectDir=%2
+set targetName=%3
 set uploadScriptPath=%projectDir%\Plugins\BugSplat\Source\Scripts\BugSplat.bat
 
 echo "BugSplat [INFO]: invoking upload script at %uploadScriptPath%"
@@ -11,4 +12,4 @@ if not exist "%uploadScriptPath%" (
 	exit /b
 )
 
-call %uploadScriptPath% %targetPlatform%
+call %uploadScriptPath% %targetPlatform% %targetName%

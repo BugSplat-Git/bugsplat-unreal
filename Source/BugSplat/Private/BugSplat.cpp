@@ -1,8 +1,8 @@
-// Copyright 2022 BugSplat. All Rights Reserved.
+// Copyright 2023 BugSplat. All Rights Reserved.
 
 #include "BugSplat.h"
-#include "BugSplatSettings.h"
-#include "BugSplatSettingsCustomization.h"
+#include "BugSplatCrashReportClient.h"
+#include "BugSplatEditorSettingsCustomization.h"
 #include "LevelEditor.h"
 #include "Widgets/Docking/SDockTab.h"
 #include "Widgets/Layout/SBox.h"
@@ -12,6 +12,8 @@
 #include <Runtime/Projects/Public/PluginDescriptor.h>
 #include <EngineSharedPCH.h>
 #include <Editor/MainFrame/Public/Interfaces/IMainFrameModule.h>
+#include <BugSplatEditorSettings.h>
+#include "BugSplatRuntime.h"
 
 static const FName BugSplatTabName("BugSplat");
 
@@ -33,14 +35,15 @@ void FBugSplatModule::StartupModule()
 	auto& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 	PropertyModule.RegisterCustomClassLayout(
 		"BugSplatEditorSettings",
-		FOnGetDetailCustomizationInstance::CreateStatic(&FBugSplatSettingsCustomization::MakeInstance));
+		FOnGetDetailCustomizationInstance::CreateStatic(&FBugSplatEditorSettingsCustomization::MakeInstance));
 
 	PropertyModule.NotifyCustomizationModuleChanged();
 }
 
 void FBugSplatModule::ShutdownModule()
 {
-	delete BugSplatSettings;
+	delete BugSplatCrashReportClient;
+	delete BugSplatSymbols;
 
 	if (FModuleManager::Get().IsModuleLoaded("PropertyEditor"))
 	{
@@ -54,21 +57,15 @@ FBugSplatModule& FBugSplatModule::Get()
 	return FModuleManager::LoadModuleChecked<FBugSplatModule>("BugSplat");
 }
 
-FReply FBugSplatModule::OnUpdateGlobalIni()
+void FBugSplatModule::OnUpdateBugSplatSettings()
 {
-	BugSplatSettings->UpdateGlobalIni();
-	return FReply::Handled();
+	BugSplatCrashReportClient->UpdateEngineSettings();
+	BugSplatSymbols->UpdateSymbolUploadsSettings();
 }
 
 FReply FBugSplatModule::OnUpdateLocalIni()
 {
-	BugSplatSettings->UpdateLocalIni();
-	return FReply::Handled();
-}
-
-FReply FBugSplatModule::OnUpdateWindowsSymbolUploadScript()
-{
-	BugSplatSettings->WriteSymbolUploadScript();
+	BugSplatCrashReportClient->UpdatePackagedBuildSettings();
 	return FReply::Handled();
 }
 

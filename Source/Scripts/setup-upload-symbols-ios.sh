@@ -35,7 +35,7 @@ if [ ! -z "$reportCrashes" ]; then
     fi
 fi
 
-export uploadSymbols=$(awk -F "=" '/bUploadDebugSymbolsIos/ {print $2}' ${configPath}/DefaultEngine.ini)
+export uploadSymbols=$(awk -F "=" '/bUploadDebugSymbols/ {print $2}' ${configPath}/DefaultEngine.ini)
 
 if [ ! -z "$uploadSymbols" ]; then
     if [ $uploadSymbols != "True" ]; then
