@@ -47,7 +47,7 @@ Next, open the BugSplat plugin menu in the Unreal Editor via `Edit > Project Set
 
 <img width="1126" alt="BugSplat Unreal Plugin Settings" src="https://github.com/BugSplat-Git/bugsplat-unreal/assets/2646053/c386a288-31e7-475d-adb8-9bef0506272b">
 
-### Desktop
+### Windows, macOS, and Linux
 
 BugSplat leverages Unreal's `CrashReportClient` to provide crash reporting for Windows, macOS, and Linux games. Be sure to update your project settings and enable `Include Crash Reporter` and `Include Debug Files in Shipping Builds`:
 
@@ -57,7 +57,7 @@ To configure `CrashReportClient` to post to BugSplat, the `DataRouterUrl` value 
 
 In order to get function names and line numbers in crash reports, you'll need to upload your game's `.exe`, `.dll`, and `.pdb` files. To upload debug symbols for reach build, ensure that the `Enable Automatic Symbol Uploads` option is selected. When selected, a script to execute [symbol-upload](https://github.com/BugSplat-Git/symbol-upload) will be added to the `PostBuildSteps` field in `BugSplat.uplugin`. The symbol upload script will run automatically when your game is built.
 
-### iOS
+### iOS and Android
 
 Before attempting to use the BugSplat plugin to capture crashes on Mobile, please ensure you've completed the [iOS](https://docs.unrealengine.com/5.0/en-US/setting-up-an-unreal-engine-project-for-ios/) and [Android](https://docs.unrealengine.com/5.0/en-US/android-support-for-unreal-engine/) quickstart guides.
 
@@ -72,6 +72,10 @@ In order to get function names and line numbers in your iOS crash reports, pleas
 To enable crash reporting, ensure the `Enable iOS Crash Reporting` and `Enable Android Crash Reporting` options are selected.
 
 Note that sometimes iOS applications won't crash while the USB cable is connected. If this happens, disconnect the USB cable and re-run the application to trigger a crash.
+
+### Xbox and PlayStation
+
+BugSplat can provide instructions for implementing Unreal crash reporting on Xbox and PlayStation. Please email us at [support@bugsplat.com](mailto:support@bugsplat.com) for more info.
 
 ## 🏃 Usage
 
