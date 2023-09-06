@@ -1,6 +1,6 @@
 import { compress } from "https://deno.land/x/zip@v1.2.5/mod.ts";
 
-const supportedVersions = ['5.0', '5.1', '5.2'];
+const supportedVersions = ['5.0', '5.1', '5.2', '5.3'];
 
 const pluginJson = JSON.parse(await Deno.readTextFile('./BugSplat.uplugin'));
 
