@@ -68,7 +68,7 @@ FString FBugSplatSymbols::CreateSymbolUploadScript(FString Database, FString App
 	args.Add(App);
 	args.Add(Version);
 	args.Add(FPaths::Combine(FPaths::ConvertRelativePathToFull(FPaths::ProjectDir()), "Binaries"));
-	args.Add("**/*.{pdb,dll,exe}");
+	args.Add(FString("**/*.{pdb,dll,exe}"));
 	
 	return FString::Format(*PostBuildStepsConsoleCommandFormat, args);
 }
