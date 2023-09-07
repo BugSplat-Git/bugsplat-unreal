@@ -38,7 +38,7 @@
             "call \"$(PluginDir)\\Source\\Scripts\\upload-symbols-win64.bat\" $(TargetPlatform) \"$(ProjectDir)\" $(TargetName)"
         ],
         "Mac": [
-            "sh $(PluginDir)/Source/Scripts/setup-upload-symbols-ios.sh $(TargetPlatform) $(TargetName) \"$(ProjectDir)\" $(PluginDir)"
+            "sh \"$(PluginDir)/Source/Scripts/setup-upload-symbols-ios.sh\" $(TargetPlatform) $(TargetName) \"$(ProjectDir)\" $(PluginDir)"
         ]
     }
 }
