@@ -11,7 +11,7 @@ UBugSplatEditorSettings::UBugSplatEditorSettings(const FObjectInitializer& Objec
 	BugSplatClientId = TEXT("");
 	BugSplatClientSecret = TEXT("");
 	bUpdateEngineDataRouterUrl = true;
-	bUploadDebugSymbols = true;
+	bUploadDebugSymbols = false;
 	bEnableCrashReportingIos = true;
 	bEnableCrashReportingAndroid = true;
 }
