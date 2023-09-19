@@ -40,7 +40,7 @@ FString FBugSplatSymbols::CreateSymbolUploadScript(FString Database, FString App
 {
 	FString SetCurrentPlatfrom = TEXT("@echo off\nset targetPlatform=%1\nset targetName=%2\n");
 	FString TargetPlatformNullGuard = TEXT("if \"%targetPlatform%\"==\"\" (\n\techo \"BugSplat [ERROR]: Symbol upload invocation missing target platform...\"\n\texit /b\n)");
-	FString EditorPlatformGuard = TEXT("set isEditor=0\nif \"%targetPlatform%\"==\"Editor\" set isEditor=1\nif \"%targetPlatform%\"==\"WindowsEditor\" set isEditor=1\nif \"%targetPlatform%\"==\"DevelopmentEditor\" set isEditor=1\nif \"%targetName:~-6%\"==\"Editor\" set isEditor=1\nif %isEditor%==1 (\n\techo \"BugSplat [INFO]: Editor build detected, skipping symbol uploads...\"\n\texit /b\n)");
+	FString EditorPlatformGuard = TEXT("set isWindows=0\nif \"%targetPlatform%\"==\"Win64\" set isWindows=1\nif \"%targetPlatform%\"==\"XSX\" set isWindows=1\nif \"%targetPlatform%\"==\"XB1\" set isWindows=1\nif %isWindows%==0 (\n\techo \"BugSplat [INFO]: Non-Windows build detected, skipping Windows symbol uploads...\"\n\texit /b\n)");
 
 	FString PostBuildStepsConsoleCommandFormat =
 		FString(
