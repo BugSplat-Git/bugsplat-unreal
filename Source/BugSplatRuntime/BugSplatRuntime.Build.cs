@@ -63,8 +63,6 @@ public class BugSplatRuntime : ModuleRules
 		
 		if (Target.Platform == UnrealTargetPlatform.IOS)
 		{
-			PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Private/IOS"));
-
 			PublicAdditionalFrameworks.Add(new Framework("Bugsplat", "../ThirdParty/IOS/Bugsplat.embeddedframework.zip", "HockeySDKResources.bundle"));
 
 			PrivateDependencyModuleNames.AddRange(new string[] { "Launch" });
@@ -75,8 +73,6 @@ public class BugSplatRuntime : ModuleRules
 		
 		if (Target.Platform == UnrealTargetPlatform.Android)
 		{
-			PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Private/Android"));
-
 			PublicDependencyModuleNames.AddRange(new string[] { "Launch" });
 			string PluginPath = Utils.MakePathRelativeTo(ModuleDirectory, Target.RelativeEnginePath);
 
