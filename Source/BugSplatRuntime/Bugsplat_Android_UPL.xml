@@ -155,4 +155,11 @@
         </if>
     </buildGradleAdditions>
 
+    <proguardAdditions>
+        <insert>
+            -keep class com.ninevastudios.bugsplatunitylib.BugSplatBridge { *; }
+            -keepclassmembers class com.ninevastudios.bugsplatunitylib.BugSplatBridge { *; }
+        </insert>
+    </proguardAdditions>
+
 </root>
