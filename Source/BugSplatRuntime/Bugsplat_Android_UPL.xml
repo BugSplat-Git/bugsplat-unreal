@@ -131,7 +131,7 @@
                     task dumpSymbols(type:Exec) {
                         standardOutput = new ByteArrayOutputStream();
 
-                        commandLine dumpSymExec, '-b', bugsplatDatabase, '-i', bugsplatClientId, '-s', bugsplatClientSecret, '-f', '**/*.so', '-d', artifactsDirPath
+                        commandLine dumpSymExec, '-f', '**/*.so', '-d', artifactsDirPath
 
                         doLast {
                             checkExecResult(execResult, 'Error', standardOutput);
