@@ -106,7 +106,7 @@
                     task uploadSymbols(type:Exec) {
                         standardOutput = new ByteArrayOutputStream();
 
-                        commandLine uploaderExec, '-b', bugsplatDatabase, '-a', bugsplatApp, '-v', bugsplatVersion, '-f', '**/*.sym', '-d', artifactsDirPath, '-i', bugsplatClientId, '-s', bugsplatClientSecret, '-m'
+                        commandLine uploaderExec, '-b', bugsplatDatabase, '-a', bugsplatApp, '-v', bugsplatVersion, '-f', '**/*.so', '-d', artifactsDirPath, '-i', bugsplatClientId, '-s', bugsplatClientSecret, '-m'
 
                         doLast {
                             checkExecResult(execResult, 'Error', standardOutput);
