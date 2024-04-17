@@ -78,3 +78,4 @@ Source/Scripts/BugSplat.bat
 
 # Symbol Upload temp files
 Source/Scripts/tmp
+!Source/ThirdParty/SymUploader/*.exe
