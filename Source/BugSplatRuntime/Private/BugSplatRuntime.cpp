@@ -20,6 +20,7 @@
 #include "Android/AndroidJNI.h"
 #include "Android/AndroidApplication.h"
 #include "Android/AndroidJava.h"
+#include <signal.h>
 #endif
 
 #define LOCTEXT_NAMESPACE "FBugSplatRuntimeModule"
@@ -97,6 +98,10 @@ void FBugSplatRuntimeModule::SetupCrashReportingIos()
 void FBugSplatRuntimeModule::SetupCrashReportingAndroid()
 {
 #if PLATFORM_ANDROID
+	// Reset signal handlers to default	
+	FAndroidMisc::SetCrashHandler(reinterpret_cast<void(*)(const FGenericCrashContext&)>(-1));
+    UE_LOG(LogTemp, Log, TEXT("BugSplat: released Android signal handlers"));
+
 	JNIEnv* Env = FAndroidApplication::GetJavaEnv();
 
 	auto Activity = FJavaWrapper::GameActivityThis;
