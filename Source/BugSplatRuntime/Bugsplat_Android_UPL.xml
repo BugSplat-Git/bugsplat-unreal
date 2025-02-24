@@ -29,7 +29,7 @@
     <prebuildCopies>
       <if condition="bEnableCrashReporting">
         <true>
-          <copyFile src="$S(PluginDir)/../ThirdParty/Android/bugsplat-android-debug.aar" dst="$S(BuildDir)/gradle/app/libs/bugsplat-android-release.aar" />
+          <copyFile src="$S(PluginDir)/../ThirdParty/Android/bugsplat-android-release.aar" dst="$S(BuildDir)/gradle/app/libs/bugsplat-android-release.aar" />
         </true>
       </if>
     </prebuildCopies>
