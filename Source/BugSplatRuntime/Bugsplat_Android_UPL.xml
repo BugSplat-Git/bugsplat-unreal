@@ -29,7 +29,7 @@
     <prebuildCopies>
       <if condition="bEnableCrashReporting">
         <true>
-          <copyFile src="$S(PluginDir)/../ThirdParty/Android/bugsplatunitylib-release.aar" dst="$S(BuildDir)/gradle/app/libs/bugsplatunitylib-release.aar" />
+          <copyFile src="$S(PluginDir)/../ThirdParty/Android/bugsplat-android-release.aar" dst="$S(BuildDir)/gradle/app/libs/bugsplat-android-release.aar" />
         </true>
       </if>
     </prebuildCopies>
@@ -132,8 +132,8 @@
 
     <proguardAdditions>
         <insert>
-            -keep class com.ninevastudios.bugsplatunitylib.BugSplatBridge { *; }
-            -keepclassmembers class com.ninevastudios.bugsplatunitylib.BugSplatBridge { *; }
+            -keep class com.bugsplat.android.BugSplatBridge { *; }
+            -keepclassmembers class com.bugsplat.android.BugSplatBridge { *; }
         </insert>
     </proguardAdditions>
 

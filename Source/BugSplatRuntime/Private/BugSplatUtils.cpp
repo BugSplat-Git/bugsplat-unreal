@@ -1,15 +1,17 @@
-// Copyright 2023 BugSplat. All Rights Reserved.
+// Copyright BugSplat. All Rights Reserved.
 
 #include "BugSplatUtils.h"
 
 void UBugSplatUtils::GenerateCrash()
 {
-	char *ptr = 0;
+	UE_LOG(LogTemp, Log, TEXT("BugSplat: GenerateCrash"));
+	volatile char *ptr = (char*)0xC0FFEEC0;
 	*ptr += 1;
 }
 
 void UBugSplatUtils::GenerateAssert()
 {
+	UE_LOG(LogTemp, Log, TEXT("BugSplat: GenerateAssert"));
 	char *ptr = nullptr;
 	check(ptr != nullptr);
 }

@@ -101,7 +101,7 @@ void FBugSplatRuntimeModule::SetupCrashReportingAndroid()
 
 	auto Activity = FJavaWrapper::GameActivityThis;
 
-	jclass BridgeClass = FAndroidApplication::FindJavaClass("com/ninevastudios/bugsplatunitylib/BugSplatBridge");
+	jclass BridgeClass = FAndroidApplication::FindJavaClass("com/bugsplat/android/BugSplatBridge");
 	jmethodID InitBugSplatMethod = FJavaWrapper::FindStaticMethod(Env, BridgeClass, "initBugSplat", "(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V", false);
 
 	Env->CallStaticVoidMethod(BridgeClass, InitBugSplatMethod, FJavaWrapper::GameActivityThis,
