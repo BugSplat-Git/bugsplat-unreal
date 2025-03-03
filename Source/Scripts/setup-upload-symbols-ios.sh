@@ -10,7 +10,8 @@ export binariesPath=$projectPath/Binaries/IOS
 export configPath=$projectPath/Config
 export scriptsPath=$pluginPath/Source/Scripts
 
-export uploaderPath=$pluginPath/Source/ThirdParty/SymUploader/symbol-upload-macos
+export uploaderFolderPath=$pluginPath/Source/ThirdParty/SymUploader
+export uploaderPath=$uploaderFolderPath/symbol-upload-macos
 
 echo "BugSplat postprocessing: Start debug symbols upload for iOS"
 
@@ -78,6 +79,14 @@ export bugSplatClientSecretEsc=$(echo "$bugSplatClientSecret" | sed 's/\//\\\//g
 sed -i .backup 's/database/'$bugSplatDatabase'/g' $HOME/.bugsplat.conf
 sed -i .backup 's/clientId/'$bugSplatClientId'/g' $HOME/.bugsplat.conf
 sed -i .backup 's/clientSecret/'$bugSplatClientSecretEsc'/g' $HOME/.bugsplat.conf
+
+# Check if the uploader exists, download it if it doesn't
+if [ ! -d "$uploaderPath" ]; then
+    echo "BugSplat postprocessing: Uploader does not exist. Downloading..."
+    mkdir -p $uploaderFolderPath
+    curl -sL "https://app.bugsplat.com/download/symbol-upload-macos" -o $uploaderPath
+    chmod +x $uploaderPath
+fi
 
 echo "BugSplat postprocessing: Run debug symbols upload script"
 $scriptsPath/upload-symbols-ios.sh -f $binariesPath/$targetName.zip -u $uploaderPath
