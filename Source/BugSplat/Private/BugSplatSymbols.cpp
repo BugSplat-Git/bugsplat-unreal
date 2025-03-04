@@ -38,10 +38,10 @@ void FBugSplatSymbols::UpdateSymbolUploadsSettings()
 
 FString FBugSplatSymbols::CreateSymbolUploadScript(FString Database, FString App, FString Version, FString ClientId, FString ClientSecret)
 {
-	FString SetCurrentPlatfrom = TEXT("@echo off\nset targetPlatform=%1\nset targetName=%2\n");
-	FString EditorBuildCheck = TEXT("echo %targetName% | findstr /i \"Editor\" >nul\nif %errorlevel% equ 0 (\n\techo \"BugSplat [WARN]: Skipping symbol upload for Editor build...\"\n\texit /b 0\n)\n");
-	FString TargetPlatformNullGuard = TEXT("if \"%targetPlatform%\"==\"\" (\n\techo \"BugSplat [ERROR]: Symbol upload invocation missing target platform...\"\n\texit /b\n)");
-	FString EditorPlatformGuard = TEXT("set isWindows=0\nif \"%targetPlatform%\"==\"Win64\" set isWindows=1\nif \"%targetPlatform%\"==\"XSX\" set isWindows=1\nif \"%targetPlatform%\"==\"XB1\" set isWindows=1\nif %isWindows%==0 (\n\techo \"BugSplat [INFO]: Non-Windows build detected, skipping Windows symbol uploads...\"\n\texit /b\n)");
+	FString SetCurrentPlatfrom = TEXT("$targetPlatform = $args[0]\n$targetName = $args[1]\n");
+	FString EditorBuildCheck = TEXT("if ($targetName -like '*Editor*') {\n    Write-Host 'BugSplat [WARN]: Skipping symbol upload for Editor build...'\n    exit 0\n}\n");
+	FString TargetPlatformNullGuard = TEXT("if (-not $targetPlatform) {\n    Write-Host 'BugSplat [ERROR]: Symbol upload invocation missing target platform...'\n    exit 1\n}\n");
+	FString EditorPlatformGuard = TEXT("$isWindows = $false\nif ($targetPlatform -eq 'Win64' -or $targetPlatform -eq 'XSX' -or $targetPlatform -eq 'XB1') {\n    $isWindows = $true\n}\nif (-not $isWindows) {\n    Write-Host 'BugSplat [INFO]: Non-Windows build detected, skipping Windows symbol uploads...'\n    exit 0\n}\n");
 
 	FString PostBuildStepsConsoleCommandFormat =
 		FString(
@@ -49,13 +49,13 @@ FString FBugSplatSymbols::CreateSymbolUploadScript(FString Database, FString App
 			"{1}\n"		   // Editor Build Check
 			"{2}\n"		   // Target Platform Null Guard
 			"{3}\n"		   // Editor Platform Guard
-			"\"{4}\" "	   // Uploader Path
+			"& \"{4}\" "	   // Uploader Path
 			"-i {5} "	   // Client ID
 			"-s {6} "	   // Client Secret
 			"-b {7} "	   // Database
 			"-a \"{8}\" "  // Application
 			"-v \"{9}\" "  // Version
-			"-d \"{10}/%targetPlatform%\" " // Output Directory
+			"-d \"{10}/$targetPlatform\" " // Output Directory
 			"-f \"{11}\" " // File Pattern
 		);
 
@@ -78,5 +78,5 @@ FString FBugSplatSymbols::CreateSymbolUploadScript(FString Database, FString App
 
 void FBugSplatSymbols::WriteSymbolUploadScript(FString Contents)
 {
-	FFileHelper::SaveStringToFile(Contents, *BUGSPLAT_BASH_DIR);
+	FFileHelper::SaveStringToFile(Contents, *BUGSPLAT_SYMBOL_UPLOAD_SCRIPT_PATH);
 }
