@@ -30,13 +30,6 @@ if [ "$targetPlatform" != "IOS" ] && [ "$targetPlatform" != "Mac" ]; then
     exit
 fi
 
-if [ ! -f "$uploaderPath" ]; then
-    echo "BugSplat [INFO]: File $uploaderPath does not exist - downloading..."
-    mkdir -p $uploaderFolderPath
-    curl -sL "https://app.bugsplat.com/download/symbol-upload-macos" -o $uploaderPath
-    chmod +x $uploaderPath
-fi
-
 if [ "$targetPlatform" == "Mac" ] && [ -f "$scriptsPath/upload-symbols-mac.sh" ]; then
     echo "BugSplat [INFO]: Running upload-symbols-mac.sh"
     sh "$scriptsPath/upload-symbols-mac.sh" -f "$binariesPath/$targetName.zip" -u "$uploaderPath"

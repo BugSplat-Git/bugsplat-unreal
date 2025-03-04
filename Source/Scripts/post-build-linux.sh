@@ -30,11 +30,4 @@ if [ "$targetPlatform" != "Linux" ]; then
     exit
 fi
 
-if [ ! -f "$uploaderPath" ]; then
-    echo "BugSplat [INFO]: File $uploaderPath does not exist - downloading..."
-    mkdir -p $uploaderFolderPath
-    curl -sL "https://app.bugsplat.com/download/symbol-upload-linux" -o $uploaderPath
-    chmod +x $uploaderPath
-fi
-
 echo "BugSplat [WARN]: Symbol uploads for Linux are not supported yet"
