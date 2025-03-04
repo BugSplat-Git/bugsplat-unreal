@@ -18,6 +18,11 @@ if (-not (Test-Path $symbolUploaderPath)) {
     Invoke-WebRequest -Uri "https://app.bugsplat.com/download/symbol-upload-windows.exe" -OutFile $symbolUploaderPath
 }
 
+if ($targetName -like '*Editor*') {
+    Write-Host 'BugSplat [WARN]: Skipping symbol upload for Editor build...'
+    exit 0
+}
+
 Write-Host "BugSplat [INFO]: Invoking upload script at $uploadScriptPath"
 
 & "$uploadScriptPath" $targetPlatform $targetName
