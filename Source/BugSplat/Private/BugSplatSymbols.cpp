@@ -38,7 +38,6 @@ void FBugSplatSymbols::UpdateSymbolUploadsSettings()
 
 FString FBugSplatSymbols::CreateSymbolUploadScript(FString Database, FString App, FString Version, FString ClientId, FString ClientSecret)
 {
-	// TODO BG test XSX and XB1
 #if PLATFORM_WINDOWS
 	FString SetCurrentPlatfrom = TEXT("$targetPlatform = $args[0]\n$targetName = $args[1]\n");
 	FString TargetPlatformNullGuard = TEXT("if (-not $targetPlatform) {\n    Write-Host 'BugSplat [ERROR]: Symbol upload invocation missing target platform...'\n    exit 1\n}\n");
