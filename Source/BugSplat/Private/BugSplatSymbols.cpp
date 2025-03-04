@@ -39,26 +39,29 @@ void FBugSplatSymbols::UpdateSymbolUploadsSettings()
 FString FBugSplatSymbols::CreateSymbolUploadScript(FString Database, FString App, FString Version, FString ClientId, FString ClientSecret)
 {
 	FString SetCurrentPlatfrom = TEXT("@echo off\nset targetPlatform=%1\nset targetName=%2\n");
+	FString EditorBuildCheck = TEXT("echo %targetName% | findstr /i \"Editor\" >nul\nif %errorlevel% equ 0 (\n\techo \"BugSplat [WARN]: Skipping symbol upload for Editor build...\"\n\texit /b 0\n)\n");
 	FString TargetPlatformNullGuard = TEXT("if \"%targetPlatform%\"==\"\" (\n\techo \"BugSplat [ERROR]: Symbol upload invocation missing target platform...\"\n\texit /b\n)");
 	FString EditorPlatformGuard = TEXT("set isWindows=0\nif \"%targetPlatform%\"==\"Win64\" set isWindows=1\nif \"%targetPlatform%\"==\"XSX\" set isWindows=1\nif \"%targetPlatform%\"==\"XB1\" set isWindows=1\nif %isWindows%==0 (\n\techo \"BugSplat [INFO]: Non-Windows build detected, skipping Windows symbol uploads...\"\n\texit /b\n)");
 
 	FString PostBuildStepsConsoleCommandFormat =
 		FString(
 			"{0}\n"		   // Set Platform
-			"{1}\n"		   // Target Platform Null Guard
-			"{2}\n"		   // Editor Platform Guard
-			"\"{3}\" "	   // Uploader Path
-			"-i {4} "	   // Client ID
-			"-s {5} "	   // Client Secret
-			"-b {6} "	   // Database
-			"-a \"{7}\" "  // Application
-			"-v \"{8}\" "  // Version
-			"-d \"{9}/%targetPlatform%\" " // Output Directory
-			"-f \"{10}\" " // File Pattern
+			"{1}\n"		   // Editor Build Check
+			"{2}\n"		   // Target Platform Null Guard
+			"{3}\n"		   // Editor Platform Guard
+			"\"{4}\" "	   // Uploader Path
+			"-i {5} "	   // Client ID
+			"-s {6} "	   // Client Secret
+			"-b {7} "	   // Database
+			"-a \"{8}\" "  // Application
+			"-v \"{9}\" "  // Version
+			"-d \"{10}/%targetPlatform%\" " // Output Directory
+			"-f \"{11}\" " // File Pattern
 		);
 
 	FStringFormatOrderedArguments args;
 	args.Add(SetCurrentPlatfrom);
+	args.Add(EditorBuildCheck);
 	args.Add(TargetPlatformNullGuard);
 	args.Add(EditorPlatformGuard);
 	args.Add(BUGSPLAT_SYMBOL_UPLOADER_PATH);
