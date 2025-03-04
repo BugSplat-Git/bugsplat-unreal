@@ -14,7 +14,7 @@ FBugSplatSymbols::FBugSplatSymbols()
 }
 
 
-// TODO BG Mac/Linux uploads
+// TODO BG Linux uploads
 
 void FBugSplatSymbols::UpdateSymbolUploadsSettings()
 {
@@ -38,6 +38,8 @@ void FBugSplatSymbols::UpdateSymbolUploadsSettings()
 
 FString FBugSplatSymbols::CreateSymbolUploadScript(FString Database, FString App, FString Version, FString ClientId, FString ClientSecret)
 {
+	// TODO BG test XSX and XB1
+#if PLATFORM_WINDOWS
 	FString SetCurrentPlatfrom = TEXT("$targetPlatform = $args[0]\n$targetName = $args[1]\n");
 	FString EditorBuildCheck = TEXT("if ($targetName -like '*Editor*') {\n    Write-Host 'BugSplat [WARN]: Skipping symbol upload for Editor build...'\n    exit 0\n}\n");
 	FString TargetPlatformNullGuard = TEXT("if (-not $targetPlatform) {\n    Write-Host 'BugSplat [ERROR]: Symbol upload invocation missing target platform...'\n    exit 1\n}\n");
@@ -74,6 +76,44 @@ FString FBugSplatSymbols::CreateSymbolUploadScript(FString Database, FString App
 	args.Add(FString("**/*.{pdb,dll,exe}"));
 	
 	return FString::Format(*PostBuildStepsConsoleCommandFormat, args);
+#elif PLATFORM_MAC
+	FString EditorBuildCheck = TEXT("if [[ \"$2\" == *\"Editor\"* ]]; then\n    echo \"BugSplat [WARN]: Skipping symbol upload for Editor build...\"\n    exit 0\nfi\n");
+	FString TargetPlatformCheck = TEXT("if [ -z \"$1\" ]; then\n    echo \"BugSplat [ERROR]: Symbol upload invocation missing target platform...\"\n    exit 1\nfi\n");
+	FString PlatformGuard = TEXT("if [ \"$1\" != \"Mac\" ] && [ \"$1\" != \"IOS\" ]; then\n    echo \"BugSplat [INFO]: Non-Apple build detected, skipping Mac/iOS symbol uploads...\"\n    exit 0\nfi\n");
+
+	FString PostBuildStepsConsoleCommandFormat =
+		FString(
+			"#!/bin/bash\n"
+			"{0}\n"		   // Editor Build Check
+			"{1}\n"		   // Target Platform Check
+			"{2}\n"		   // Platform Guard
+			"\"{3}\" "	   // Uploader Path
+			"-i {4} "	   // Client ID
+			"-s {5} "	   // Client Secret
+			"-b {6} "	   // Database
+			"-a \"{7}\" "  // Application
+			"-v \"{8}\" "  // Version
+			"-d \"{9}/$1\" " // Output Directory
+			"-f \"{10}\" " // File Pattern
+		);
+
+	FStringFormatOrderedArguments args;
+	args.Add(EditorBuildCheck);
+	args.Add(TargetPlatformCheck);
+	args.Add(PlatformGuard);
+	args.Add(BUGSPLAT_SYMBOL_UPLOADER_PATH);
+	args.Add(ClientId);
+	args.Add(ClientSecret);
+	args.Add(Database);
+	args.Add(App);
+	args.Add(Version);
+	args.Add(FPaths::Combine(FPaths::ConvertRelativePathToFull(FPaths::ProjectDir()), FString("Binaries")));
+	args.Add(FString("**/*.{app,dSYM}"));
+
+	return FString::Format(*PostBuildStepsConsoleCommandFormat, args);
+#else
+	return TEXT("echo \"BugSplat [INFO]: Symbol uploads not supported on this platform\"");
+#endif
 }
 
 void FBugSplatSymbols::WriteSymbolUploadScript(FString Contents)

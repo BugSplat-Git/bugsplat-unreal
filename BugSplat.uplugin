@@ -38,7 +38,7 @@
             "powershell -ExecutionPolicy Bypass -File \"$(PluginDir)\\Source\\Scripts\\setup-upload-symbols-win64.ps1\" $(TargetPlatform) \"$(ProjectDir)\" $(TargetName)"
         ],
         "Mac": [
-            "sh \"$(PluginDir)/Source/Scripts/setup-upload-symbols-ios.sh\" $(TargetPlatform) $(TargetName) \"$(ProjectDir)\" $(PluginDir)"
+            "sh \"$(PluginDir)/Source/Scripts/setup-upload-symbols-mac.sh\" $(TargetPlatform) $(TargetName) \"$(ProjectDir)\" $(PluginDir)"
         ]
     }
 }

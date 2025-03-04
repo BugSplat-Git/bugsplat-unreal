@@ -13,25 +13,40 @@ export scriptsPath=$pluginPath/Source/Scripts
 export uploaderFolderPath=$pluginPath/Source/ThirdParty/SymUploader
 export uploaderPath=$uploaderFolderPath/symbol-upload-macos
 
-echo "BugSplat postprocessing: Start debug symbols upload for iOS"
+echo "BugSplat [INFO]: Input target name: $targetName" 
+echo "BugSplat [INFO]: Input binaries path: $binariesPath"
+echo "BugSplat [INFO]: Input config path: $configPath"
+echo "BugSplat [INFO]: Input scripts path: $scriptsPath"
+echo "BugSplat [INFO]: Symbol uploader path: $uploaderPath"
 
-if [ $targetPlatform != "IOS" ]; then
-    echo "BugSplat postprocessing: Unexpected platform ${targetPlatform}. Terminating..." 
+if [ $targetPlatform != "IOS" ] && [ $targetPlatform != "Mac" ]; then
+    echo "BugSplat [WARN]: Unexpected platform ${targetPlatform}, skipping symbol upload..." 
     exit
 fi
 
-echo "BugSplat postprocessing: Input target name: $targetName" 
-echo "BugSplat postprocessing: Input binaries path: $binariesPath"
-echo "BugSplat postprocessing: Input config path: $configPath"
-echo "BugSplat postprocessing: Input scripts path: $scriptsPath"
-echo "BugSplat postprocessing: Symbol uploader path: $uploaderPath"
+if [ ! -d "$uploaderPath" ]; then
+    echo "BugSplat [INFO]: File $uploaderPath does not exist - downloading..."
+    mkdir -p $uploaderFolderPath
+    curl -sL "https://app.bugsplat.com/download/symbol-upload-macos" -o $uploaderPath
+    chmod +x $uploaderPath
+fi
+
+# TODO BG handle macos
+if [ -f "$scriptsPath/upload-symbols-mac.sh" ]; then
+    echo "BugSplat [INFO]: Running upload-symbols-mac.sh"
+    sh "$scriptsPath/upload-symbols-mac.sh" -f "$binariesPath/$targetName.zip" -u "$uploaderPath"
+    exit
+fi
+
+
+echo "BugSplat [INFO]: Start debug symbols upload for iOS"
 
 export reportCrashes=$(awk -F "=" '/bEnableCrashReportingIos/ {print $2}' ${configPath}/DefaultEngine.ini)
 
 # By default crash reporting for iOS is enabled and hence not included in DefaultEngine.ini
 if [ ! -z "$reportCrashes" ]; then
     if [ $reportCrashes != "True" ]; then
-        echo "BugSplat postprocessing: Crash reporting is disabled in plugin settings. Terminating..." 
+        echo "BugSplat [INFO]: Crash reporting is disabled in plugin settings. Terminating..." 
         exit
     fi
 fi
@@ -40,38 +55,38 @@ export uploadSymbols=$(awk -F "=" '/bUploadDebugSymbols/ {print $2}' ${configPat
 
 if [ ! -z "$uploadSymbols" ]; then
     if [ $uploadSymbols != "True" ]; then
-        echo "BugSplat postprocessing: Automatic symbols upload is disabled in plugin settings. Terminating..." 
+        echo "BugSplat [INFO]: Automatic symbols upload is disabled in plugin settings. Terminating..." 
         exit
     fi
 fi
 
-echo "BugSplat postprocessing: Copy ${targetName}.app to binaries root directory"
+echo "BugSplat [INFO]: Copy ${targetName}.app to binaries root directory"
 cp -r $binariesPath/Payload/$targetName.app $binariesPath
 
-echo "BugSplat postprocessing: Archive required iOS build artifacts"
+echo "BugSplat [INFO]: Archive required iOS build artifacts"
 pushd $binariesPath
 zip -r $targetName.zip $targetName.app $targetName.dSYM
 popd
 
-echo "BugSplat postprocessing: Copy user credentials config file template to home directory"
+echo "BugSplat [INFO]: Copy user credentials config file template to home directory"
 cp $scriptsPath/.bugsplat.conf $HOME/.bugsplat.conf
 
-echo "BugSplat postprocessing: Set actual user credentials"
+echo "BugSplat [INFO]: Set actual user credentials"
 
 export bugSplatDatabase=$(awk -F "=" '/BugSplatDatabase/ {print $2}' ${configPath}/DefaultEngine.ini)
 export bugSplatClientId=$(awk -F "=" '/BugSplatClientId/ {print $2}' ${configPath}/DefaultEngine.ini)
 export bugSplatClientSecret=$(awk -F "=" '/BugSplatClientSecret/ {print $2}' ${configPath}/DefaultEngine.ini)
 
 if [ -z "$bugSplatDatabase" ]; then
-    echo "BugSplat postprocessing: bugSplatDatabase variable is empty"
+    echo "BugSplat [INFO]: bugSplatDatabase variable is empty"
 fi
 
 if [ -z "$bugSplatClientId" ]; then
-    echo "BugSplat postprocessing: bugSplatClientId variable is empty"
+    echo "BugSplat [INFO]: bugSplatClientId variable is empty"
 fi
 
 if [ -z "$bugSplatClientSecret" ]; then
-    echo "BugSplat postprocessing: bugSplatClientSecret variable is empty"
+    echo "BugSplat [INFO]: bugSplatClientSecret variable is empty"
 fi
 
 export bugSplatClientSecretEsc=$(echo "$bugSplatClientSecret" | sed 's/\//\\\//g')
@@ -80,20 +95,12 @@ sed -i .backup 's/database/'$bugSplatDatabase'/g' $HOME/.bugsplat.conf
 sed -i .backup 's/clientId/'$bugSplatClientId'/g' $HOME/.bugsplat.conf
 sed -i .backup 's/clientSecret/'$bugSplatClientSecretEsc'/g' $HOME/.bugsplat.conf
 
-# Check if the uploader exists, download it if it doesn't
-if [ ! -d "$uploaderPath" ]; then
-    echo "BugSplat postprocessing: Uploader does not exist. Downloading..."
-    mkdir -p $uploaderFolderPath
-    curl -sL "https://app.bugsplat.com/download/symbol-upload-macos" -o $uploaderPath
-    chmod +x $uploaderPath
-fi
-
-echo "BugSplat postprocessing: Run debug symbols upload script"
+echo "BugSplat [INFO]: Run debug symbols upload script"
 $scriptsPath/upload-symbols-ios.sh -f $binariesPath/$targetName.zip -u $uploaderPath
 
-echo "BugSplat postprocessing: Clean up temporaries"
+echo "BugSplat [INFO]: Clean up temporaries"
 
 rm $HOME/.bugsplat.conf
 rm $HOME/.bugsplat.conf.backup
 
-echo "BugSplat postprocessing: Completed"
+echo "BugSplat [INFO]: Completed"
