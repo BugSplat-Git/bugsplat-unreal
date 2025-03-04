@@ -13,6 +13,7 @@ export scriptsPath=$pluginPath/Source/Scripts
 export uploaderFolderPath=$pluginPath/Source/ThirdParty/SymUploader
 export uploaderPath=$uploaderFolderPath/symbol-upload-macos
 
+echo "BugSplat [INFO]: Input target platform: $targetPlatform" 
 echo "BugSplat [INFO]: Input target name: $targetName" 
 echo "BugSplat [INFO]: Input binaries path: $binariesPath"
 echo "BugSplat [INFO]: Input config path: $configPath"
@@ -24,6 +25,11 @@ if [ $targetPlatform != "IOS" ] && [ $targetPlatform != "Mac" ]; then
     exit
 fi
 
+if [[ $targetName == *"Editor"* ]]; then
+    echo "BugSplat [INFO]: Editor build detected, skipping symbol upload..."
+    exit
+fi
+
 if [ ! -d "$uploaderPath" ]; then
     echo "BugSplat [INFO]: File $uploaderPath does not exist - downloading..."
     mkdir -p $uploaderFolderPath
@@ -31,10 +37,12 @@ if [ ! -d "$uploaderPath" ]; then
     chmod +x $uploaderPath
 fi
 
-# TODO BG handle macos
-if [ -f "$scriptsPath/upload-symbols-mac.sh" ]; then
+if [ $targetPlatform == "Mac" ] && [ -f "$scriptsPath/upload-symbols-mac.sh" ]; then
     echo "BugSplat [INFO]: Running upload-symbols-mac.sh"
     sh "$scriptsPath/upload-symbols-mac.sh" -f "$binariesPath/$targetName.zip" -u "$uploaderPath"
+    exit
+elif [ $targetPlatform == "Mac" ]; then
+    echo "BugSplat [WARN]: Symbol uploads not configured via plugin - skipping..."
     exit
 fi
 
