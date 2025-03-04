@@ -1,3 +1,5 @@
+# Copyright (C) BugSplat. All Rights Reserved.
+
 $targetPlatform = $args[0]
 $projectDir = $args[1]
 $targetName = $args[2]
