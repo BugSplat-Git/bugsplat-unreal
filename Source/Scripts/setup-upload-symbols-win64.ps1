@@ -1,7 +1,7 @@
 $targetPlatform = $args[0]
 $projectDir = $args[1]
 $targetName = $args[2]
-$uploadScriptPath = Join-Path $projectDir "Plugins\BugSplat\Source\Scripts\BugSplat.bat"
+$uploadScriptPath = Join-Path $projectDir "Plugins\BugSplat\Source\Scripts\upload-symbols-win64.ps1"
 $symbolUploaderFolderPath = Join-Path $projectDir "Plugins\BugSplat\Source\ThirdParty\SymUploader"
 $symbolUploaderPath = Join-Path $symbolUploaderFolderPath "symbol-upload-windows.exe"
 
@@ -20,4 +20,4 @@ if (-not (Test-Path $symbolUploaderPath)) {
 
 Write-Host "BugSplat [INFO]: Invoking upload script at $uploadScriptPath"
 
-& $uploadScriptPath $targetPlatform $targetName
+& "$uploadScriptPath" $targetPlatform $targetName
