@@ -39,6 +39,9 @@
         ],
         "Mac": [
             "sh \"$(PluginDir)/Source/Scripts/setup-upload-symbols-mac.sh\" $(TargetPlatform) $(TargetName) \"$(ProjectDir)\" $(PluginDir)"
+        ],
+        "Linux": [
+            "sh \"$(PluginDir)/Source/Scripts/setup-upload-symbols-linux.sh\" $(TargetPlatform) $(TargetName) \"$(ProjectDir)\" $(PluginDir)"
         ]
     }
 }
