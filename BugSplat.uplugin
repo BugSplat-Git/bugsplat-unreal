@@ -33,15 +33,26 @@
             ]
         }
     ],
-    "PostBuildSteps": {
+    "PreBuildSteps": {
         "Win64": [
-            "powershell -ExecutionPolicy Bypass -File \"$(PluginDir)\\Source\\Scripts\\setup-upload-symbols-win64.ps1\" $(TargetPlatform) \"$(ProjectDir)\" $(TargetName)"
+            "powershell -ExecutionPolicy Bypass -File \"$(PluginDir)\\Source\\Scripts\\pre-build-win64.ps1\" $(TargetName) \"$(PluginDir)\""
         ],
         "Mac": [
-            "sh \"$(PluginDir)/Source/Scripts/setup-upload-symbols-mac.sh\" $(TargetPlatform) $(TargetName) \"$(ProjectDir)\" $(PluginDir)"
+            "sh \"$(PluginDir)/Source/Scripts/pre-build-mac.sh\" $(TargetName) \"$(PluginDir)\""
         ],
         "Linux": [
-            "sh \"$(PluginDir)/Source/Scripts/setup-upload-symbols-linux.sh\" $(TargetPlatform) $(TargetName) \"$(ProjectDir)\" $(PluginDir)"
+            "sh \"$(PluginDir)/Source/Scripts/pre-build-linux.sh\" $(TargetName) \"$(PluginDir)\""
+        ]
+    },
+    "PostBuildSteps": {
+        "Win64": [
+            "powershell -ExecutionPolicy Bypass -File \"$(PluginDir)\\Source\\Scripts\\post-build-win64.ps1\" $(TargetPlatform) $(TargetName) \"$(ProjectDir)\" \"$(PluginDir)\""
+        ],
+        "Mac": [
+            "sh \"$(PluginDir)/Source/Scripts/post-build-mac.sh\" $(TargetPlatform) $(TargetName) \"$(ProjectDir)\" \"$(PluginDir)\""
+        ],
+        "Linux": [
+            "sh \"$(PluginDir)/Source/Scripts/post-build-linux.sh\" $(TargetPlatform) $(TargetName) \"$(ProjectDir)\" \"$(PluginDir)\""
         ]
     }
 }

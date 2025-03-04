@@ -20,13 +20,13 @@ echo "BugSplat [INFO]: Input config path: $configPath"
 echo "BugSplat [INFO]: Input scripts path: $scriptsPath"
 echo "BugSplat [INFO]: Symbol uploader path: $uploaderPath"
 
-if [ $targetPlatform != "IOS" ] && [ $targetPlatform != "Mac" ]; then
-    echo "BugSplat [WARN]: Unexpected platform ${targetPlatform}, skipping symbol upload..." 
+if [[ "$targetName" == *"Editor"* ]]; then
+    echo "BugSplat [INFO]: Editor build detected, skipping symbol upload..."
     exit
 fi
 
-if [[ $targetName == *"Editor"* ]]; then
-    echo "BugSplat [INFO]: Editor build detected, skipping symbol upload..."
+if [ "$targetPlatform" != "IOS" ] && [ "$targetPlatform" != "Mac" ]; then
+    echo "BugSplat [WARN]: Unexpected platform ${targetPlatform}, skipping symbol upload..." 
     exit
 fi
 
@@ -37,11 +37,11 @@ if [ ! -f "$uploaderPath" ]; then
     chmod +x $uploaderPath
 fi
 
-if [ $targetPlatform == "Mac" ] && [ -f "$scriptsPath/upload-symbols-mac.sh" ]; then
+if [ "$targetPlatform" == "Mac" ] && [ -f "$scriptsPath/upload-symbols-mac.sh" ]; then
     echo "BugSplat [INFO]: Running upload-symbols-mac.sh"
     sh "$scriptsPath/upload-symbols-mac.sh" -f "$binariesPath/$targetName.zip" -u "$uploaderPath"
     exit
-elif [ $targetPlatform == "Mac" ]; then
+elif [ "$targetPlatform" == "Mac" ]; then
     echo "BugSplat [WARN]: Symbol uploads not configured via plugin - skipping..."
     exit
 fi

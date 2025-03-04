@@ -20,13 +20,13 @@ echo "BugSplat [INFO]: Input config path: $configPath"
 echo "BugSplat [INFO]: Input scripts path: $scriptsPath"
 echo "BugSplat [INFO]: Symbol uploader path: $uploaderPath"
 
-if [ "$targetPlatform" != "Linux" ]; then
-    echo "BugSplat [WARN]: Unexpected platform ${targetPlatform}, skipping symbol upload..." 
+if [[ "$targetName" == *"Editor"* ]]; then
+    echo "BugSplat [INFO]: Editor build detected, skipping symbol upload..."
     exit
 fi
 
-if [[ "$targetName" == *"Editor"* ]]; then
-    echo "BugSplat [INFO]: Editor build detected, skipping symbol upload..."
+if [ "$targetPlatform" != "Linux" ]; then
+    echo "BugSplat [WARN]: Unexpected platform ${targetPlatform}, skipping symbol upload..." 
     exit
 fi
 
@@ -36,3 +36,5 @@ if [ ! -f "$uploaderPath" ]; then
     curl -sL "https://app.bugsplat.com/download/symbol-upload-linux" -o $uploaderPath
     chmod +x $uploaderPath
 fi
+
+echo "BugSplat [WARN]: Symbol uploads for Linux are not supported yet"
