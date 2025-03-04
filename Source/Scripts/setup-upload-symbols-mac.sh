@@ -30,7 +30,7 @@ if [[ $targetName == *"Editor"* ]]; then
     exit
 fi
 
-if [ ! -d "$uploaderPath" ]; then
+if [ ! -f "$uploaderPath" ]; then
     echo "BugSplat [INFO]: File $uploaderPath does not exist - downloading..."
     mkdir -p $uploaderFolderPath
     curl -sL "https://app.bugsplat.com/download/symbol-upload-macos" -o $uploaderPath
