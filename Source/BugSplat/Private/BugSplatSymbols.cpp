@@ -41,7 +41,7 @@ FString FBugSplatSymbols::CreateSymbolUploadScript(FString Database, FString App
 	FString SetCurrentPlatfrom = TEXT("$targetPlatform = $args[0]\n$targetName = $args[1]\n");
 	FString EditorBuildCheck = TEXT("if ($targetName -like '*Editor*') {\n    Write-Host 'BugSplat [WARN]: Skipping symbol upload for Editor build...'\n    exit 0\n}\n");
 	FString TargetPlatformNullGuard = TEXT("if (-not $targetPlatform) {\n    Write-Host 'BugSplat [ERROR]: Symbol upload invocation missing target platform...'\n    exit 1\n}\n");
-	FString EditorPlatformGuard = TEXT("$isWindows = $false\nif ($targetPlatform -eq 'Win64' -or $targetPlatform -eq 'XSX' -or $targetPlatform -eq 'XB1') {\n    $isWindows = $true\n}\nif (-not $isWindows) {\n    Write-Host 'BugSplat [INFO]: Non-Windows build detected, skipping Windows symbol uploads...'\n    exit 0\n}\n");
+	FString EditorPlatformGuard = TEXT("$isWindowsTarget = $false\nif ($targetPlatform -eq 'Win64' -or $targetPlatform -eq 'XSX' -or $targetPlatform -eq 'XB1') {\n    $isWindowsTarget = $true\n}\nif (-not $isWindowsTarget) {\n    Write-Host 'BugSplat [INFO]: Non-Windows build detected, skipping Windows symbol uploads...'\n    exit 0\n}\n");
 
 	FString PostBuildStepsConsoleCommandFormat =
 		FString(

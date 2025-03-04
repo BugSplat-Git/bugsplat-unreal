@@ -5,7 +5,7 @@ $uploadScriptPath = Join-Path $projectDir "Plugins\BugSplat\Source\Scripts\BugSp
 $symbolUploaderFolderPath = Join-Path $projectDir "Plugins\BugSplat\Source\ThirdParty\SymUploader"
 $symbolUploaderPath = Join-Path $symbolUploaderFolderPath "symbol-upload-windows.exe"
 
-Write-Host "BugSplat [INFO]: Post build step invoked with parameters: $targetPlatform, $targetName"
+Write-Host "BugSplat [INFO]: Post-build step invoked with parameters: $targetPlatform, $targetName"
 
 if (-not (Test-Path $uploadScriptPath)) {
     Write-Host "BugSplat [WARN]: Symbol uploads not configured via plugin - skipping..."
