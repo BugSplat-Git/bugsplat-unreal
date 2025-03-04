@@ -8,12 +8,12 @@ $symbolUploaderPath = Join-Path $symbolUploaderFolderPath "symbol-upload-windows
 Write-Host "BugSplat [INFO]: Post build step invoked with parameters: $targetPlatform, $targetName"
 
 if (-not (Test-Path $uploadScriptPath)) {
-    Write-Host "BugSplat [WARN]: symbol uploads not configured via plugin - skipping..."
+    Write-Host "BugSplat [WARN]: Symbol uploads not configured via plugin - skipping..."
     exit
 }
 
 if (-not (Test-Path $symbolUploaderPath)) {
-    Write-Host "BugSplat [INFO]: $symbolUploaderPath not found - downloading..."
+    Write-Host "BugSplat [INFO]: File $symbolUploaderPath not found - downloading..."
     New-Item -ItemType Directory -Force -Path $symbolUploaderFolderPath | Out-Null
     Invoke-WebRequest -Uri "https://app.bugsplat.com/download/symbol-upload-windows.exe" -OutFile $symbolUploaderPath
 }
