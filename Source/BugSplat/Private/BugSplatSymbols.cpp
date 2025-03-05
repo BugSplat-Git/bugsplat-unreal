@@ -74,7 +74,7 @@ FString FBugSplatSymbols::CreateSymbolUploadScript(FString Database, FString App
 	return FString::Format(*PostBuildStepsConsoleCommandFormat, args);
 #elif PLATFORM_MAC
 	FString TargetPlatformCheck = TEXT("if [ -z \"$1\" ]; then\n    echo \"BugSplat [ERROR]: Symbol upload invocation missing target platform...\"\n    exit 1\nfi\n");
-	FString PlatformGuard = TEXT("if [ \"$1\" != \"Mac\" ] && [ \"$1\" != \"IOS\" ]; then\n    echo \"BugSplat [INFO]: Non-Apple build detected, skipping Mac/iOS symbol uploads...\"\n    exit 0\nfi\n");
+	FString PlatformGuard = TEXT("if [ \"$1\" != \"Mac\" ]; then\n    echo \"BugSplat [INFO]: Non-Mac build detected, skipping Mac symbol uploads...\"\n    exit 0\nfi\n");
 
 	FString PostBuildStepsConsoleCommandFormat =
 		FString(
