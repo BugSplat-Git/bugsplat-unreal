@@ -11,6 +11,9 @@ static const FString PLUGIN_BASE_DIR = FPaths::ConvertRelativePathToFull(IPlugin
 #if PLATFORM_MAC
 static const FString BUGSPLAT_SYMBOL_UPLOADER_PATH = *FPaths::Combine(PLUGIN_BASE_DIR, FString("/Source/ThirdParty/SymUploader/symbol-upload-macos"));
 static const FString BUGSPLAT_SYMBOL_UPLOAD_SCRIPT_PATH = *FPaths::Combine(FPaths::ProjectDir(), FString("Plugins/BugSplat/Source/Scripts/upload-symbols-mac.sh"));
+#elif PLATFORM_LINUX
+static const FString BUGSPLAT_SYMBOL_UPLOADER_PATH = *FPaths::Combine(PLUGIN_BASE_DIR, FString("/Source/ThirdParty/SymUploader/symbol-upload-linux"));
+static const FString BUGSPLAT_SYMBOL_UPLOAD_SCRIPT_PATH = *FPaths::Combine(FPaths::ProjectDir(), FString("Plugins/BugSplat/Source/Scripts/upload-symbols-linux.sh"));
 #else
 static const FString BUGSPLAT_SYMBOL_UPLOADER_PATH = *FPaths::Combine(PLUGIN_BASE_DIR, FString("/Source/ThirdParty/SymUploader/symbol-upload-windows.exe"));
 static const FString BUGSPLAT_SYMBOL_UPLOAD_SCRIPT_PATH = *FPaths::Combine(FPaths::ProjectDir(), FString("Plugins/BugSplat/Source/Scripts/upload-symbols-win64.ps1"));
