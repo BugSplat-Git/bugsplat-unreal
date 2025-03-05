@@ -34,7 +34,7 @@ You may choose to add BugSplat through the Unreal Marketplace or add the plugin 
 
 1. Navigate to your project folder containing your `[ProjectName].uproject` file.
 2. Create a `Plugins` folder if it does not already exist.
-3. Create a `BugSplat` folder in the `Plugins` folder and copy the contents of this repo into the `BugSplat` folder. Please note, if you're cloning this repo on macOS or Linux, you'll need to use [Git LFS](https://git-lfs.com/) and `git lfs fetch --all` to download our [symbol-upload](https://github.com/BugSplat-Git/bugsplat-unreal/tree/main/Source/ThirdParty/SymUploader) tool.
+3. Create a `BugSplat` folder in the `Plugins` folder and copy the contents of this repo into the `BugSplat` folder. 
 4. In the Unreal Editor, ensure you can access the BugSplat plugin via `Edit > Project Settings` and scroll to the `BugSplat` section under `Plugins`.
 
 ## ⚙️ Configuration
@@ -56,6 +56,15 @@ BugSplat leverages Unreal's `CrashReportClient` to provide crash reporting for W
 To configure `CrashReportClient` to post to BugSplat, the `DataRouterUrl` value needs to be added to `DefaultEngine.ini`. The `bugsplat-unreal` plugin automatically updates the value for `DataRouterUrl` when the `Update Engine DefaultEngine.ini` option is enabled. Please note the `DataRouterUrl` value is global and is shared across all packaged builds created by the affected engine. To override the `DataRouterUrl` value a package build uses, you may optionally use the `Update Packaged Game INI` button under the `Tools` section.
 
 In order to get function names and line numbers in crash reports, you'll need to upload your game's `.exe`, `.dll`, and `.pdb` files. To upload debug symbols for reach build, ensure that the `Enable Automatic Symbol Uploads` option is selected. When selected, a script to execute [symbol-upload](https://github.com/BugSplat-Git/symbol-upload) will be added to the `PostBuildSteps` field in `BugSplat.uplugin`. The symbol upload script will run automatically when your game is built.
+
+#### macOS
+
+To create a `.dSYM` file for a macOS build invoke `RunUAT.command` with the `-EnableDSym` flag per the example below:
+
+```sh
+../../../Engine/Build/BatchFiles/Mac/Build.sh -Project="../../my-unreal-crasher/MyUnrealCrasher.uproject" MyUnrealCrasher Mac Development -NoEditor -EnableDSym -TargetPath="~/Desktop/UnrealEngine"
+```
+
 
 ### iOS and Android
 
