@@ -13,15 +13,14 @@
         <setStringFromProperty result="bugsplatClientSecret" ini="Engine" section="/Script/BugSplatRuntime.BugSplatEditorSettings" property="BugSplatClientSecret" />
 
         <setString result="uploaderDirPath" value="$S(AbsPluginDir)/../ThirdParty/SymUploader/"/>
-
         <setBoolIsEqual result="bIsShipping" arg1="$S(Configuration)" arg2="Shipping"/>
 
         <if condition="bIsShipping">
             <true>
-                <setString result="artifactsDirPath" value="$S(BuildDir)/gradle/app/build/intermediates/merged_native_libs/release/out/lib/$S(Architecture)"/>
+                <setString result="baseArtifactsDir" value="$S(BuildDir)/gradle/app/build/intermediates/merged_native_libs/release"/>
             </true>
             <false>
-                <setString result="artifactsDirPath" value="$S(BuildDir)/gradle/app/build/intermediates/merged_native_libs/debug/out/lib/$S(Architecture)"/>
+                <setString result="baseArtifactsDir" value="$S(BuildDir)/gradle/app/build/intermediates/merged_native_libs/debug"/>
             </false>
         </if>
     </init>
@@ -58,16 +57,10 @@
                 <insert>
                     import org.apache.tools.ant.taskdefs.condition.Os
 
-                    def checkExecResult(execResult, failText, standardOutput) {
-                        if (execResult) {
-                            if (execResult.getExitValue() != 0) {
-                                throw new GradleException('Non-zero exit value: ' + execResult.getExitValue())
-                            }
-                            if (standardOutput.toString().contains(failText)) {
-                                throw new GradleException('"' + failText + '" string in output: ' + standardOutput.toString())
-                            }
-                        } else {
-                            throw new GradleException('Returned a null execResult object')
+                    def checkExecResult(failText, standardOutput) {
+                        def output = standardOutput.toString()
+                        if (output.contains(failText)) {
+                            throw new GradleException('"' + failText + '" found in output: ' + output)
                         }
                     }
 
@@ -78,38 +71,40 @@
                         if (Os.isFamily(Os.FAMILY_MAC)) {
                             return 'symbol-upload-macos'
                         }
-                        if (Os.isFamily(Os.FAMILY_MAC)) {
+                        if (Os.isFamily(Os.FAMILY_UNIX)) {
                             return 'symbol-upload-linux'
                         }
-                        return '';
+                        return ''
                     }
 
-                    
                     def deleteFiles(deleteDirPath, fileType) {
                         delete fileTree(dir: deleteDirPath, include: fileType)
                     }
 
                     def uploaderExec = '</insert><insertValue value="$S(uploaderDirPath)"/><insert>' + getUploaderExecName()
-                    def artifactsDirPath = '</insert><insertValue value="$S(artifactsDirPath)"/><insert>'
+                    def baseArtifactsDir = '</insert><insertValue value="$S(baseArtifactsDir)"/><insert>'
                     def bugsplatDatabase = '</insert><insertValue value="$S(bugsplatDatabase)"/><insert>'
                     def bugsplatApp = '</insert><insertValue value="$S(bugsplatApp)"/><insert>'
                     def bugsplatVersion = '</insert><insertValue value="$S(bugsplatVersion)"/><insert>-android'
                     def bugsplatClientId = '</insert><insertValue value="$S(bugsplatClientId)"/><insert>'
                     def bugsplatClientSecret = '</insert><insertValue value="$S(bugsplatClientSecret)"/><insert>'
+                    def architecture = '</insert><insertValue value="$S(Architecture)"/><insert>'
 
                     task cleanUpSymbols() {
                         doLast {
-                            deleteFiles(artifactsDirPath, '*.sym')
+                            deleteFiles(baseArtifactsDir, '*.sym')
                         }
                     }
 
-                    task uploadSymbols(type:Exec) {
-                        standardOutput = new ByteArrayOutputStream();
+                    task uploadSymbols(type: Exec) {
+                        standardOutput = new ByteArrayOutputStream()
 
-                        commandLine uploaderExec, '-b', bugsplatDatabase, '-a', bugsplatApp, '-v', bugsplatVersion, '-f', '**/*.so', '-d', artifactsDirPath, '-i', bugsplatClientId, '-s', bugsplatClientSecret, '-m'
+                        commandLine uploaderExec, '-b', bugsplatDatabase, '-a', bugsplatApp, '-v', bugsplatVersion, 
+                            '-f', '**/' + architecture + '/**/*.so', '-d', baseArtifactsDir, 
+                            '-i', bugsplatClientId, '-s', bugsplatClientSecret, '-m'
 
                         doLast {
-                            checkExecResult(execResult, 'Error', standardOutput);
+                            checkExecResult('Error', standardOutput)
                         }
 
                         finalizedBy cleanUpSymbols
@@ -117,10 +112,10 @@
 
                     tasks.whenTaskAdded { task ->
                         if (
-                          task.name == 'ue4CompleteDebug' ||
-                          task.name == 'ue4CompleteRelease' ||
-                          task.name == 'ueCompleteDebug' ||
-                          task.name == 'ueCompleteRelease'
+                            task.name == 'ue4CompleteDebug' ||
+                            task.name == 'ue4CompleteRelease' ||
+                            task.name == 'ueCompleteDebug' ||
+                            task.name == 'ueCompleteRelease'
                         ) {
                             task.finalizedBy 'uploadSymbols'
                         }
@@ -136,5 +131,4 @@
             -keepclassmembers class com.bugsplat.android.BugSplatBridge { *; }
         </insert>
     </proguardAdditions>
-
 </root>
