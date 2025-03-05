@@ -20,7 +20,7 @@ echo "BugSplat [INFO]: Input config path: $configPath"
 echo "BugSplat [INFO]: Input scripts path: $scriptsPath"
 echo "BugSplat [INFO]: Symbol uploader path: $uploaderPath"
 
-if [[ "$targetName" == *"Editor"* ]]; then
+if echo "$targetName" | grep -q "Editor"; then
     echo "BugSplat [INFO]: Editor build detected, skipping symbol upload..."
     exit
 fi
