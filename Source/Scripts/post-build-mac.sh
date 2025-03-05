@@ -32,7 +32,7 @@ fi
 
 if [ "$targetPlatform" == "Mac" ] && [ -f "$scriptsPath/upload-symbols-mac.sh" ]; then
     echo "BugSplat [INFO]: Running upload-symbols-mac.sh"
-    sh "$scriptsPath/upload-symbols-mac.sh" -f "$binariesPath/$targetName.zip" -u "$uploaderPath"
+    sh "$scriptsPath/upload-symbols-mac.sh"
     exit
 elif [ "$targetPlatform" == "Mac" ]; then
     echo "BugSplat [WARN]: Symbol uploads not configured via plugin - skipping..."
