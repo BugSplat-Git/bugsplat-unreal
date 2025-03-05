@@ -72,10 +72,12 @@ DerivedDataCache/*
 
 # Ignore auto-generated upload script
 Source/Scripts/BugSplat.bat
+Source/Scripts/upload-symbols-win64.ps1
+Source/Scripts/upload-symbols-mac.sh
 
 # Mac OS
 .DS_Store
 
 # Symbol Upload temp files
 Source/Scripts/tmp
-!Source/ThirdParty/SymUploader/*.exe
+Source/ThirdParty/SymUploader

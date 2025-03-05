@@ -1,2 +1,0 @@
-Source/ThirdParty/SymUploader/symbol-upload-macos filter=lfs diff=lfs merge=lfs -text
-Source/ThirdParty/SymUploader/symbol-upload-linux filter=lfs diff=lfs merge=lfs -text
