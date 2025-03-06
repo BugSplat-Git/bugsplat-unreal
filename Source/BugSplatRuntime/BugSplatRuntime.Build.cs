@@ -63,12 +63,21 @@ public class BugSplatRuntime : ModuleRules
 		
 		if (Target.Platform == UnrealTargetPlatform.IOS)
 		{
-			PublicAdditionalFrameworks.Add(new Framework("Bugsplat", "../ThirdParty/IOS/Bugsplat.embeddedframework.zip", ""));
+			// Path to the framework directory
+			string FrameworkPath = Path.Combine(ModuleDirectory, "../ThirdParty/IOS");
 
+			// Add the framework (unzipped from .embeddedframework.zip by UPL)
+			PublicAdditionalFrameworks.Add(new Framework("BugSplat", Path.Combine(FrameworkPath, "BugSplat.embeddedframework.zip"), ""));
+
+			// Add the framework's Headers directory to the include path
+			PublicIncludePaths.Add(Path.Combine(FrameworkPath, "BugSplat.framework/Headers"));
+
+			// Dependencies
 			PrivateDependencyModuleNames.AddRange(new string[] { "Launch" });
-			string PluginPath = Utils.MakePathRelativeTo(ModuleDirectory, Target.RelativeEnginePath);
 
-			AdditionalPropertiesForReceipt.Add("IOSPlugin", Path.Combine(PluginPath, "Bugsplat_IOS_UPL.xml"));
+			// UPL path
+			string PluginPath = Utils.MakePathRelativeTo(ModuleDirectory, Target.RelativeEnginePath);
+			AdditionalPropertiesForReceipt.Add("IOSPlugin", Path.Combine(PluginPath, "BugSplat_IOS_UPL.xml"));
 		}
 		
 		if (Target.Platform == UnrealTargetPlatform.Android)
@@ -76,7 +85,7 @@ public class BugSplatRuntime : ModuleRules
 			PublicDependencyModuleNames.AddRange(new string[] { "Launch" });
 			string PluginPath = Utils.MakePathRelativeTo(ModuleDirectory, Target.RelativeEnginePath);
 
-			AdditionalPropertiesForReceipt.Add("AndroidPlugin", Path.Combine(PluginPath, "Bugsplat_Android_UPL.xml"));
+			AdditionalPropertiesForReceipt.Add("AndroidPlugin", Path.Combine(PluginPath, "BugSplat_Android_UPL.xml"));
 			
 			PublicDefinitions.Add("DOXYGEN=0");
 		}

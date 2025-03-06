@@ -39,7 +39,6 @@ elif [ "$targetPlatform" == "Mac" ]; then
     exit
 fi
 
-
 echo "BugSplat [INFO]: Start debug symbols upload for iOS"
 
 export reportCrashes=$(awk -F "=" '/bEnableCrashReportingIos/ {print $2}' ${configPath}/DefaultEngine.ini)
@@ -61,47 +60,60 @@ if [ ! -z "$uploadSymbols" ]; then
     fi
 fi
 
-echo "BugSplat [INFO]: Copy ${targetName}.app to binaries root directory"
-cp -r $binariesPath/Payload/$targetName.app $binariesPath
+# Get app info directly from the app bundle
+export appPath="$binariesPath/$targetName.app"
+export dsymFileSpec="$targetName.app.dSYM"
 
-echo "BugSplat [INFO]: Archive required iOS build artifacts"
-pushd $binariesPath
-zip -r $targetName.zip $targetName.app $targetName.dSYM
-popd
+echo "BugSplat [INFO]: Checking app path: $appPath"
 
-echo "BugSplat [INFO]: Copy user credentials config file template to home directory"
-cp $scriptsPath/.bugsplat.conf $HOME/.bugsplat.conf
+# Check if Info.plist exists
+if [ ! -f "${appPath}/Info.plist" ]; then
+    echo "BugSplat [WARN]: Info.plist not found at ${appPath}/Info.plist"
+    
+    # Use fallback values
+    export appMarketingVersion="1.0"
+    export appBundleVersion=""
+    export appExecutable="$targetName"
+    
+    echo "BugSplat [INFO]: Using fallback values - Version: $appMarketingVersion, Executable: $appExecutable"
+else
+    # Read version information directly from Info.plist
+    export appMarketingVersion=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "${appPath}/Info.plist" 2>/dev/null)
+    export appBundleVersion=$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" "${appPath}/Info.plist" 2>/dev/null)
+    export appExecutable=$(/usr/libexec/PlistBuddy -c "Print CFBundleExecutable" "${appPath}/Info.plist" 2>/dev/null)
+    
+    # Check if values were successfully retrieved
+    if [ -z "$appMarketingVersion" ]; then
+        echo "BugSplat [WARN]: CFBundleShortVersionString not found, using default"
+        appMarketingVersion="1.0"
+    fi
+    
+    if [ -z "$appExecutable" ]; then
+        echo "BugSplat [WARN]: CFBundleExecutable not found, using target name"
+        appExecutable="$targetName"
+    fi
+fi
 
-echo "BugSplat [INFO]: Set actual user credentials"
+# Format version string
+export appVersion="${appMarketingVersion}"
+if [ -n "${appBundleVersion}" ]; then
+    appVersion="${appVersion} (${appBundleVersion})"
+fi
 
+# Get BugSplat credentials from config
 export bugSplatDatabase=$(awk -F "=" '/BugSplatDatabase/ {print $2}' ${configPath}/DefaultEngine.ini)
 export bugSplatClientId=$(awk -F "=" '/BugSplatClientId/ {print $2}' ${configPath}/DefaultEngine.ini)
 export bugSplatClientSecret=$(awk -F "=" '/BugSplatClientSecret/ {print $2}' ${configPath}/DefaultEngine.ini)
 
-if [ -z "$bugSplatDatabase" ]; then
-    echo "BugSplat [INFO]: bugSplatDatabase variable is empty"
+# Validate credentials
+if [ -z "$bugSplatDatabase" ] || [ -z "$bugSplatClientId" ] || [ -z "$bugSplatClientSecret" ]; then
+    echo "BugSplat [ERROR]: Missing BugSplat credentials in DefaultEngine.ini"
+    exit 1
 fi
 
-if [ -z "$bugSplatClientId" ]; then
-    echo "BugSplat [INFO]: bugSplatClientId variable is empty"
-fi
+echo "BugSplat [INFO]: Uploading symbols directly..."
 
-if [ -z "$bugSplatClientSecret" ]; then
-    echo "BugSplat [INFO]: bugSplatClientSecret variable is empty"
-fi
+# Directly invoke the uploader with the required parameters
+$uploaderPath -b $bugSplatDatabase -a $appExecutable -v "$appVersion" -d "$binariesPath" -f "$dsymFileSpec" -i $bugSplatClientId -s "$bugSplatClientSecret"
 
-export bugSplatClientSecretEsc=$(echo "$bugSplatClientSecret" | sed 's/\//\\\//g')
-
-sed -i .backup 's/database/'$bugSplatDatabase'/g' $HOME/.bugsplat.conf
-sed -i .backup 's/clientId/'$bugSplatClientId'/g' $HOME/.bugsplat.conf
-sed -i .backup 's/clientSecret/'$bugSplatClientSecretEsc'/g' $HOME/.bugsplat.conf
-
-echo "BugSplat [INFO]: Run debug symbols upload script"
-$scriptsPath/upload-symbols-ios.sh -f $binariesPath/$targetName.zip -u $uploaderPath
-
-echo "BugSplat [INFO]: Clean up temporaries"
-
-rm $HOME/.bugsplat.conf
-rm $HOME/.bugsplat.conf.backup
-
-echo "BugSplat [INFO]: Completed"
+echo "BugSplat [INFO]: Symbol upload completed"

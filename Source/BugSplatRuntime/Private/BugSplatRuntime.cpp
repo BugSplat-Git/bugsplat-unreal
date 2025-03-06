@@ -13,7 +13,7 @@
 
 #if PLATFORM_IOS
 #import <Foundation/Foundation.h>
-#import <Bugsplat/Bugsplat.h>
+#import <BugSplat/BugSplat.h>
 #endif
 
 #if PLATFORM_ANDROID
@@ -87,29 +87,28 @@ void FBugSplatRuntimeModule::SetupCrashReportingIos()
 {
 #if PLATFORM_IOS
 	dispatch_async(dispatch_get_main_queue(), ^
-	{
-		BugsplatStartupManager* bugsplatStartupManager = [[BugsplatStartupManager alloc] init];
-		[bugsplatStartupManager start];
-	});
+    {
+        [[BugSplat shared] start];
+    });
 #endif
 }
 
 void FBugSplatRuntimeModule::SetupCrashReportingAndroid()
 {
 #if PLATFORM_ANDROID
-	JNIEnv* Env = FAndroidApplication::GetJavaEnv();
+    JNIEnv* Env = FAndroidApplication::GetJavaEnv();
 
-	auto Activity = FJavaWrapper::GameActivityThis;
+    auto Activity = FJavaWrapper::GameActivityThis;
 
 	jclass BridgeClass = FAndroidApplication::FindJavaClass("com/bugsplat/android/BugSplatBridge");
 	jmethodID InitBugSplatMethod = FJavaWrapper::FindStaticMethod(Env, BridgeClass, "initBugSplat", "(Landroid/app/Activity;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V", false);
 
-	Env->CallStaticVoidMethod(BridgeClass, InitBugSplatMethod, FJavaWrapper::GameActivityThis,
-		*FJavaClassObject::GetJString(BugSplatEditorSettings->BugSplatDatabase),
-		*FJavaClassObject::GetJString(BugSplatEditorSettings->BugSplatApp),
+    Env->CallStaticVoidMethod(BridgeClass, InitBugSplatMethod, FJavaWrapper::GameActivityThis,
+        *FJavaClassObject::GetJString(BugSplatEditorSettings->BugSplatDatabase),
+        *FJavaClassObject::GetJString(BugSplatEditorSettings->BugSplatApp),
 		*FJavaClassObject::GetJString(FString::Printf(TEXT("%s-android"), *BugSplatEditorSettings->BugSplatVersion)));
 
-	Env->DeleteLocalRef(BridgeClass);
+    Env->DeleteLocalRef(BridgeClass);
 #endif
 }
 

@@ -82,6 +82,9 @@ To enable crash reporting, ensure the `Enable iOS Crash Reporting` and `Enable A
 
 Note that sometimes iOS applications won't crash while the USB cable is connected. If this happens, disconnect the USB cable and re-run the application to trigger a crash.
 
+> [!NOTE]
+> The Unreal iOS project has a Build Phase `Generate dsym for archive, and strip` that runs after the Unreal PostBuildSteps. This Build Phase must run before a `dSYM` is generated. Once this Build Phase has run, BugSplat will upload the `dSYM` during the next incremental build.
+
 ### Xbox and PlayStation
 
 BugSplat can provide instructions for implementing Unreal crash reporting on Xbox and PlayStation. Please email us at [support@bugsplat.com](mailto:support@bugsplat.com) for more info.
