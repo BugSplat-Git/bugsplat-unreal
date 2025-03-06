@@ -74,7 +74,7 @@ FString FBugSplatSymbols::CreateSymbolUploadScript(FString Database, FString App
 	return FString::Format(*PostBuildStepsConsoleCommandFormat, args);
 #elif PLATFORM_MAC
 	FString TargetPlatformCheck = TEXT("if [ -z \"$1\" ]; then\n    echo \"BugSplat [ERROR]: Symbol upload invocation missing target platform...\"\n    exit 1\nfi\n");
-	FString PlatformGuard = TEXT("if [ \"$1\" != \"Mac\" ] && [ \"$1\" != \"IOS\" ]; then\n    echo \"BugSplat [INFO]: Non-Apple build detected, skipping Mac/iOS symbol uploads...\"\n    exit 0\nfi\n");
+	FString PlatformGuard = TEXT("if [ \"$1\" != \"Mac\" ]; then\n    echo \"BugSplat [INFO]: Non-Mac build detected, skipping Mac symbol uploads...\"\n    exit 0\nfi\n");
 
 	FString PostBuildStepsConsoleCommandFormat =
 		FString(
@@ -102,6 +102,38 @@ FString FBugSplatSymbols::CreateSymbolUploadScript(FString Database, FString App
 	args.Add(Version);
 	args.Add(FPaths::Combine(FPaths::ConvertRelativePathToFull(FPaths::ProjectDir()), FString("Binaries")));
 	args.Add(FString("**/*.{app,dSYM}"));
+
+	return FString::Format(*PostBuildStepsConsoleCommandFormat, args);
+#elif PLATFORM_LINUX
+	FString TargetPlatformCheck = TEXT("if [ -z \"$1\" ]; then\n    echo \"BugSplat [ERROR]: Symbol upload invocation missing target platform...\"\n    exit 1\nfi\n");
+	FString PlatformGuard = TEXT("if [ \"$1\" != \"Linux\" ]; then\n    echo \"BugSplat [INFO]: Non-Linux build detected, skipping Linux symbol uploads...\"\n    exit 0\nfi\n");
+
+	FString PostBuildStepsConsoleCommandFormat =
+		FString(
+			"#!/bin/bash\n"
+			"{0}\n"          // Target Platform Check
+			"{1}\n"          // Platform Guard
+			"\"{2}\" "       // Uploader Path
+			"-i {3} "        // Client ID
+			"-s {4} "        // Client Secret
+			"-b {5} "        // Database
+			"-a \"{6}\" "    // Application
+			"-v \"{7}\" "    // Version
+			"-d \"{8}/$1\" " // Output Directory
+			"-f \"{9}\" "    // File Pattern
+		);
+
+	FStringFormatOrderedArguments args;
+	args.Add(TargetPlatformCheck);
+	args.Add(PlatformGuard);
+	args.Add(BUGSPLAT_SYMBOL_UPLOADER_PATH);
+	args.Add(ClientId);
+	args.Add(ClientSecret);
+	args.Add(Database);
+	args.Add(App);
+	args.Add(Version);
+	args.Add(FPaths::Combine(FPaths::ConvertRelativePathToFull(FPaths::ProjectDir()), FString("Binaries")));
+	args.Add(FString("**/*.sym"));
 
 	return FString::Format(*PostBuildStepsConsoleCommandFormat, args);
 #else

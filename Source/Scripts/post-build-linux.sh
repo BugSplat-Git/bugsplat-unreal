@@ -30,4 +30,9 @@ if [ "$targetPlatform" != "Linux" ]; then
     exit
 fi
 
-echo "BugSplat [WARN]: Symbol uploads for Linux are not supported yet"
+if [ -f "$scriptsPath/upload-symbols-linux.sh" ]; then
+    echo "BugSplat [INFO]: Running upload-symbols-linux.sh"
+    sh "$scriptsPath/upload-symbols-linux.sh" "$targetPlatform" "$targetName"
+else
+    echo "BugSplat [WARN]: Symbol uploads not configured via plugin - skipping..."
+fi
