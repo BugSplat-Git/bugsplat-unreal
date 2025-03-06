@@ -74,6 +74,7 @@ DerivedDataCache/*
 Source/Scripts/BugSplat.bat
 Source/Scripts/upload-symbols-win64.ps1
 Source/Scripts/upload-symbols-mac.sh
+Source/Scripts/upload-symbols-linux.sh
 
 # Mac OS
 .DS_Store
