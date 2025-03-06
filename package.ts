@@ -4,6 +4,16 @@ const supportedVersions = ['5.0', '5.1', '5.2', '5.3', '5.4', '5.5'];
 
 const pluginJson = JSON.parse(await Deno.readTextFile('./BugSplat.uplugin'));
 
+// Remove downloaded symbol-upload-* files before packaging
+const symUploaderDir = './Source/ThirdParty/SymUploader';
+for await (const entry of Deno.readDir(symUploaderDir)) {
+  if (entry.isFile && entry.name.startsWith('symbol-upload-')) {
+    await Deno.remove(`${symUploaderDir}/${entry.name}`);
+    console.log(`Deleted ${entry.name}`);
+  }
+}
+
+// Update the plugin version for each supported Unreal Engine version
 for (const unrealVersion of supportedVersions) {
   const pluginVersion = pluginJson.VersionName;
   pluginJson.EngineVersion = `${unrealVersion}.0`;
@@ -14,6 +24,7 @@ for (const unrealVersion of supportedVersions) {
     'Source',
     'Resources',
     'README.md',
+    'LICENSE.md',
     'Content',
     'Config',
     'BugSplat.uplugin',
