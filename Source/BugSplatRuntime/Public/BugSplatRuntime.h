@@ -19,6 +19,9 @@ public:
 
 	UBugSplatEditorSettings* GetSettings() const;
 
+	/** Gets a map of crash attributes to include in crash reports */
+	TMap<FString, FString> GetCrashAttributes() const;
+
 private:
 	void SetupCrashReportingIos();
 	void SetupCrashReportingAndroid();

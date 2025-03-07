@@ -127,8 +127,8 @@
 
     <proguardAdditions>
         <insert>
-            -keep class com.bugsplat.android.BugSplatBridge { *; }
-            -keepclassmembers class com.bugsplat.android.BugSplatBridge { *; }
+            -keep class com.bugsplat.android.BugSplat { *; }
+            -keepclassmembers class com.bugsplat.android.BugSplat { *; }
         </insert>
     </proguardAdditions>
 </root>
