@@ -1,5 +1,5 @@
-framework module Bugsplat {
-  umbrella header "Bugsplat.h"
+framework module BugSplat {
+  umbrella header "BugSplat.h"
   export *
 
   module * { export * }

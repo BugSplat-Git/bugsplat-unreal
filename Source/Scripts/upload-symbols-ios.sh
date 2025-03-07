@@ -4,7 +4,7 @@
 # Copyright (C) BugSplat. All Rights Reserved.
 
 OPT="value"
-opts=":hfu:"
+opts=":hd:a:v:i:s:p:"
 
 cmd(){ echo `basename $0`; }
 
@@ -12,7 +12,12 @@ usage(){
   echo "\
     `cmd` [OPTION...]
   -h  optional  Print this help message
-  -f	required  Path to zip file containing .app and dSYM
+  -d  required  BugSplat database name
+  -a  required  Application name
+  -v  required  Application version
+  -i  required  BugSplat client ID
+  -s  required  BugSplat client secret
+  -p  required  Path to dSYM file or directory
   -u  required  Path to symbol uploader executable
 " | column -t -s ";"
 }
@@ -28,19 +33,32 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-while getopts ":u:f:h" opt; do
+while getopts ":d:a:v:i:s:p:u:h" opt; do
   case ${opt} in
-    f )
-      ZIPFILE=$OPTARG
-      echo "argument -f called with parameter $OPTARG" >&2
+    d )
+      BUGSPLAT_DATABASE=$OPTARG
+      ;;
+    a )
+      PRODUCT_NAME=$OPTARG
+      ;;
+    v )
+      APP_VERSION=$OPTARG
+      ;;
+    i )
+      BUGSPLAT_CLIENT_ID=$OPTARG
+      ;;
+    s )
+      BUGSPLAT_CLIENT_SECRET=$OPTARG
+      ;;
+    p )
+      DSYM_PATH=$OPTARG
       ;;
     u )
       UPLOADER=$OPTARG
-      echo "argument -u called with parameter $OPTARG" >&2
       ;;
     h )
       usage
-      exit 1
+      exit 0
       ;;
     \? )
       error
@@ -54,76 +72,21 @@ while getopts ":u:f:h" opt; do
 done
 shift $((OPTIND -1))
 
-if [ ! -f "${HOME}/.bugsplat.conf" ]
-then
-    echo "Missing bugsplat config file: ~/.bugsplat.conf"
-    exit
+# Validate required parameters
+if [ -z "$BUGSPLAT_DATABASE" ] || [ -z "$PRODUCT_NAME" ] || [ -z "$APP_VERSION" ] || 
+   [ -z "$BUGSPLAT_CLIENT_ID" ] || [ -z "$BUGSPLAT_CLIENT_SECRET" ] || [ -z "$DSYM_PATH" ] || [ -z "$UPLOADER" ]; then
+    echo "Missing required parameters"
+    usage
+    exit 1
 fi
 
-source "${HOME}/.bugsplat.conf"
+echo "Uploading symbols to BugSplat..."
+echo "Database: $BUGSPLAT_DATABASE"
+echo "Application: $PRODUCT_NAME"
+echo "Version: $APP_VERSION"
+echo "dSYM Path: $DSYM_PATH"
 
-if [ -z "${BUGSPLAT_DATABASE}" ]
-then
-    echo "BUGSPLAT_DATABASE must be set in ~/.bugsplat.conf"
-    exit
-fi
+# Directly invoke the uploader with the provided parameters
+$UPLOADER -b $BUGSPLAT_DATABASE -a $PRODUCT_NAME -v "$APP_VERSION" -f "$DSYM_PATH" -i $BUGSPLAT_CLIENT_ID -s "$BUGSPLAT_CLIENT_SECRET"
 
-if [ -z "${BUGSPLAT_CLIENT_ID}" ]
-then
-    echo "BUGSPLAT_CLIENT_ID must be set in ~/.bugsplat.conf"
-    exit
-fi
-
-if [ -z "${BUGSPLAT_CLIENT_SECRET}" ]
-then
-    echo "BUGSPLAT_CLIENT_SECRET must be set in ~/.bugsplat.conf"
-    exit
-fi
-
-# Print the variables
-echo "ZIP File: $ZIPFILE"
-echo "UPLOADER File: $UPLOADER"
-
-# extract to tmp directory for inspection
-UNZIP_DIR=$(zipinfo -1 $ZIPFILE | grep -oE '^[^/]+' | uniq)
-
-pwd
-
-UNZIP_LOCATION="/tmp/Bugsplat"
-UNZIP_PATH="${UNZIP_LOCATION}/${UNZIP_DIR}"
-echo "UNZIP_PATH: ${UNZIP_PATH}"
-mkdir -p ${UNZIP_LOCATION}
-unzip -o $ZIPFILE -d ${UNZIP_LOCATION}
-
-APP=$(find $UNZIP_PATH -name *.app -type d -maxdepth 1 -print | head -n1)
-echo "App: ${APP}"
-
-# Changed Info.plist path
-APP_MARKETING_VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "${APP}/Info.plist")
-APP_BUNDLE_VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleVersion" "${APP}/Info.plist")
-
-if [ -z "${APP_MARKETING_VERSION}" ]
-then
-	echo "CFBundleShortVersionString not found in app Info.plist"
-    exit
-fi
-
-echo "App marketing version: ${APP_MARKETING_VERSION}"
-echo "App bundle version: ${APP_BUNDLE_VERSION}"
-
-APP_VERSION="${APP_MARKETING_VERSION}"
-
-if [ -n "${APP_BUNDLE_VERSION}" ]
-then
-    APP_VERSION="${APP_VERSION} (${APP_BUNDLE_VERSION})"
-fi
-
-# Changed CFBundleName to CFBundleExecutable and Info.plist path
-PRODUCT_NAME=$(/usr/libexec/PlistBuddy -c "Print CFBundleExecutable" "${APP}/Info.plist")
-
-echo "App version: ${APP_VERSION}"
-
-$UPLOADER -b $BUGSPLAT_DATABASE -a $PRODUCT_NAME -v "$APP_VERSION" -f "**/*.{app,dSYM}" -d $UNZIP_LOCATION  -i $BUGSPLAT_CLIENT_ID -s "$BUGSPLAT_CLIENT_SECRET"
-
-rm -rf $UNZIP_LOCATION
-rm $ZIPFILE
+echo "Symbol upload complete"

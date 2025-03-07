@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <init>
+        <log text="BugSplat SDK iOS UPL initialization"/>
+        <copyDir src="$S(PluginDir)/../ThirdParty/IOS/BugSplat.framework" dst="$S(BuildDir)/Frameworks/BugSplat.framework" />
+
+        <setBoolFromProperty result="bEnableCrashReporting" ini="Engine" section="/Script/BugSplatRuntime.BugSplatEditorSettings" property="bEnableCrashReportingIos" default="true" />
+        <setBoolFromProperty result="bUploadSymbols" ini="Engine" section="/Script/BugSplatRuntime.BugSplatEditorSettings" property="bUploadDebugSymbols" default="true" />
+
+        <setStringFromProperty result="DatabaseName" ini="Engine" section="/Script/BugSplatRuntime.BugSplatEditorSettings" property="BugSplatDatabase"/>
+        <setStringFromProperty result="VersionNumber" ini="Engine" section="/Script/BugSplatRuntime.BugSplatEditorSettings" property="BugSplatVersion"/>
+    </init>
+
+    <iosPListUpdates>
+        <if condition="bEnableCrashReporting">
+            <true>
+                <setElement result="BugSplatDatabaseKey" xml="&lt;key&gt;BugSplatDatabase&lt;/key&gt;"/>
+                <addElement tag="dict" name="BugSplatDatabaseKey" />
+                <setElement result="BugSplatDatabaseValue" xml="&lt;string&gt;$S(DatabaseName)&lt;/string&gt;"/>
+                <addElement tag="dict" name="BugSplatDatabaseValue" />
+                <setElement result="CFBundleVersionKey" xml="&lt;key&gt;CFBundleVersion&lt;/key&gt;"/>
+                <addElement tag="dict" name="CFBundleVersionKey" />
+                <setElement result="CFBundleVersionValue" xml="&lt;string&gt;$S(VersionNumber)-ios&lt;/string&gt;"/>
+                <addElement tag="dict" name="CFBundleVersionValue" />
+            </true>
+        </if>
+    </iosPListUpdates>
+</root>
