@@ -11,6 +11,14 @@
 #include "Misc/Paths.h"
 #include "Misc/ConfigCacheIni.h"
 #include "Runtime/Core/Public/GenericPlatform/GenericPlatformCrashContext.h"
+#include "HAL/PlatformTime.h"
+#include "HAL/PlatformProperties.h"
+#include "Misc/App.h"
+#include "Misc/EngineVersion.h"
+#include "Misc/Guid.h"
+#include "HAL/PlatformMemory.h"
+#include "HAL/PlatformProcess.h"
+#include "Misc/CommandLine.h"
 
 #if PLATFORM_IOS
 #import <Foundation/Foundation.h>
@@ -39,9 +47,13 @@ TMap<FString, FString> FBugSplatRuntimeModule::GetCrashAttributes() const
 	// Add engine information
 	Attributes.Add(TEXT("EngineVersion"), FEngineVersion::Current().ToString());
 	Attributes.Add(TEXT("EngineBranch"), FEngineVersion::Current().GetBranch());
+	Attributes.Add(TEXT("EngineCompatibleVersion"), FEngineVersion::CompatibleWith().ToString());
+	// Add whether this is a UE release build
+	Attributes.Add(TEXT("IsUERelease"), FApp::IsEngineInstalled() ? TEXT("True") : TEXT("False"));
 
 	// Add platform information
 	Attributes.Add(TEXT("PlatformName"), FPlatformProperties::PlatformName());
+	Attributes.Add(TEXT("PlatformNameIni"), FPlatformProperties::IniPlatformName());
 
 	// Add build configuration
 	FString BuildConfiguration;
@@ -61,12 +73,21 @@ TMap<FString, FString> FBugSplatRuntimeModule::GetCrashAttributes() const
 
 	// Add project name
 	Attributes.Add(TEXT("ProjectName"), FApp::GetProjectName());
+	Attributes.Add(TEXT("GameName"), FString(FApp::GetProjectName()));
+	Attributes.Add(TEXT("GameSessionID"), FApp::GetSessionId().ToString());
 
 	// Add executable name and path
 	Attributes.Add(TEXT("ExecutableName"), FPlatformProcess::ExecutableName());
-	#if PLATFORM_IOS
+#if PLATFORM_IOS
 	Attributes.Add(TEXT("ExecutablePath"), FPlatformProcess::ExecutablePath());
-	#endif
+#endif
+
+	// Add base and root directories
+	Attributes.Add(TEXT("BaseDir"), FPlatformProcess::BaseDir());
+	Attributes.Add(TEXT("RootDir"), FPaths::RootDir());
+	Attributes.Add(TEXT("EngineDir"), FPaths::EngineDir());
+	Attributes.Add(TEXT("ProjectDir"), FPaths::ProjectDir());
+
 	// Add CPU info
 	Attributes.Add(TEXT("CPUBrand"), FPlatformMisc::GetCPUBrand());
 	Attributes.Add(TEXT("CPUChipset"), FPlatformMisc::GetCPUChipset());
@@ -77,11 +98,25 @@ TMap<FString, FString> FBugSplatRuntimeModule::GetCrashAttributes() const
 	// Add OS info
 	Attributes.Add(TEXT("OSVersion"), FPlatformMisc::GetOSVersion());
 	Attributes.Add(TEXT("ComputerName"), FPlatformProcess::ComputerName());
+	Attributes.Add(TEXT("UserName"), FPlatformProcess::UserName());
+	Attributes.Add(TEXT("DefaultLocale"), FPlatformMisc::GetDefaultLocale());
 
 	// Add memory info
 	Attributes.Add(TEXT("TotalPhysicalGB"), FString::Printf(TEXT("%.2f"), FPlatformMemory::GetPhysicalGBRam()));
 	Attributes.Add(TEXT("AvailablePhysicalMB"), FString::FromInt(FPlatformMemory::GetStats().AvailablePhysical / (1024 * 1024)));
 	Attributes.Add(TEXT("TotalVirtualGB"), FString::Printf(TEXT("%.2f"), FPlatformMemory::GetStats().TotalVirtual / (1024.0f * 1024.0f * 1024.0f)));
+
+	// Add more detailed memory stats
+	const FPlatformMemoryStats MemoryStats = FPlatformMemory::GetStats();
+	Attributes.Add(TEXT("TotalPhysical"), FString::FromInt(MemoryStats.TotalPhysical));
+	Attributes.Add(TEXT("TotalVirtual"), FString::FromInt(MemoryStats.TotalVirtual));
+	Attributes.Add(TEXT("PageSize"), FString::FromInt(MemoryStats.PageSize));
+	Attributes.Add(TEXT("AvailablePhysical"), FString::FromInt(MemoryStats.AvailablePhysical));
+	Attributes.Add(TEXT("AvailableVirtual"), FString::FromInt(MemoryStats.AvailableVirtual));
+	Attributes.Add(TEXT("UsedPhysical"), FString::FromInt(MemoryStats.UsedPhysical));
+	Attributes.Add(TEXT("PeakUsedPhysical"), FString::FromInt(MemoryStats.PeakUsedPhysical));
+	Attributes.Add(TEXT("UsedVirtual"), FString::FromInt(MemoryStats.UsedVirtual));
+	Attributes.Add(TEXT("PeakUsedVirtual"), FString::FromInt(MemoryStats.PeakUsedVirtual));
 
 	// Add GPU info
 	Attributes.Add(TEXT("GPUBrand"), FPlatformMisc::GetPrimaryGPUBrand());
@@ -89,6 +124,87 @@ TMap<FString, FString> FBugSplatRuntimeModule::GetCrashAttributes() const
 	// Add runtime info
 	Attributes.Add(TEXT("IsUnattended"), FApp::IsUnattended() ? TEXT("True") : TEXT("False"));
 	Attributes.Add(TEXT("IsInstalled"), FApp::IsInstalled() ? TEXT("True") : TEXT("False"));
+	Attributes.Add(TEXT("ProcessId"), FString::FromInt(FPlatformProcess::GetCurrentProcessId()));
+	Attributes.Add(TEXT("SecondsSinceStart"), FString::FromInt(FPlatformTime::Seconds() - GStartTime));
+
+	// Add build information
+	Attributes.Add(TEXT("IsWithDebugInfo"), FApp::GetIsWithDebugInfo() ? TEXT("True") : TEXT("False"));
+
+	// Add engine mode
+	FString EngineMode;
+#if WITH_EDITOR
+	EngineMode = TEXT("Editor");
+#else
+	EngineMode = TEXT("Game");
+#endif
+	Attributes.Add(TEXT("EngineMode"), EngineMode);
+
+	// Add engine mode extended
+	FString EngineModeEx;
+#if UE_BUILD_DEVELOPMENT
+	if (FApp::IsGame())
+	{
+		EngineModeEx = TEXT("Development Game");
+	}
+	else
+	{
+		EngineModeEx = TEXT("Development Editor");
+	}
+#elif UE_BUILD_SHIPPING
+	EngineModeEx = TEXT("Shipping Game");
+#elif UE_BUILD_TEST
+	EngineModeEx = TEXT("Test Game");
+#elif UE_BUILD_DEBUG
+	if (FApp::IsGame())
+	{
+		EngineModeEx = TEXT("Debug Game");
+	}
+	else
+	{
+		EngineModeEx = TEXT("Debug Editor");
+	}
+#endif
+	Attributes.Add(TEXT("EngineModeEx"), EngineModeEx);
+
+	// Add crash GUID
+	Attributes.Add(TEXT("CrashGUID"), FGuid::NewGuid().ToString());
+
+	// Add execution GUID if available
+	Attributes.Add(TEXT("ExecutionGUID"), FGenericCrashContext::ExecutionGuid.ToString());
+
+	// Add any engine data from GenericPlatformCrashContext
+	const TMap<FString, FString>& EngineData = FGenericCrashContext::GetEngineData();
+	for (const TPair<FString, FString>& Pair : EngineData)
+	{
+		Attributes.Add(FString::Printf(TEXT("EngineData_%s"), *Pair.Key), Pair.Value);
+	}
+
+	// Add any game data from GenericPlatformCrashContext
+	const TMap<FString, FString>& GameData = FGenericCrashContext::GetGameData();
+	for (const TPair<FString, FString>& Pair : GameData)
+	{
+		Attributes.Add(FString::Printf(TEXT("GameData_%s"), *Pair.Key), Pair.Value);
+	}
+
+	// Add platform-specific memory constants
+	const FPlatformMemoryConstants& MemConstants = FPlatformMemory::GetConstants();
+	Attributes.Add(TEXT("MemoryConstants_TotalPhysical"), FString::FromInt(MemConstants.TotalPhysical));
+	Attributes.Add(TEXT("MemoryConstants_TotalVirtual"), FString::FromInt(MemConstants.TotalVirtual));
+	Attributes.Add(TEXT("MemoryConstants_PageSize"), FString::FromInt(MemConstants.PageSize));
+	Attributes.Add(TEXT("MemoryConstants_TotalPhysicalGB"), FString::Printf(TEXT("%.2f"), MemConstants.TotalPhysicalGB));
+
+	// Add misc platform info
+	Attributes.Add(TEXT("Is64bitOperatingSystem"), FPlatformMisc::Is64bitOperatingSystem() ? TEXT("True") : TEXT("False"));
+
+	// Add build version
+	Attributes.Add(TEXT("BuildVersion"), FApp::GetBuildVersion());
+
+#if PLATFORM_IOS
+	// Add log file path - use a more direct approach instead of PlatformOutputDevices
+	FString LogFilePath = FPaths::ProjectLogDir() / FApp::GetProjectName() + TEXT(".log");
+	LogFilePath = FPaths::ConvertRelativePathToFull(LogFilePath);
+	Attributes.Add(TEXT("LogFilePath"), LogFilePath);
+#endif
 
 	return Attributes;
 }
