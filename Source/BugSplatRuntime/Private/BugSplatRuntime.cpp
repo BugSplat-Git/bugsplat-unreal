@@ -44,6 +44,7 @@ TMap<FString, FString> FBugSplatRuntimeModule::GetCrashAttributes() const
 {
 	TMap<FString, FString> Attributes;
 
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 2
 	// Add engine information
 	Attributes.Add(TEXT("EngineVersion"), FEngineVersion::Current().ToString());
 	Attributes.Add(TEXT("EngineBranch"), FEngineVersion::Current().GetBranch());
@@ -204,6 +205,9 @@ TMap<FString, FString> FBugSplatRuntimeModule::GetCrashAttributes() const
 	FString LogFilePath = FPaths::ProjectLogDir() / FApp::GetProjectName() + TEXT(".log");
 	LogFilePath = FPaths::ConvertRelativePathToFull(LogFilePath);
 	Attributes.Add(TEXT("LogFilePath"), LogFilePath);
+#endif
+#else
+	UE_LOG(LogBugsplat, Warning, TEXT("Crash attributes are only supported in Unreal Engine 5.2 or greater. Current engine version: %d.%d"), ENGINE_MAJOR_VERSION, ENGINE_MINOR_VERSION);
 #endif
 
 	return Attributes;
