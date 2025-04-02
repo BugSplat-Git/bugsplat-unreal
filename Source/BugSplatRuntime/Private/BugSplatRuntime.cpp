@@ -11,6 +11,7 @@
 #include "Misc/Paths.h"
 #include "Misc/ConfigCacheIni.h"
 #include "Runtime/Core/Public/GenericPlatform/GenericPlatformCrashContext.h"
+#include "Runtime/Launch/Resources/Version.h"
 #include "HAL/PlatformTime.h"
 #include "HAL/PlatformProperties.h"
 #include "Misc/App.h"
