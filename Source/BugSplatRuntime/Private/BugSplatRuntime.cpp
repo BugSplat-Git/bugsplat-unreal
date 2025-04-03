@@ -45,7 +45,7 @@ TMap<FString, FString> FBugSplatRuntimeModule::GetCrashAttributes() const
 {
 	TMap<FString, FString> Attributes;
 
-#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 2
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 3
 	// Add engine information
 	Attributes.Add(TEXT("EngineVersion"), FEngineVersion::Current().ToString());
 	Attributes.Add(TEXT("EngineBranch"), FEngineVersion::Current().GetBranch());
