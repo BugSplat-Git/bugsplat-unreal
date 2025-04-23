@@ -3,6 +3,8 @@
     <init>
         <log text="BugSplat SDK iOS UPL initialization"/>
         <copyDir src="$S(PluginDir)/../ThirdParty/IOS/BugSplat.framework" dst="$S(BuildDir)/Frameworks/BugSplat.framework" />
+        <copyDir src="$S(PluginDir)/../ThirdParty/IOS/HockeySDK.framework" dst="$S(BuildDir)/Frameworks/HockeySDK.framework" />
+        <!--<copyDir src="$S(PluginDir)/../ThirdParty/IOS/CrashReporter.framework" dst="$S(BuildDir)/Frameworks/CrashReporter.framework" /> -->
 
         <setBoolFromProperty result="bEnableCrashReporting" ini="Engine" section="/Script/BugSplatRuntime.BugSplatEditorSettings" property="bEnableCrashReportingIos" default="true" />
         <setBoolFromProperty result="bUploadSymbols" ini="Engine" section="/Script/BugSplatRuntime.BugSplatEditorSettings" property="bUploadDebugSymbols" default="true" />

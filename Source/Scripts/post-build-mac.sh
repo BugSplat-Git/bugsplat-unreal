@@ -62,7 +62,7 @@ fi
 
 # Get app info directly from the app bundle
 export appPath="$binariesPath/$targetName.app"
-export dsymFileSpec="$targetName.app.dSYM"
+export dsymFileSpec="*.dSYM"
 
 echo "BugSplat [INFO]: Checking app path: $appPath"
 
