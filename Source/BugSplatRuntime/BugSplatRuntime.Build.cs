@@ -67,7 +67,8 @@ public class BugSplatRuntime : ModuleRules
 			string FrameworkPath = Path.Combine(ModuleDirectory, "../ThirdParty/IOS");
 
 			// Add the framework (unzipped from .embeddedframework.zip by UPL)
-			PublicAdditionalFrameworks.Add(new Framework("BugSplat", Path.Combine(FrameworkPath, "BugSplat.embeddedframework.zip"), ""));
+			PublicAdditionalFrameworks.Add(new Framework("BugSplat", Path.Combine(FrameworkPath, "BugSplat.embeddedframework.zip"), "", true));
+			PublicAdditionalFrameworks.Add(new Framework("HockeySDK", Path.Combine(FrameworkPath, "HockeySDK.embeddedframework.zip"), "", true));
 
 			// Add the framework's Headers directory to the include path
 			PublicIncludePaths.Add(Path.Combine(FrameworkPath, "BugSplat.framework/Headers"));

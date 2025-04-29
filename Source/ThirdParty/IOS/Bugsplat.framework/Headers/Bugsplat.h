@@ -54,27 +54,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (weak, nonatomic, nullable) id<BugSplatDelegate> delegate;
 
-/** Set the userID that should used in the SDK components
-
- Right now this is used by the Crash Manager to attach to a crash report.
-
- The value can be set at any time and will be stored in the keychain on the current
- device only! To delete the value from the keychain set the value to `nil`.
-
- This property is optional.
-
- @warning When returning a non nil value, crash reports are not anonymous any more
- and the crash alerts will not show the word "anonymous"!
-
- @warning This property needs to be set before calling `start` to be considered
- for being added to crash reports as meta data.
-
- @see userName
- @see userEmail
- @see `[BITHockeyManagerDelegate userIDForHockeyManager:componentManager:]`
- */
-@property (nonatomic, copy, nullable) NSString *userID;
-
 /**
  * The database name BugSplat will use to construct the BugSplatDatabase URL where crash reports will be submitted.
  *
@@ -95,45 +74,60 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, copy, nullable) NSString *bugSplatDatabase;
 
-/** Set the user name that should used in the SDK components
+/**
+ * The userID that will be used when a crash report is submitted.
+ *
+ * The value can be set programmatically at any time and will be stored in NSUserDefaults.
+ * To delete the value from NSUserDefaults, set the value to `nil`.
+ *
+ * This property is optional.
+ *
+ * @warning When returning a non nil value, crash reports are not anonymous any more
+ * and the crash alerts will not show the word "anonymous"!
+ *
+ * @warning If setting this property programmatically, it needs to be set before calling `start`
+ * if the userID should be included in a possible crash from the last app session.
+ *
+ * @see userName
+ * @see userEmail
+ */
+@property (nonatomic, copy, nullable) NSString *userID;
 
- Right now this is used by the Crash Manager to attach to a crash report.
-
- The value can be set at any time and will be stored in the keychain on the current
- device only! To delete the value from the keychain set the value to `nil`.
-
- This property is optional.
-
- @warning When returning a non nil value, crash reports are not anonymous any more
- and the crash alerts will not show the word "anonymous"!
-
- @warning This property needs to be set before calling `start` to be considered
- for being added to crash reports as meta data.
-
- @see userID
- @see userEmail
- @see `[BITHockeyManagerDelegate userNameForHockeyManager:componentManager:]`
+/**
+ * The user name that will be used when a crash report is submitted.
+ *
+ * The value can be set programmatically at any time and will be stored in NSUserDefaults.
+ * To delete the value from NSUserDefaults, set the value to `nil`.
+ *
+ * This property is optional.
+ *
+ * @warning When returning a non nil value, crash reports are not anonymous any more
+ * and the crash alerts will not show the word "anonymous"!
+ *
+ * @warning If setting this property programmatically, it needs to be set before calling `start`
+ * if the userName should be included in a possible crash from the last app session.
+ *
+ * @see userID
+ * @see userEmail
  */
 @property (nonatomic, copy, nullable) NSString *userName;
 
-/** Set the users email address that should used in the SDK components
-
- Right now this is used by the Crash Manager to attach to a crash report.
-
- The value can be set at any time and will be stored in the keychain on the current
- device only! To delete the value from the keychain set the value to `nil`.
-
- This property is optional.
-
- @warning When returning a non nil value, crash reports are not anonymous any more
- and the crash alerts will not show the word "anonymous"!
-
- @warning This property needs to be set before calling `start` to be considered
- for being added to crash reports as meta data.
-
- @see userID
- @see userName
- @see [BITHockeyManagerDelegate userEmailForHockeyManager:componentManager:]
+/**
+ * The user email address that will be used when a crash report is submitted.
+ *
+ * The value can be set programmatically at any time and will be stored in NSUserDefaults.
+ * To delete the value from NSUserDefaults, set the value to `nil`.
+ *
+ * This property is optional.
+ *
+ * @warning When returning a non nil value, crash reports are not anonymous any more
+ * and the crash alerts will not show the word "anonymous"!
+ *
+ * @warning If setting this property programmatically, it needs to be set before calling `start`
+ * if the userEmail should be included in a possible crash from the last app session.
+ *
+ * @see userID
+ * @see userName
  */
 @property (nonatomic, copy, nullable) NSString *userEmail;
 
@@ -148,8 +142,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL autoSubmitCrashReport;
 
 /**
- * Add an attribute and value to the crash report.
- * Attributes and values represent app supplied keys and values to associate with a crash report.
+ * Add an attribute and value to a dictionary of attributes that will potentially be included in a crash report.
+ * If the attribute is an invalid XML entity name, or the attribute+value pair cannot be set,
+ * the method will return NO, otherwise it will return YES.
+ *
+ * Attributes and values represent app supplied keys and values to associate with a crash report, should the app crash during this session.
  * Attributes and values will be bundled up in a BugSplatAttachment as NSData, with a filename of CrashContext.xml, MIME type of "application/xml" and encoding of "UTF-8".
  *
  * IMPORTANT: For iOS, only one BugSplatAttachment is currently supported.
@@ -159,28 +156,34 @@ NS_ASSUME_NONNULL_BEGIN
  * NOTES:
  *
  * This method may be called multiple times, once per attribute+value pair.
- * Attributes are backed by an NSDictionary so attribute names must be unique.
+ * This method may be called at any time during the app session prior to a crash.
+ * Attributes are persisted to NSUserDefaults within a NSDictionary<NSString *, NSString *>, so attribute names must be unique.
  * If the attribute does not exist, it will be added to attributes dictionary.
  * If attribute already exists, the value will be replaced in the dictionary.
  * If attribute already exists, and the value is nil, the attribute will be removed from the dictionary.
  *
  * When this method is called, the following preprocessing occurs:
- * 1. attribute will first have white space and newlines removed from both the beginning and end of the String.
+ * 1. attribute will be checked for XML entity name rules. If validation fails, method returns NO.
  *
- * 2. attribute will then be processed by an XML escaping routine which looks for escapable characters ",',&,<, and >
+ * 2. values will then be processed by an XML escaping routine which looks for escapable characters ",',&,<, and >
  * See: https://stackoverflow.com/questions/1091945/what-characters-do-i-need-to-escape-in-xml-documents
  * Any XML comment blocks or CDATA blocks found will disable XML escaping within the block.
  *
- * 3. values will then be processed by an XML escaping routine which looks for escapable characters ",',&,<, and >
- * Any XML comment blocks or CDATA blocks found will disable XML escaping within the block.
+ * 3. After processing both attribute and value for XML escape characters, the attribute+value pair will be
+ * persisted to NSUserDefaults within a NSDictionary<NSString *, NSString *>.
  *
- * 4. After processing both attribute and value for XML escape characters, the attribute+value pair will be stored in an NSDictionary.
+ * 4. If the attribute or value cannot be set, the method will return NO, otherwise it will return YES.
  *
  * If a crash occurs, attributes and values will be bundled up in a BugSplatAttachment as NSData, with a filename of CrashContext.xml, MIME type of "application/xml"
  * and encoding of "UTF-8". The attachment will be included with the crash data (except as noted above regarding iOS BugSplatAttachment limitation).
- * 
+ *
+ * Attributes and their values are only valid for the lifetime of the app session and only used in a crash report if the crash occurs during that app session.
+ * Any attributes set in the prior app session will be bundled up in a BugSplatAttachment as NSData, with a filename of CrashContext.xml,
+ * MIME type of "application/xml" and encoding of "UTF-8". The attachment will be added to the crash report when it is processed during the next launch of the app.
+ * If the app terminates normally, any attributes persisted during the prior `normal` app session will be erased during the next app launch.
+ *
  */
-- (void)setValue:(nullable NSString *)value forAttribute:(NSString *)attribute;
+- (BOOL)setValue:(nullable NSString *)value forAttribute:(NSString *)attribute NS_SWIFT_NAME(set(_:for:));
 
 // macOS specific API
 #if TARGET_OS_OSX
@@ -198,9 +201,18 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL askUserDetails;
 
 /**
- *  Defines if user's name and email entered in the crash report UI should be saved to the keychain.
+ * If the user enters their name or email on a Bug Crash Alert Form, persist their data to NSUserDefaults.
+ * After this occurs, userName and userEmail properties will contain the values the user entered.
+ * When the Bug Crash Alert Form is presented again, it will be pre-populated with user name and email.
+ * To erase their user name or email, set the property value to nil programmatically.
  *
- *  Default: _NO_
+ * This property defaults to NO.
+ * This property is optional.
+ *
+ * @warning If setting this property to YES, it needs to be set before calling `start`.
+ *
+ * @see userName
+ * @see userEmail
  */
 @property (nonatomic, assign) BOOL persistUserDetails;
 

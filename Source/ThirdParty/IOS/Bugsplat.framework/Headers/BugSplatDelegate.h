@@ -59,7 +59,22 @@ NS_ASSUME_NONNULL_BEGIN
  */
 -(void)bugSplatWillCancelSendingCrashReport:(BugSplat *)bugSplat;
 
+/** Return a BugSplatAttachment object providing an NSData object the crash report being processed should contain
+ NOTE: For iOS, if this method returns a non-nil BugSplatAttachment, any attributes added via setAttribute:value: to BugSplat will NOT be included in the Crash Report.
+
+ Example implementation:
+
+ NSData *data = [NSData dataWithContentsOfURL:@"mydatafile"];
+
+ BugSplatAttachment *attachment = [[BugSplatAttachment alloc] initWithFilename:@"myfile.data"
+                                                                attachmentData:data
+                                                                   contentType:@"application/octet-stream"];
+ @param bugSplat The `BugSplat` instance invoking this delegate
+*/
+- (BugSplatAttachment *)attachmentForBugSplat:(BugSplat *)bugSplat API_AVAILABLE(ios(13.0));
+
 // MARK: - BugSplatDelegate (MacOS)
+#if TARGET_OS_OSX
 
 /** Return any string based data the crash report being processed should contain
  *
@@ -85,20 +100,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<BugSplatAttachment *> *)attachmentsForBugSplat:(BugSplat *)bugSplat API_AVAILABLE(macosx(10.13));
 
 // MARK: - BugSplatDelegate (iOS)
-
-/** Return a BugSplatAttachment object providing an NSData object the crash report being processed should contain
- NOTE: If this method returns a non-nil BugSplatAttachment, any attributes added via setAttribute:value: to BugSplat will NOT be included in the Crash Report.
-
- Example implementation:
-
- NSData *data = [NSData dataWithContentsOfURL:@"mydatafile"];
-
- BugSplatAttachment *attachment = [[BugSplatAttachment alloc] initWithFilename:@"myfile.data"
-                                                                attachmentData:data
-                                                                   contentType:@"application/octet-stream"];
- @param bugSplat The `BugSplat` instance invoking this delegate
-*/
-- (BugSplatAttachment *)attachmentForBugSplat:(BugSplat *)bugSplat API_AVAILABLE(ios(13.0));
+#else
 
 /** Invoked after the user did choose to send crashes always in the alert
 
@@ -106,6 +108,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 -(void)bugSplatWillSendCrashReportsAlways:(BugSplat *)bugSplat API_AVAILABLE(ios(13.0));
 
+#endif
 
 @end
 
