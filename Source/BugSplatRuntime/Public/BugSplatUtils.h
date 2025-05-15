@@ -17,4 +17,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "BugSplat")
 	static void GenerateAssert();
+
+	UFUNCTION(BlueprintCallable, Category = "BugSplat")
+	static void GenerateEnsure();
 };

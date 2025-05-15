@@ -15,3 +15,10 @@ void UBugSplatUtils::GenerateAssert()
 	char *ptr = nullptr;
 	check(ptr != nullptr);
 }
+
+void UBugSplatUtils::GenerateEnsure()
+{
+	UE_LOG(LogTemp, Log, TEXT("BugSplat: GenerateEnsure"));
+	char* ptr = nullptr;
+	ensure(ptr != nullptr);
+}
