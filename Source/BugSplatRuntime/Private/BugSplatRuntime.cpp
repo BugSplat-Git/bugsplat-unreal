@@ -104,7 +104,7 @@ TMap<FString, FString> FBugSplatRuntimeModule::GetCrashAttributes() const
 	Attributes.Add(TEXT("DefaultLocale"), FPlatformMisc::GetDefaultLocale());
 
 	// Add memory info
-	Attributes.Add(TEXT("TotalPhysicalGB"), FString::Printf(TEXT("%.2f"), FPlatformMemory::GetPhysicalGBRam()));
+	Attributes.Add(TEXT("TotalPhysicalGB"), FString::Printf(TEXT("%.2f"), (float)FPlatformMemory::GetPhysicalGBRam()));
 	Attributes.Add(TEXT("AvailablePhysicalMB"), FString::FromInt(FPlatformMemory::GetStats().AvailablePhysical / (1024 * 1024)));
 	Attributes.Add(TEXT("TotalVirtualGB"), FString::Printf(TEXT("%.2f"), FPlatformMemory::GetStats().TotalVirtual / (1024.0f * 1024.0f * 1024.0f)));
 
@@ -193,7 +193,7 @@ TMap<FString, FString> FBugSplatRuntimeModule::GetCrashAttributes() const
 	Attributes.Add(TEXT("MemoryConstants_TotalPhysical"), FString::FromInt(MemConstants.TotalPhysical));
 	Attributes.Add(TEXT("MemoryConstants_TotalVirtual"), FString::FromInt(MemConstants.TotalVirtual));
 	Attributes.Add(TEXT("MemoryConstants_PageSize"), FString::FromInt(MemConstants.PageSize));
-	Attributes.Add(TEXT("MemoryConstants_TotalPhysicalGB"), FString::Printf(TEXT("%.2f"), MemConstants.TotalPhysicalGB));
+	Attributes.Add(TEXT("MemoryConstants_TotalPhysicalGB"), FString::Printf(TEXT("%.2f"), (float)MemConstants.TotalPhysicalGB));
 
 	// Add misc platform info
 	Attributes.Add(TEXT("Is64bitOperatingSystem"), FPlatformMisc::Is64bitOperatingSystem() ? TEXT("True") : TEXT("False"));
