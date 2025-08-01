@@ -70,7 +70,14 @@ To create a `.dSYM` file for a macOS build invoke `RunUAT.command` with the `-En
 
 Before attempting to use the BugSplat plugin to capture crashes on Mobile, please ensure you've completed the [iOS](https://docs.unrealengine.com/5.0/en-US/setting-up-an-unreal-engine-project-for-ios/) and [Android](https://docs.unrealengine.com/5.0/en-US/android-support-for-unreal-engine/) quickstart guides.
 
-In order to get function names and line numbers in your iOS crash reports, please make the following changes in the `iOS` section of `Project Settings`.
+To enable crash reporting, ensure the `Enable iOS Crash Reporting` and `Enable Android Crash Reporting` options are selected. Also, ensure that `Enable Automatic Symbol Uploads` is checked so that your crash reports contain function names and line numbers.
+
+#### iOS
+
+> [!NOTE]
+> The Unreal iOS project's build process includes a `Build Phase called Generate dSYM for archive, and strip`, which executes after the Unreal PostBuildSteps. However, this Build Phase must complete before the `dSYM` file (debug symbols) is generated. Due to this timing, BugSplat cannot upload the `dSYM` immediately during the initial build. Instead, BugSplat will upload the `dSYM` during the next incremental build in Xcode. Alternatively, you can follow the [example](https://github.com/BugSplat-Git/bugsplat-apple/blob/main/Symbol_Upload_Examples/Build-Phase-symbol-upload.sh) in our bugsplat-apple repo to configure a custom Build Phase for symbol uploads.
+
+To get function names and line numbers in your iOS crash reports, please make the following changes in the `iOS` section of `Project Settings`.
 
 | Option | Value |
 |--------|-------|
@@ -78,13 +85,91 @@ In order to get function names and line numbers in your iOS crash reports, pleas
 | Generate dSYMs as a bundle for third-party crash tools | true |
 | Support bitcode in shipping | false |
 
-To enable crash reporting, ensure the `Enable iOS Crash Reporting` and `Enable Android Crash Reporting` options are selected. Also ensure that `Enable Automatic Symbol Uploads` is checked so that your crash reports contain function names and line numbers.
-
 Note that sometimes iOS applications won't crash while the USB cable is connected. If this happens, disconnect the USB cable and re-run the application to trigger a crash.
 
-> [!NOTE]
-> The Unreal iOS project's build process includes a `Build Phase called Generate dSYM for archive, and strip`, which executes after the Unreal PostBuildSteps. However, this Build Phase must complete before the `dSYM` file (debug symbols) is generated. Due to this timing, BugSplat cannot upload the `dSYM` immediately during the initial build. Instead, BugSplat will upload the `dSYM` during the next incremental build in Xcode. Alternatively, you can follow the [example](https://github.com/BugSplat-Git/bugsplat-apple/blob/main/Symbol_Upload_Examples/Build-Phase-symbol-upload.sh) in our bugsplat-apple repo to configure your a custom Build Phase for symbol uploads.
+#### Android
 
+> ![Note]
+> Code is aggressively optimized when building for Android. Oftentimes, Unreal's build process causes code that generates simple errors used in testing the integration to get optimized away. To test a null pointer dereference, you can add the `volatile` keyword to work around compiler optimizations.
+
+Fatal Errors on Android raise a `SIGTRAP` and require extra configuration so that they can be reported to BugSplat.
+
+MyUnrealCrasherErrorOutputDevice.h (TODO BG Link)
+```cpp
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Misc/OutputDeviceError.h"
+
+class FMyUnrealCrasherAndroidErrorOutputDevice : public FOutputDeviceError
+{
+public:
+    virtual ~FMyUnrealCrasherAndroidErrorOutputDevice() {}
+
+    virtual void Serialize(const TCHAR* V, ELogVerbosity::Type Verbosity, const FName& Category) override;
+
+    virtual void HandleError() override;
+
+    static FOutputDeviceError* GetErrorOutputDevice()
+    {
+        static FMyUnrealCrasherAndroidErrorOutputDevice Singleton;
+        return &Singleton;
+    }
+};
+```
+
+MyUnrealCrasherErrorOutputDevice.cpp (TODO BG Link)
+```cpp
+#include "MyUnrealCrasherAndroidErrorOutputDevice.h"
+#include "Misc/OutputDevice.h"
+#include "HAL/PlatformMisc.h"
+#include "Misc/App.h"
+
+#if PLATFORM_ANDROID
+#include <android/log.h>
+#endif
+
+void FMyUnrealCrasherAndroidErrorOutputDevice::Serialize(const TCHAR* V, ELogVerbosity::Type Verbosity, const FName& Category)
+{
+#if PLATFORM_ANDROID
+    // Format the log message similar to Unreal's standard output
+    FString Format = FOutputDevice::FormatLogLine(Verbosity, Category, V, GIsEditor ? ELogTimes::UTC : ELogTimes::SinceGStartTime);
+
+    // Log to Android's logging system
+    __android_log_print(ANDROID_LOG_ERROR, "Unreal", TCHAR_TO_UTF8(*Format));
+#endif
+
+    // Handle fatal errors
+    if (Verbosity == ELogVerbosity::Fatal)
+    {
+        HandleError();
+    }
+}
+
+void FMyUnrealCrasherAndroidErrorOutputDevice::HandleError()
+{
+    // Set up the crash context regardless
+    RequestEngineExit(TEXT("Android RequestExitWithCrashReporting"));
+
+    // Use abort() for forced exit to trigger crash reporting (e.g., BugSplat)
+    abort();
+}
+```
+
+MyUnrealCrasherGameInstance.cpp (TODO BG link)
+```cpp
+#include "MyUnrealCrasherGameInstance.h"  // Your game instance header
+#include "MyUnrealCrasherAndroidErrorOutputDevice.h"  // Include the custom error device header
+
+void UMyUnrealCrasherGameInstance::Init()
+{
+    Super::Init();
+
+#if PLATFORM_ANDROID
+    GError = FMyUnrealCrasherAndroidErrorOutputDevice::GetErrorOutputDevice();  // Override the global error output device
+#endif
+}
+```
 
 ### Xbox and PlayStation
 
