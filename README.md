@@ -94,79 +94,179 @@ Note that sometimes iOS applications won't crash while the USB cable is connecte
 
 Fatal Errors on Android raise a `SIGTRAP` and require extra configuration so that they can be reported to BugSplat.
 
-MyUnrealCrasherErrorOutputDevice.h (TODO BG Link)
+[MyUnrealCrasherErrorOutputDevice.h](https://github.com/BugSplat-Git/my-unreal-crasher/blob/b0a805505a661d6729657bcae724e64dea31484b/Source/MyUnrealCrasher/MyUnrealCrasherAndroidErrorOutputDevice.h)
 ```cpp
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Misc/OutputDeviceError.h"
 
+#if PLATFORM_ANDROID
 class FMyUnrealCrasherAndroidErrorOutputDevice : public FOutputDeviceError
 {
 public:
-    virtual ~FMyUnrealCrasherAndroidErrorOutputDevice() {}
+	virtual ~FMyUnrealCrasherAndroidErrorOutputDevice() {}
+	
+	virtual void Serialize(const TCHAR* V, ELogVerbosity::Type Verbosity, const FName& Category) override;
+	virtual void HandleError() override;
+	
+	static FOutputDeviceError* GetErrorOutputDevice();
+	
+private:
+	void RequestExit(bool Force, const TCHAR* CallSite);
+};
+#endif
+```
 
-    virtual void Serialize(const TCHAR* V, ELogVerbosity::Type Verbosity, const FName& Category) override;
+[MyUnrealCrasherErrorOutputDevice.cpp](https://github.com/BugSplat-Git/my-unreal-crasher/blob/b0a805505a661d6729657bcae724e64dea31484b/Source/MyUnrealCrasher/MyUnrealCrasherAndroidErrorOutputDevice.cpp)
+```cpp
+// Copyright © BugSplat. All rights reserved.
+#include "MyUnrealCrasherAndroidErrorOutputDevice.h"
 
-    virtual void HandleError() override;
+#include "CoreMinimal.h"
+#include "CoreGlobals.h"
+#include "Misc/OutputDevice.h"
+#include "Misc/OutputDeviceHelper.h"
+#include "Misc/App.h"
+#include "Misc/CoreDelegates.h"
+#include "Misc/FeedbackContext.h"
+#include "HAL/PlatformMisc.h"
+#include "HAL/PlatformCrt.h"
 
-    static FOutputDeviceError* GetErrorOutputDevice()
-    {
-        static FMyUnrealCrasherAndroidErrorOutputDevice Singleton;
-        return &Singleton;
-    }
+#if PLATFORM_ANDROID
+#include "Android/AndroidPlatform.h" // For LogAndroid
+
+FOutputDeviceError* FMyUnrealCrasherAndroidErrorOutputDevice::GetErrorOutputDevice()
+{
+	static FMyUnrealCrasherAndroidErrorOutputDevice ErrorOutputDevice;
+	return &ErrorOutputDevice;
+}
+
+void FMyUnrealCrasherAndroidErrorOutputDevice::Serialize( const TCHAR* Msg, ELogVerbosity::Type Verbosity, const class FName& Category )
+{
+	FPlatformMisc::LowLevelOutputDebugString(*FOutputDeviceHelper::FormatLogLine(Verbosity, Category, Msg, GPrintLogTimes));
+
+	static int32 CallCount = 0;
+	int32 NewCallCount = FPlatformAtomics::InterlockedIncrement(&CallCount);
+	if(GIsCriticalError == 0 && NewCallCount == 1)
+	{
+		// First appError.
+		GIsCriticalError = 1;
+
+		FCString::Strncpy(GErrorExceptionDescription, Msg, UE_ARRAY_COUNT(GErrorExceptionDescription));
+	}
+	else
+	{
+		UE_LOG(LogAndroid, Error, TEXT("Error reentered: %s"), Msg);
+	}
+
+	if (GIsGuarded)
+	{
+		UE_DEBUG_BREAK();
+	}
+	else
+	{
+		HandleError();
+		RequestExit(true, TEXT("MyUnrealCrasherAndroidErrorOutputDevice::Serialize.!GIsGuarded"));
+	}
+}
+
+void FMyUnrealCrasherAndroidErrorOutputDevice::HandleError()
+{
+	static int32 CallCount = 0;
+	int32 NewCallCount = FPlatformAtomics::InterlockedIncrement(&CallCount);
+
+	if (NewCallCount != 1)
+	{
+		UE_LOG(LogAndroid, Error, TEXT("HandleError re-entered."));
+		return;
+	}
+	
+	GIsGuarded = 0;
+	GIsRunning = 0;
+	GIsCriticalError = 1;
+	GLogConsole = NULL;
+	GErrorHist[UE_ARRAY_COUNT(GErrorHist) - 1] = 0;
+
+	// Dump the error and flush the log.
+#if !NO_LOGGING
+	FDebug::LogFormattedMessageWithCallstack(LogAndroid.GetCategoryName(), __FILE__, __LINE__, TEXT("=== Critical error: ==="), GErrorHist, ELogVerbosity::Error);
+#endif
+	
+	GLog->Panic();
+
+	FCoreDelegates::OnHandleSystemError.Broadcast();
+	FCoreDelegates::OnShutdownAfterError.Broadcast();
+}
+
+
+void FMyUnrealCrasherAndroidErrorOutputDevice::RequestExit( bool Force, const TCHAR* CallSite)
+{
+
+#if PLATFORM_COMPILER_OPTIMIZATION_PG_PROFILING
+	// Write the PGO profiling file on a clean shutdown.
+	extern void PGO_WriteFile();
+	if (!GIsCriticalError)
+	{
+		PGO_WriteFile();
+		// exit now to avoid a possible second PGO write when AndroidMain exits.
+		Force = true;
+	}
+#endif
+
+	UE_LOG(LogAndroid, Log, TEXT("FMyUnrealCrasherAndroidErrorOutputDevice::RequestExit(%i, %s)"), Force,
+		CallSite ? CallSite : TEXT("<NoCallSiteInfo>"));
+	if (GLog)
+	{
+		GLog->Flush();
+	}
+
+	if (Force)
+	{
+		abort(); // Abort to trigger a crash report
+	}
+	else
+	{
+		RequestEngineExit(TEXT("Android RequestExitWithCrashReporting")); // Called regardless in our version to set up the crash context
+	}
+}
+#endif
+```
+[MyUnrealCrasherGameInstance.h](https://github.com/BugSplat-Git/my-unreal-crasher/blob/b0a805505a661d6729657bcae724e64dea31484b/Source/MyUnrealCrasher/MyUnrealCrasherGameInstance.h)
+```cpp
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Engine/GameInstance.h"
+#include "MyUnrealCrasherGameInstance.generated.h"
+
+UCLASS()
+class MYUNREALCRASHER_API UMyUnrealCrasherGameInstance : public UGameInstance
+{
+	GENERATED_BODY()
+
+public:
+	virtual void Init() override;
 };
 ```
 
-MyUnrealCrasherErrorOutputDevice.cpp (TODO BG Link)
+[MyUnrealCrasherGameInstance.cpp](https://github.com/BugSplat-Git/my-unreal-crasher/blob/b0a805505a661d6729657bcae724e64dea31484b/Source/MyUnrealCrasher/MyUnrealCrasherGameInstance.cpp)
 ```cpp
+//  Copyright © BugSplat. All rights reserved.
+#include "MyUnrealCrasherGameInstance.h"
 #include "MyUnrealCrasherAndroidErrorOutputDevice.h"
-#include "Misc/OutputDevice.h"
-#include "HAL/PlatformMisc.h"
-#include "Misc/App.h"
 
 #if PLATFORM_ANDROID
 #include <android/log.h>
 #endif
 
-void FMyUnrealCrasherAndroidErrorOutputDevice::Serialize(const TCHAR* V, ELogVerbosity::Type Verbosity, const FName& Category)
-{
-#if PLATFORM_ANDROID
-    // Format the log message similar to Unreal's standard output
-    FString Format = FOutputDevice::FormatLogLine(Verbosity, Category, V, GIsEditor ? ELogTimes::UTC : ELogTimes::SinceGStartTime);
-
-    // Log to Android's logging system
-    __android_log_print(ANDROID_LOG_ERROR, "Unreal", TCHAR_TO_UTF8(*Format));
-#endif
-
-    // Handle fatal errors
-    if (Verbosity == ELogVerbosity::Fatal)
-    {
-        HandleError();
-    }
-}
-
-void FMyUnrealCrasherAndroidErrorOutputDevice::HandleError()
-{
-    // Set up the crash context regardless
-    RequestEngineExit(TEXT("Android RequestExitWithCrashReporting"));
-
-    // Use abort() for forced exit to trigger crash reporting (e.g., BugSplat)
-    abort();
-}
-```
-
-MyUnrealCrasherGameInstance.cpp (TODO BG link)
-```cpp
-#include "MyUnrealCrasherGameInstance.h"  // Your game instance header
-#include "MyUnrealCrasherAndroidErrorOutputDevice.h"  // Include the custom error device header
-
 void UMyUnrealCrasherGameInstance::Init()
 {
-    Super::Init();
+	Super::Init();
+	UE_LOG(LogTemp, Log, TEXT("MyUnrealCrasherGameInstance::Init - Setting custom error output device"));
 
 #if PLATFORM_ANDROID
-    GError = FMyUnrealCrasherAndroidErrorOutputDevice::GetErrorOutputDevice();  // Override the global error output device
+	GError = FMyUnrealCrasherAndroidErrorOutputDevice::GetErrorOutputDevice();
 #endif
 }
 ```
