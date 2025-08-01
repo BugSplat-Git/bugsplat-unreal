@@ -89,13 +89,17 @@ Note that sometimes iOS applications won't crash while the USB cable is connecte
 
 #### Android
 
-> ![Note]
+> [!Note]
 > Code is aggressively optimized when building for Android. Oftentimes, Unreal's build process optimizes away code that generates simple errors used in testing. To test a null pointer dereference, you can add the `volatile` keyword to work around compiler optimizations.
 
 
 Fatal Errors on Android raise a `SIGTRAP` and require extra configuration so that they can be reported to BugSplat.
+	
+<details>
+	<summary>Click to reveal Android Error Output Device code </summary>
 
 [MyUnrealCrasherErrorOutputDevice.h](https://github.com/BugSplat-Git/my-unreal-crasher/blob/b0a805505a661d6729657bcae724e64dea31484b/Source/MyUnrealCrasher/MyUnrealCrasherAndroidErrorOutputDevice.h)
+
 ```cpp
 #pragma once
 
@@ -120,8 +124,8 @@ private:
 ```
 
 [MyUnrealCrasherErrorOutputDevice.cpp](https://github.com/BugSplat-Git/my-unreal-crasher/blob/b0a805505a661d6729657bcae724e64dea31484b/Source/MyUnrealCrasher/MyUnrealCrasherAndroidErrorOutputDevice.cpp)
+
 ```cpp
-// Copyright © BugSplat. All rights reserved.
 #include "MyUnrealCrasherAndroidErrorOutputDevice.h"
 
 #include "CoreMinimal.h"
@@ -233,7 +237,9 @@ void FMyUnrealCrasherAndroidErrorOutputDevice::RequestExit( bool Force, const TC
 }
 #endif
 ```
+
 [MyUnrealCrasherGameInstance.h](https://github.com/BugSplat-Git/my-unreal-crasher/blob/b0a805505a661d6729657bcae724e64dea31484b/Source/MyUnrealCrasher/MyUnrealCrasherGameInstance.h)
+
 ```cpp
 #pragma once
 
@@ -252,6 +258,7 @@ public:
 ```
 
 [MyUnrealCrasherGameInstance.cpp](https://github.com/BugSplat-Git/my-unreal-crasher/blob/b0a805505a661d6729657bcae724e64dea31484b/Source/MyUnrealCrasher/MyUnrealCrasherGameInstance.cpp)
+
 ```cpp
 //  Copyright © BugSplat. All rights reserved.
 #include "MyUnrealCrasherGameInstance.h"
@@ -271,6 +278,8 @@ void UMyUnrealCrasherGameInstance::Init()
 #endif
 }
 ```
+
+</details>
 
 ### Xbox and PlayStation
 
@@ -299,3 +308,4 @@ If everything is configured correctly, you should see something that resembles t
 ## 🧑‍💻 Contributing
 
 BugSplat ❤️s open source! If you feel that this package can be improved, please open an [Issue](https://github.com/BugSplat-Git/bugsplat-unreal/issues). If you have an awesome new feature you'd like to implement, we'd love to merge your [Pull Request](https://github.com/BugSplat-Git/bugsplat-unreal/pulls). You can also send us an [email](mailto:support@bugsplat.com), join us on [Discord](https://discord.gg/K4KjjRV5ve), or message us via the in-app chat on [bugsplat.com](https://bugsplat.com).
+
