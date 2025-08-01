@@ -20,4 +20,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "BugSplat")
 	static void GenerateEnsure();
+
+	UFUNCTION(BlueprintCallable, Category = "BugSplat")
+	static void GenerateFatalLog();
 };

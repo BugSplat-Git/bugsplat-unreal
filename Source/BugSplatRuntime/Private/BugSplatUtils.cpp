@@ -1,5 +1,4 @@
 // Copyright BugSplat. All Rights Reserved.
-
 #include "BugSplatUtils.h"
 
 void UBugSplatUtils::GenerateCrash()
@@ -21,4 +20,9 @@ void UBugSplatUtils::GenerateEnsure()
 	UE_LOG(LogTemp, Log, TEXT("BugSplat: GenerateEnsure"));
 	char* ptr = nullptr;
 	ensure(ptr != nullptr);
+}
+
+void UBugSplatUtils::GenerateFatalLog()
+{
+	UE_LOG(LogTemp, Fatal, TEXT("BugSplat: GenerateFatalLog"));
 }
