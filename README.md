@@ -303,9 +303,10 @@ Once you've submitted a crash report, navigate to the [Crashes](https://app.bugs
 
 If everything is configured correctly, you should see something that resembles the following:
 
-<img width="1728" alt="BugSplat Crash Page" src="https://github.com/BugSplat-Git/bugsplat-unreal/assets/2646053/e577b6e9-4b8e-4b9a-8a56-556909c58069">
+<img width="3456" height="1996" alt="image" src="https://github.com/user-attachments/assets/53a6acd8-8a3f-4355-bddf-02023af17660" />
 
 ## 🧑‍💻 Contributing
 
 BugSplat ❤️s open source! If you feel that this package can be improved, please open an [Issue](https://github.com/BugSplat-Git/bugsplat-unreal/issues). If you have an awesome new feature you'd like to implement, we'd love to merge your [Pull Request](https://github.com/BugSplat-Git/bugsplat-unreal/pulls). You can also send us an [email](mailto:support@bugsplat.com), join us on [Discord](https://discord.gg/K4KjjRV5ve), or message us via the in-app chat on [bugsplat.com](https://bugsplat.com).
+
 
