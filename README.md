@@ -90,7 +90,8 @@ Note that sometimes iOS applications won't crash while the USB cable is connecte
 #### Android
 
 > ![Note]
-> Code is aggressively optimized when building for Android. Oftentimes, Unreal's build process causes code that generates simple errors used in testing the integration to get optimized away. To test a null pointer dereference, you can add the `volatile` keyword to work around compiler optimizations.
+> Code is aggressively optimized when building for Android. Oftentimes, Unreal's build process optimizes away code that generates simple errors used in testing. To test a null pointer dereference, you can add the `volatile` keyword to work around compiler optimizations.
+
 
 Fatal Errors on Android raise a `SIGTRAP` and require extra configuration so that they can be reported to BugSplat.
 
