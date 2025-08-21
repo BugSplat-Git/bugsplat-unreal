@@ -52,17 +52,6 @@
 #import "BITCrashMetaData.h"
 #endif /* HOCKEYSDK_FEATURE_CRASH_REPORTER */
 
-#if HOCKEYSDK_FEATURE_UPDATES
-#import "BITUpdateManager.h"
-#import "BITUpdateManagerDelegate.h"
-#import "BITUpdateViewController.h"
-#endif /* HOCKEYSDK_FEATURE_UPDATES */
-
-#if HOCKEYSDK_FEATURE_STORE_UPDATES
-#import "BITStoreUpdateManager.h"
-#import "BITStoreUpdateManagerDelegate.h"
-#endif /* HOCKEYSDK_FEATURE_STORE_UPDATES */
-
 #if HOCKEYSDK_FEATURE_FEEDBACK
 #import "BITFeedbackManager.h"
 #import "BITFeedbackManagerDelegate.h"
