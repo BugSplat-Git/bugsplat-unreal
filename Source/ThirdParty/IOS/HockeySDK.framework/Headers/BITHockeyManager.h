@@ -39,12 +39,6 @@
 #if HOCKEYSDK_FEATURE_CRASH_REPORTER
 @class BITCrashManager;
 #endif
-#if HOCKEYSDK_FEATURE_UPDATES
-@class BITUpdateManager;
-#endif
-#if HOCKEYSDK_FEATURE_STORE_UPDATES
-@class BITStoreUpdateManager;
-#endif
 #if HOCKEYSDK_FEATURE_FEEDBACK
 @class BITFeedbackManager;
 #endif
@@ -61,7 +55,7 @@
  This is the principal SDK class. It represents the entry point for the HockeySDK. The main promises of the class are initializing the SDK modules, providing access to global properties and to all modules. Initialization is divided into several distinct phases:
  
  1. Setup the [HockeyApp](http://hockeyapp.net/) app identifier and the optional delegate: This is the least required information on setting up the SDK and using it. It does some simple validation of the app identifier and checks if the app is running from the App Store or not.
- 2. Provides access to the SDK modules `BITCrashManager`, `BITUpdateManager`, and `BITFeedbackManager`. This way all modules can be further configured to personal needs, if the defaults don't fit the requirements.
+ 2. Provides access to the SDK modules `BITCrashManager`, and `BITFeedbackManager`. This way all modules can be further configured to personal needs, if the defaults don't fit the requirements.
  3. Configure each module.
  4. Start up all modules.
  
@@ -69,7 +63,6 @@
 
  All modules do **NOT** show any user interface if the module is not activated or not integrated.
  `BITCrashManager`: Shows an alert on startup asking the user if he/she agrees on sending the crash report, if `[BITCrashManager crashManagerStatus]` is set to `BITCrashManagerStatusAlwaysAsk` (default)
- `BITUpdateManager`: Is automatically deactivated when the SDK detects it is running from a build distributed via the App Store. Otherwise if it is not deactivated manually, it will show an alert after startup informing the user about a pending update, if one is available. If the user then decides to view the update another screen is presented with further details and an option to install the update.
  `BITFeedbackManager`: If this module is deactivated or the user interface is nowhere added into the app, this module will not do anything. It will not fetch the server for data or show any user interface. If it is integrated, activated, and the user already used it to provide feedback, it will show an alert after startup if a new answer has been received from the server with the option to view it.
  
  Example:
@@ -124,8 +117,7 @@ NS_ASSUME_NONNULL_BEGIN
  Initializes the manager with a particular app identifier and delegate
  
  Initialize the manager with a HockeyApp app identifier and assign the class that
- implements the optional protocols `BITHockeyManagerDelegate`, `BITCrashManagerDelegate` or
- `BITUpdateManagerDelegate`.
+ implements the optional protocols `BITHockeyManagerDelegate`, `BITCrashManagerDelegate`.
  
     [[BITHockeyManager sharedHockeyManager]
       configureWithIdentifier:@"<AppIdentifierFromHockeyApp>"
@@ -136,7 +128,6 @@ NS_ASSUME_NONNULL_BEGIN
  @see startManager
  @see BITHockeyManagerDelegate
  @see BITCrashManagerDelegate
- @see BITUpdateManagerDelegate
  @see BITFeedbackManagerDelegate
  @param appIdentifier The app identifier that should be used.
  @param delegate `nil` or the class implementing the option protocols
@@ -151,7 +142,7 @@ NS_ASSUME_NONNULL_BEGIN
  All modules will automatically detect if the app is running in the App Store and use
  the live app identifier for that. In all other cases it will use the beta app identifier.
  And also assign the class that implements the optional protocols `BITHockeyManagerDelegate`,
- `BITCrashManagerDelegate` or `BITUpdateManagerDelegate`
+ `BITCrashManagerDelegate`
  
     [[BITHockeyManager sharedHockeyManager]
       configureWithBetaIdentifier:@"<AppIdentifierForBetaAppFromHockeyApp>"
@@ -172,7 +163,6 @@ NS_ASSUME_NONNULL_BEGIN
  @see startManager
  @see BITHockeyManagerDelegate
  @see BITCrashManagerDelegate
- @see BITUpdateManagerDelegate
  @see BITFeedbackManagerDelegate
  @param betaIdentifier The app identifier for the _non_ app store (beta) configurations
  @param liveIdentifier The app identifier for the app store configurations.
@@ -210,10 +200,8 @@ NS_ASSUME_NONNULL_BEGIN
  
  @see BITHockeyManagerDelegate
  @see BITCrashManagerDelegate
- @see BITUpdateManagerDelegate
  @see BITFeedbackManagerDelegate
  @see BITAuthenticatorDelegate
- @see BITStoreUpdateManagerDelegate
  */
 @property (nonatomic, weak, nullable) id<BITHockeyManagerDelegate> delegate;
 
@@ -261,72 +249,6 @@ NS_ASSUME_NONNULL_BEGIN
  @see crashManager
  */
 @property (nonatomic, getter = isCrashManagerDisabled) BOOL disableCrashManager;
-
-#endif
-
-
-#if HOCKEYSDK_FEATURE_UPDATES
-
-/**
- Reference to the initialized BITUpdateManager module
- 
- Returns the BITUpdateManager instance initialized by BITHockeyManager
- 
- @see configureWithIdentifier:delegate:
- @see configureWithBetaIdentifier:liveIdentifier:delegate:
- @see startManager
- @see disableUpdateManager
- */
-@property (nonatomic, strong, readonly) BITUpdateManager *updateManager;
-
-
-/**
- Flag the determines whether the Update Manager should be disabled
- 
- If this flag is enabled, then checking for updates and submitting beta usage
- analytics will be turned off!
- 
- Please note that the Update Manager instance will be initialized anyway!
- 
- @warning This property needs to be set before calling `startManager`
-
- *Default*: _NO_
- @see updateManager
- */
-@property (nonatomic, getter = isUpdateManagerDisabled) BOOL disableUpdateManager;
-
-#endif
-
-
-#if HOCKEYSDK_FEATURE_STORE_UPDATES
-
-/**
- Reference to the initialized BITStoreUpdateManager module
- 
- Returns the BITStoreUpdateManager instance initialized by BITHockeyManager
- 
- @see configureWithIdentifier:delegate:
- @see configureWithBetaIdentifier:liveIdentifier:delegate:
- @see startManager
- @see enableStoreUpdateManager
- */
-@property (nonatomic, strong, readonly) BITStoreUpdateManager *storeUpdateManager;
-
-
-/**
- Flag the determines whether the App Store Update Manager should be enabled
- 
- If this flag is enabled, then checking for updates when the app runs from the
- app store will be turned on!
- 
- Please note that the Store Update Manager instance will be initialized anyway!
-
- @warning This property needs to be set before calling `startManager`
-
- *Default*: _NO_
- @see storeUpdateManager
- */
-@property (nonatomic, getter = isStoreUpdateManagerEnabled) BOOL enableStoreUpdateManager;
 
 #endif
 
@@ -445,7 +367,7 @@ NS_ASSUME_NONNULL_BEGIN
  app is cold started.
  
  This property is only considered in App Store Environment, since it would otherwise
- affect the `BITUpdateManager` and `BITAuthenticator` functionalities!
+ affect the `BITAuthenticator` functionalities!
  
  @warning This property needs to be set before calling `startManager`
  
