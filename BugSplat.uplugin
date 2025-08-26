@@ -1,7 +1,7 @@
 {
     "FileVersion": 3,
     "Version": "1.2",
-    "VersionName": "1.6.5",
+    "VersionName": "1.6.6",
     "FriendlyName": "BugSplat",
     "Description": "BugSplat provides crash reporting for Unreal projects, and gives invaluable insight into the issues tripping up your users.",
     "Category": "Code Plugins",
