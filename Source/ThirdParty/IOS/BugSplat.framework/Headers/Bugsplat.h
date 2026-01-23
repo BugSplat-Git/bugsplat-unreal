@@ -4,6 +4,7 @@
 //  Copyright © BugSplat, LLC. All rights reserved.
 //
 
+#import <TargetConditionals.h>
 #import <Foundation/Foundation.h>
 
 //! Project version number for BugSplat.
@@ -57,41 +58,34 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * The database name BugSplat will use to construct the BugSplatDatabase URL where crash reports will be submitted.
  *
- * NOTES:
- * By default, the BugSplat database name is pulled from the App's Info.plist.
+ * By default, the BugSplat database name is pulled from the App's Info.plist (BugSplatDatabase key).
  *
- * When a third party library or plugin developer is leveraging BugSplat, but the App developer incorporating
- * the plugin is not using BugSplat, programmatically setting this property would be appropriate.
+ * Set this property to override the Info.plist value or to set the database programmatically.
+ * The value can be changed at any time and will be captured at crash time.
  *
- * Only one BugSplat database can be specified within an App including any third party libraries and plugins.
- * This means if the Info.plist contains a BugSplat database, attempting to change this property will have no effect.
- *
- * Additionally, if the Info.plist does not contain a BugSplat database key and value, the first call to
- * set this property will set the BugSplat database name. Any subsequent calls to set this property will have no effect.
- *
- * Finally, with the above considerations, if programmatic change of this property is desired, it must be set before calling
- * BugSplat `start` method or it will have no effect.
+ * @note If neither Info.plist nor this property is set before calling `start`, an assertion will fail.
  */
 @property (nonatomic, copy, nullable) NSString *bugSplatDatabase;
 
 /**
- * The userID that will be used when a crash report is submitted.
+ * The application name that will be used when a crash report is submitted.
  *
- * The value can be set programmatically at any time and will be stored in NSUserDefaults.
- * To delete the value from NSUserDefaults, set the value to `nil`.
+ * By default, this value is pulled from the App's Info.plist (CFBundleDisplayName or CFBundleName).
  *
- * This property is optional.
- *
- * @warning When returning a non nil value, crash reports are not anonymous any more
- * and the crash alerts will not show the word "anonymous"!
- *
- * @warning If setting this property programmatically, it needs to be set before calling `start`
- * if the userID should be included in a possible crash from the last app session.
- *
- * @see userName
- * @see userEmail
+ * Set this property to override the default application name. The value can be changed at any time
+ * and will be captured at crash time.
  */
-@property (nonatomic, copy, nullable) NSString *userID;
+@property (nonatomic, copy, nullable) NSString *applicationName;
+
+/**
+ * The application version that will be used when a crash report is submitted.
+ *
+ * By default, this value is pulled from the App's Info.plist (CFBundleShortVersionString).
+ *
+ * Set this property to override the default application version. The value can be changed at any time
+ * and will be captured at crash time.
+ */
+@property (nonatomic, copy, nullable) NSString *applicationVersion;
 
 /**
  * The user name that will be used when a crash report is submitted.
@@ -107,7 +101,6 @@ NS_ASSUME_NONNULL_BEGIN
  * @warning If setting this property programmatically, it needs to be set before calling `start`
  * if the userName should be included in a possible crash from the last app session.
  *
- * @see userID
  * @see userEmail
  */
 @property (nonatomic, copy, nullable) NSString *userName;
@@ -126,16 +119,49 @@ NS_ASSUME_NONNULL_BEGIN
  * @warning If setting this property programmatically, it needs to be set before calling `start`
  * if the userEmail should be included in a possible crash from the last app session.
  *
- * @see userID
  * @see userName
  */
 @property (nonatomic, copy, nullable) NSString *userEmail;
+
+/**
+ * An application-defined key that will be included with crash reports.
+ *
+ * Use this for any identifier meaningful to your application, such as:
+ * - License keys
+ * - Build identifiers
+ * - User segments
+ * - Environment identifiers (dev/staging/prod)
+ *
+ * In the BugSplat dashboard, you can configure custom localized support responses
+ * for crash groups based on the appKey value.
+ *
+ * The value is captured at crash time and included with the crash report.
+ */
+@property (nonatomic, copy, nullable) NSString *appKey;
+
+/**
+ * Additional notes to include with crash reports.
+ *
+ * Use this for any additional context about the crash, such as:
+ * - Build configuration details
+ * - Feature flags enabled
+ * - Recent user actions
+ * - Debug information
+ *
+ * The value is captured at crash time and included with the crash report.
+ */
+@property (nonatomic, copy, nullable) NSString *notes;
 
 /*!
  *  Submit crash reports without asking the user
  *
  *  _YES_: The crash report will be submitted without asking the user
- *  _NO_: The user will be asked if the crash report can be submitted (default)
+ *  _NO_: The user will be asked if the crash report can be submitted
+ *
+ *  On iOS, when set to NO, the user is presented with an alert with options:
+ *  - "Send" - sends this crash report
+ *  - "Don't Send" - discards all pending crash reports
+ *  - "Always Send" - sends this crash report and enables auto-submit for future crashes
  *
  *  Default: iOS: _YES_, macOS: _NO_
  */

@@ -4,6 +4,8 @@
 //  Copyright © BugSplat, LLC. All rights reserved.
 //
 
+#import <TargetConditionals.h>
+
 #if TARGET_OS_OSX
   #import <BugSplatMac/BugSplatMac.h>
 #else
@@ -71,19 +73,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                                    contentType:@"application/octet-stream"];
  @param bugSplat The `BugSplat` instance invoking this delegate
 */
-- (BugSplatAttachment *)attachmentForBugSplat:(BugSplat *)bugSplat API_AVAILABLE(ios(13.0));
+- (nullable BugSplatAttachment *)attachmentForBugSplat:(BugSplat *)bugSplat API_AVAILABLE(ios(13.0));
 
 // MARK: - BugSplatDelegate (MacOS)
 #if TARGET_OS_OSX
-
-/** Return any string based data the crash report being processed should contain
- *
- * @param bugSplat The `BugSplat` instance invoking this delegate
- * @param signal The system crash signal
- * @param exceptionName The exception name.  Only provided if crash is the result of an uncaught exception
- * @param exceptionReason The exception reason.  Only provided if crash is the result of an uncaught exception
- */
-- (NSString *)applicationKeyForBugSplat:(BugSplat *)bugSplat signal:(NSString *)signal exceptionName:(NSString *)exceptionName exceptionReason:(NSString *)exceptionReason API_AVAILABLE(macosx(10.13));
 
 /** Return a collection of BugsplatAttachment objects providing an NSData object the crash report being processed should contain
 
@@ -102,7 +95,12 @@ NS_ASSUME_NONNULL_BEGIN
 // MARK: - BugSplatDelegate (iOS)
 #else
 
-/** Invoked after the user did choose to send crashes always in the alert
+/** Invoked after the user chose "Always Send" in the crash report alert.
+ 
+ When the user selects "Always Send", the crash report is sent and future crash reports
+ will be submitted automatically without prompting (unless the app clears NSUserDefaults).
+ 
+ Use this delegate method to update your app's UI or settings to reflect the user's choice.
 
  @param bugSplat The `BugSplat` instance invoking this delegate
  */
