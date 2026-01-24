@@ -324,6 +324,10 @@ UBugSplatEditorSettings* FBugSplatRuntimeModule::GetSettings() const
 void FBugSplatRuntimeModule::SetupCrashReportingIos()
 {
 #if PLATFORM_IOS
+	// Capture settings before entering the async block
+	FString AppName = BugSplatEditorSettings->BugSplatApp;
+	FString AppVersion = FString::Printf(TEXT("%s-ios"), *BugSplatEditorSettings->BugSplatVersion);
+
 	dispatch_async(dispatch_get_main_queue(), ^
 		{
 			// Get the log file path
@@ -337,6 +341,13 @@ void FBugSplatRuntimeModule::SetupCrashReportingIos()
 
 			// Configure BugSplat options if needed
 			[[BugSplat shared]setAutoSubmitCrashReport:YES]; // Or NO if you want to show a dialog
+
+			// Set application name and version from Unreal settings (overrides Info.plist values)
+			// This ensures consistency with Android crash reporting
+			NSString* nsAppName = [NSString stringWithUTF8String : TCHAR_TO_UTF8(*AppName)];
+			NSString* nsAppVersion = [NSString stringWithUTF8String : TCHAR_TO_UTF8(*AppVersion)];
+			[[BugSplat shared]setApplicationName:nsAppName];
+			[[BugSplat shared]setApplicationVersion:nsAppVersion];
 
 			// Get attributes from the common function
 			TMap<FString, FString> Attributes = FBugSplatRuntimeModule::Get().GetCrashAttributes();

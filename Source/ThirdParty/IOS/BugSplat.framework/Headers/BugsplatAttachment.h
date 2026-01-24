@@ -6,7 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface BugSplatAttachment : NSObject
+@interface BugSplatAttachment : NSObject <NSSecureCoding>
 
 /**
  The filename the attachment should get
