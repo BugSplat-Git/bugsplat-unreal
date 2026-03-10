@@ -48,8 +48,9 @@ public class BugSplatRuntime : ModuleRules
 				"Slate",
 				"SlateCore",
 				"Projects",
-				"Json"
-				// ... add private dependencies that you statically link with here ...	
+				"Json",
+				"HTTP"
+				// ... add private dependencies that you statically link with here ...
 			}
 			);
 		
