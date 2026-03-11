@@ -139,6 +139,7 @@ void UBugSplatFeedback::PostFeedback(
     const FString& User,
     const FString& Email,
     const TArray<FString>& AttachmentPaths,
+    const FString& AppKey,
     const FOnFeedbackComplete& OnComplete)
 {
     if (Title.IsEmpty())
@@ -149,7 +150,7 @@ void UBugSplatFeedback::PostFeedback(
     }
 
     TArray<uint8> ZipData = CreateFeedbackZip(Title, Description, AttachmentPaths);
-    GetPresignedUrl(Database, Application, Version, ZipData, Title, Description, User, Email, OnComplete);
+    GetPresignedUrl(Database, Application, Version, ZipData, Title, Description, User, Email, AppKey, OnComplete);
 }
 
 TArray<uint8> UBugSplatFeedback::CreateFeedbackZip(const FString& Title, const FString& Description, const TArray<FString>& AttachmentPaths)
@@ -199,6 +200,7 @@ void UBugSplatFeedback::GetPresignedUrl(
     const FString& Description,
     const FString& User,
     const FString& Email,
+    const FString& AppKey,
     FOnFeedbackComplete OnComplete)
 {
     FString Url = FString::Printf(
@@ -212,7 +214,7 @@ void UBugSplatFeedback::GetPresignedUrl(
 
     // Capture data for the callback
     Request->OnProcessRequestComplete().BindLambda(
-        [Database, Application, Version, ZipData, Description, User, Email, OnComplete]
+        [Database, Application, Version, ZipData, Description, User, Email, AppKey, OnComplete]
         (FHttpRequestPtr Req, FHttpResponsePtr Resp, bool bSuccess)
         {
             if (!bSuccess || !Resp.IsValid() || Resp->GetResponseCode() != 200)
@@ -231,7 +233,7 @@ void UBugSplatFeedback::GetPresignedUrl(
             }
 
             FString PresignedUrl = JsonObj->GetStringField(TEXT("url"));
-            UploadToS3(PresignedUrl, ZipData, Database, Application, Version, Description, User, Email, OnComplete);
+            UploadToS3(PresignedUrl, ZipData, Database, Application, Version, Description, User, Email, AppKey, OnComplete);
         }
     );
 
@@ -247,6 +249,7 @@ void UBugSplatFeedback::UploadToS3(
     const FString& Description,
     const FString& User,
     const FString& Email,
+    const FString& AppKey,
     FOnFeedbackComplete OnComplete)
 {
     TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FHttpModule::Get().CreateRequest();
@@ -256,7 +259,7 @@ void UBugSplatFeedback::UploadToS3(
     Request->SetContent(ZipData);
 
     Request->OnProcessRequestComplete().BindLambda(
-        [PresignedUrl, Database, Application, Version, Description, User, Email, OnComplete]
+        [PresignedUrl, Database, Application, Version, Description, User, Email, AppKey, OnComplete]
         (FHttpRequestPtr Req, FHttpResponsePtr Resp, bool bSuccess)
         {
             if (!bSuccess || !Resp.IsValid() || Resp->GetResponseCode() != 200)
@@ -267,7 +270,7 @@ void UBugSplatFeedback::UploadToS3(
             }
 
             FString Etag = Resp->GetHeader(TEXT("ETag")).Replace(TEXT("\""), TEXT(""));
-            CommitUpload(Database, Application, Version, PresignedUrl, Etag, Description, User, Email, OnComplete);
+            CommitUpload(Database, Application, Version, PresignedUrl, Etag, Description, User, Email, AppKey, OnComplete);
         }
     );
 
@@ -283,6 +286,7 @@ void UBugSplatFeedback::CommitUpload(
     const FString& Description,
     const FString& User,
     const FString& Email,
+    const FString& AppKey,
     FOnFeedbackComplete OnComplete)
 {
     FString Url = FString::Printf(TEXT("https://%s.bugsplat.com/api/commitS3CrashUpload"), *Database);
@@ -300,6 +304,7 @@ void UBugSplatFeedback::CommitUpload(
     AddField(TEXT("crashTypeId"), TEXT("36"));
     AddField(TEXT("s3Key"), S3Key);
     AddField(TEXT("md5"), Md5);
+    AddField(TEXT("appKey"), AppKey);
     AddField(TEXT("description"), Description);
     AddField(TEXT("user"), User);
     AddField(TEXT("email"), Email);

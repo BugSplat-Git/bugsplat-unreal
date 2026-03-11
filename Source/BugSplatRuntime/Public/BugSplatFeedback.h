@@ -24,6 +24,7 @@ public:
      * @param User The user's name or id
      * @param Email The user's email
      * @param AttachmentPaths File paths to attach to the feedback report
+     * @param AppKey Optional application key for restricted databases
      * @param OnComplete Callback invoked when the operation completes
      */
     UFUNCTION(BlueprintCallable, Category = "BugSplat")
@@ -36,6 +37,7 @@ public:
         const FString& User = TEXT(""),
         const FString& Email = TEXT(""),
         const TArray<FString>& AttachmentPaths = TArray<FString>(),
+        const FString& AppKey = TEXT(""),
         const FOnFeedbackComplete& OnComplete = FOnFeedbackComplete()
     );
 
@@ -49,6 +51,7 @@ private:
         const FString& Description,
         const FString& User,
         const FString& Email,
+        const FString& AppKey,
         FOnFeedbackComplete OnComplete
     );
 
@@ -61,6 +64,7 @@ private:
         const FString& Description,
         const FString& User,
         const FString& Email,
+        const FString& AppKey,
         FOnFeedbackComplete OnComplete
     );
 
@@ -73,6 +77,7 @@ private:
         const FString& Description,
         const FString& User,
         const FString& Email,
+        const FString& AppKey,
         FOnFeedbackComplete OnComplete
     );
 
