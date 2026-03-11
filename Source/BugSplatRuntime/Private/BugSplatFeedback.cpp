@@ -7,7 +7,7 @@
 #include "HAL/PlatformFileManager.h"
 #include "Serialization/Archive.h"
 
-// Minimal ZIP implementation for a single uncompressed file
+// Minimal ZIP implementation for multiple uncompressed files
 namespace
 {
     uint32 Crc32(const uint8* Data, int32 Length)
@@ -38,65 +38,90 @@ namespace
         Out.Add((Value >> 24) & 0xFF);
     }
 
-    TArray<uint8> CreateSingleFileZip(const FString& FileName, const TArray<uint8>& FileData)
+    struct FZipEntry
+    {
+        FString FileName;
+        TArray<uint8> FileData;
+    };
+
+    TArray<uint8> CreateMultiFileZip(const TArray<FZipEntry>& Entries)
     {
         TArray<uint8> Result;
-        FTCHARToUTF8 NameUtf8(*FileName);
-        const uint8* NameBytes = (const uint8*)NameUtf8.Get();
-        int32 NameLen = NameUtf8.Length();
-        uint32 Crc = Crc32(FileData.GetData(), FileData.Num());
-        uint32 FileSize = FileData.Num();
 
         // DOS time/date
         FDateTime Now = FDateTime::Now();
         uint16 DosTime = ((Now.GetHour() << 11) | (Now.GetMinute() << 5) | (Now.GetSecond() >> 1)) & 0xFFFF;
         uint16 DosDate = (((Now.GetYear() - 1980) << 9) | (Now.GetMonth() << 5) | Now.GetDay()) & 0xFFFF;
 
-        // Local file header
-        int32 LocalHeaderOffset = Result.Num();
-        WriteUint32(Result, 0x04034B50);  // Signature
-        WriteUint16(Result, 20);           // Version needed
-        WriteUint16(Result, 0);            // Flags
-        WriteUint16(Result, 0);            // Compression: stored
-        WriteUint16(Result, DosTime);
-        WriteUint16(Result, DosDate);
-        WriteUint32(Result, Crc);
-        WriteUint32(Result, FileSize);     // Compressed size
-        WriteUint32(Result, FileSize);     // Uncompressed size
-        WriteUint16(Result, NameLen);
-        WriteUint16(Result, 0);            // Extra field length
-        Result.Append(NameBytes, NameLen);
-        Result.Append(FileData.GetData(), FileData.Num());
+        // Track local header offsets for central directory
+        TArray<int32> LocalHeaderOffsets;
 
-        // Central directory
+        // Write local file headers and data for each entry
+        for (const FZipEntry& Entry : Entries)
+        {
+            FTCHARToUTF8 NameUtf8(*Entry.FileName);
+            const uint8* NameBytes = (const uint8*)NameUtf8.Get();
+            int32 NameLen = NameUtf8.Length();
+            uint32 Crc = Crc32(Entry.FileData.GetData(), Entry.FileData.Num());
+            uint32 FileSize = Entry.FileData.Num();
+
+            LocalHeaderOffsets.Add(Result.Num());
+
+            // Local file header
+            WriteUint32(Result, 0x04034B50);  // Signature
+            WriteUint16(Result, 20);           // Version needed
+            WriteUint16(Result, 0);            // Flags
+            WriteUint16(Result, 0);            // Compression: stored
+            WriteUint16(Result, DosTime);
+            WriteUint16(Result, DosDate);
+            WriteUint32(Result, Crc);
+            WriteUint32(Result, FileSize);     // Compressed size
+            WriteUint32(Result, FileSize);     // Uncompressed size
+            WriteUint16(Result, NameLen);
+            WriteUint16(Result, 0);            // Extra field length
+            Result.Append(NameBytes, NameLen);
+            Result.Append(Entry.FileData.GetData(), Entry.FileData.Num());
+        }
+
+        // Write central directory
         int32 CentralDirOffset = Result.Num();
-        WriteUint32(Result, 0x02014B50);  // Signature
-        WriteUint16(Result, 20);           // Version made by
-        WriteUint16(Result, 20);           // Version needed
-        WriteUint16(Result, 0);            // Flags
-        WriteUint16(Result, 0);            // Compression: stored
-        WriteUint16(Result, DosTime);
-        WriteUint16(Result, DosDate);
-        WriteUint32(Result, Crc);
-        WriteUint32(Result, FileSize);
-        WriteUint32(Result, FileSize);
-        WriteUint16(Result, NameLen);
-        WriteUint16(Result, 0);            // Extra field length
-        WriteUint16(Result, 0);            // Comment length
-        WriteUint16(Result, 0);            // Disk number
-        WriteUint16(Result, 0);            // Internal attributes
-        WriteUint32(Result, 0);            // External attributes
-        WriteUint32(Result, LocalHeaderOffset);
-        Result.Append(NameBytes, NameLen);
+        for (int32 i = 0; i < Entries.Num(); i++)
+        {
+            const FZipEntry& Entry = Entries[i];
+            FTCHARToUTF8 NameUtf8(*Entry.FileName);
+            const uint8* NameBytes = (const uint8*)NameUtf8.Get();
+            int32 NameLen = NameUtf8.Length();
+            uint32 Crc = Crc32(Entry.FileData.GetData(), Entry.FileData.Num());
+            uint32 FileSize = Entry.FileData.Num();
 
+            WriteUint32(Result, 0x02014B50);  // Signature
+            WriteUint16(Result, 20);           // Version made by
+            WriteUint16(Result, 20);           // Version needed
+            WriteUint16(Result, 0);            // Flags
+            WriteUint16(Result, 0);            // Compression: stored
+            WriteUint16(Result, DosTime);
+            WriteUint16(Result, DosDate);
+            WriteUint32(Result, Crc);
+            WriteUint32(Result, FileSize);
+            WriteUint32(Result, FileSize);
+            WriteUint16(Result, NameLen);
+            WriteUint16(Result, 0);            // Extra field length
+            WriteUint16(Result, 0);            // Comment length
+            WriteUint16(Result, 0);            // Disk number
+            WriteUint16(Result, 0);            // Internal attributes
+            WriteUint32(Result, 0);            // External attributes
+            WriteUint32(Result, LocalHeaderOffsets[i]);
+            Result.Append(NameBytes, NameLen);
+        }
         int32 CentralDirSize = Result.Num() - CentralDirOffset;
 
         // End of central directory
+        uint16 EntryCount = static_cast<uint16>(Entries.Num());
         WriteUint32(Result, 0x06054B50);
         WriteUint16(Result, 0);            // Disk number
         WriteUint16(Result, 0);            // Central dir disk
-        WriteUint16(Result, 1);            // Entries on disk
-        WriteUint16(Result, 1);            // Total entries
+        WriteUint16(Result, EntryCount);   // Entries on disk
+        WriteUint16(Result, EntryCount);   // Total entries
         WriteUint32(Result, CentralDirSize);
         WriteUint32(Result, CentralDirOffset);
         WriteUint16(Result, 0);            // Comment length
@@ -113,6 +138,7 @@ void UBugSplatFeedback::PostFeedback(
     const FString& Description,
     const FString& User,
     const FString& Email,
+    const TArray<FString>& AttachmentPaths,
     const FOnFeedbackComplete& OnComplete)
 {
     if (Title.IsEmpty())
@@ -122,12 +148,15 @@ void UBugSplatFeedback::PostFeedback(
         return;
     }
 
-    TArray<uint8> ZipData = CreateFeedbackZip(Title, Description);
+    TArray<uint8> ZipData = CreateFeedbackZip(Title, Description, AttachmentPaths);
     GetPresignedUrl(Database, Application, Version, ZipData, Title, Description, User, Email, OnComplete);
 }
 
-TArray<uint8> UBugSplatFeedback::CreateFeedbackZip(const FString& Title, const FString& Description)
+TArray<uint8> UBugSplatFeedback::CreateFeedbackZip(const FString& Title, const FString& Description, const TArray<FString>& AttachmentPaths)
 {
+    TArray<FZipEntry> ZipEntries;
+
+    // Add feedback.json as the first entry
     TSharedPtr<FJsonObject> FeedbackObj = MakeShareable(new FJsonObject());
     FeedbackObj->SetStringField(TEXT("title"), Title);
     FeedbackObj->SetStringField(TEXT("description"), Description);
@@ -137,10 +166,28 @@ TArray<uint8> UBugSplatFeedback::CreateFeedbackZip(const FString& Title, const F
     FJsonSerializer::Serialize(FeedbackObj.ToSharedRef(), Writer);
 
     FTCHARToUTF8 JsonUtf8(*JsonString);
-    TArray<uint8> JsonBytes;
-    JsonBytes.Append((const uint8*)JsonUtf8.Get(), JsonUtf8.Length());
+    FZipEntry JsonEntry;
+    JsonEntry.FileName = TEXT("feedback.json");
+    JsonEntry.FileData.Append((const uint8*)JsonUtf8.Get(), JsonUtf8.Length());
+    ZipEntries.Add(MoveTemp(JsonEntry));
 
-    return CreateSingleFileZip(TEXT("feedback.json"), JsonBytes);
+    // Add each attachment file
+    for (const FString& AttachmentPath : AttachmentPaths)
+    {
+        TArray<uint8> FileBytes;
+        if (!FFileHelper::LoadFileToArray(FileBytes, *AttachmentPath))
+        {
+            UE_LOG(LogTemp, Warning, TEXT("BugSplat: Failed to load attachment file: %s"), *AttachmentPath);
+            continue;
+        }
+
+        FZipEntry AttachmentEntry;
+        AttachmentEntry.FileName = FPaths::GetCleanFilename(AttachmentPath);
+        AttachmentEntry.FileData = MoveTemp(FileBytes);
+        ZipEntries.Add(MoveTemp(AttachmentEntry));
+    }
+
+    return CreateMultiFileZip(ZipEntries);
 }
 
 void UBugSplatFeedback::GetPresignedUrl(

@@ -23,6 +23,7 @@ public:
      * @param Description Additional feedback context
      * @param User The user's name or id
      * @param Email The user's email
+     * @param AttachmentPaths File paths to attach to the feedback report
      * @param OnComplete Callback invoked when the operation completes
      */
     UFUNCTION(BlueprintCallable, Category = "BugSplat")
@@ -34,6 +35,7 @@ public:
         const FString& Description = TEXT(""),
         const FString& User = TEXT(""),
         const FString& Email = TEXT(""),
+        const TArray<FString>& AttachmentPaths = TArray<FString>(),
         const FOnFeedbackComplete& OnComplete = FOnFeedbackComplete()
     );
 
@@ -74,5 +76,5 @@ private:
         FOnFeedbackComplete OnComplete
     );
 
-    static TArray<uint8> CreateFeedbackZip(const FString& Title, const FString& Description);
+    static TArray<uint8> CreateFeedbackZip(const FString& Title, const FString& Description, const TArray<FString>& AttachmentPaths);
 };
