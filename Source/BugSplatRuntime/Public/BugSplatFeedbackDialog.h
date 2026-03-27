@@ -21,6 +21,8 @@ public:
 	static void Show();
 	static void Dismiss();
 	static bool IsShowing();
+	static void ShowConfirmationAndDismiss();
+	static void ShowError(const FString& Message);
 
 	virtual bool SupportsKeyboardFocus() const override { return true; }
 
@@ -34,7 +36,6 @@ private:
 
 	FReply OnSubmitClicked();
 	FReply OnCancelClicked();
-	void ShowConfirmationAndDismiss();
 
 	static TSharedPtr<SWidget> ViewportWidget;
 };

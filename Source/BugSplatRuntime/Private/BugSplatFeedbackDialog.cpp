@@ -245,14 +245,34 @@ FReply SBugSplatFeedbackDialog::OnSubmitClicked()
 	}
 
 	TArray<FString> Attachments;
-	bool bIncludeLogs = IncludeLogsCheckbox.IsValid() && IncludeLogsCheckbox->IsChecked();
+	bool bIncludeLogs = IncludeLogsCheckbox.IsValid() && IncludeLogsCheckbox->GetCheckedState() == ECheckBoxState::Checked;
 	if (bIncludeLogs)
 	{
 		Attachments.Add(UBugSplatFeedback::GetLogFilePath());
 	}
 
-	UBugSplatFeedback::PostFeedback(Subject, Description, Attachments, TEXT(""), TEXT(""), TEXT(""), TMap<FString, FString>());
-	ShowConfirmationAndDismiss();
+	// Show sending state
+	if (StatusText.IsValid())
+	{
+		StatusText->SetColorAndOpacity(FSlateColor(FLinearColor(0.7f, 0.7f, 0.7f)));
+		StatusText->SetText(FText::FromString(TEXT("Sending feedback...")));
+		StatusText->SetVisibility(EVisibility::Visible);
+	}
+
+	FBugSplatFeedbackComplete OnComplete;
+	OnComplete.BindLambda([](bool bSuccess, int32 HttpStatusCode)
+	{
+		if (bSuccess)
+		{
+			SBugSplatFeedbackDialog::ShowConfirmationAndDismiss();
+		}
+		else
+		{
+			SBugSplatFeedbackDialog::ShowError(FString::Printf(TEXT("Failed to send feedback (HTTP %d)"), HttpStatusCode));
+		}
+	});
+
+	UBugSplatFeedback::PostFeedbackWithCallback(Subject, Description, Attachments, TEXT(""), TEXT(""), TEXT(""), TMap<FString, FString>(), OnComplete);
 	return FReply::Handled();
 }
 
@@ -264,11 +284,15 @@ FReply SBugSplatFeedbackDialog::OnCancelClicked()
 
 void SBugSplatFeedbackDialog::ShowConfirmationAndDismiss()
 {
-	if (StatusText.IsValid())
+	if (ViewportWidget.IsValid())
 	{
-		StatusText->SetColorAndOpacity(FSlateColor(FLinearColor(0.4f, 0.9f, 0.4f)));
-		StatusText->SetText(FText::FromString(TEXT("Feedback sent — thank you!")));
-		StatusText->SetVisibility(EVisibility::Visible);
+		TSharedPtr<SBugSplatFeedbackDialog> Dialog = StaticCastSharedPtr<SBugSplatFeedbackDialog>(ViewportWidget);
+		if (Dialog.IsValid() && Dialog->StatusText.IsValid())
+		{
+			Dialog->StatusText->SetColorAndOpacity(FSlateColor(FLinearColor(0.4f, 0.9f, 0.4f)));
+			Dialog->StatusText->SetText(FText::FromString(TEXT("Feedback sent — thank you!")));
+			Dialog->StatusText->SetVisibility(EVisibility::Visible);
+		}
 	}
 
 	FTSTicker::GetCoreTicker().AddTicker(
@@ -279,4 +303,18 @@ void SBugSplatFeedbackDialog::ShowConfirmationAndDismiss()
 		}),
 		1.5f
 	);
+}
+
+void SBugSplatFeedbackDialog::ShowError(const FString& Message)
+{
+	if (ViewportWidget.IsValid())
+	{
+		TSharedPtr<SBugSplatFeedbackDialog> Dialog = StaticCastSharedPtr<SBugSplatFeedbackDialog>(ViewportWidget);
+		if (Dialog.IsValid() && Dialog->StatusText.IsValid())
+		{
+			Dialog->StatusText->SetColorAndOpacity(FSlateColor(FLinearColor(0.9f, 0.3f, 0.3f)));
+			Dialog->StatusText->SetText(FText::FromString(Message));
+			Dialog->StatusText->SetVisibility(EVisibility::Visible);
+		}
+	}
 }

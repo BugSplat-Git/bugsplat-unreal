@@ -17,9 +17,15 @@
 
 void UBugSplatFeedback::PostFeedback(const FString& Title, const FString& Description, const TArray<FString>& Attachments, const FString& User, const FString& Email, const FString& AppKey, const TMap<FString, FString>& CustomAttributes)
 {
+	PostFeedbackWithCallback(Title, Description, Attachments, User, Email, AppKey, CustomAttributes, FBugSplatFeedbackComplete());
+}
+
+void UBugSplatFeedback::PostFeedbackWithCallback(const FString& Title, const FString& Description, const TArray<FString>& Attachments, const FString& User, const FString& Email, const FString& AppKey, const TMap<FString, FString>& CustomAttributes, const FBugSplatFeedbackComplete& OnComplete)
+{
 	if (Title.IsEmpty())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("BugSplat: Feedback title is empty, not submitting"));
+		OnComplete.ExecuteIfBound(false, 0);
 		return;
 	}
 
@@ -27,6 +33,7 @@ void UBugSplatFeedback::PostFeedback(const FString& Title, const FString& Descri
 	if (!Settings)
 	{
 		UE_LOG(LogTemp, Error, TEXT("BugSplat: Cannot submit feedback - settings not available"));
+		OnComplete.ExecuteIfBound(false, 0);
 		return;
 	}
 
@@ -37,6 +44,7 @@ void UBugSplatFeedback::PostFeedback(const FString& Title, const FString& Descri
 	if (Database.IsEmpty() || AppName.IsEmpty())
 	{
 		UE_LOG(LogTemp, Error, TEXT("BugSplat: Cannot submit feedback - Database or Application not configured in plugin settings"));
+		OnComplete.ExecuteIfBound(false, 0);
 		return;
 	}
 
@@ -135,24 +143,26 @@ void UBugSplatFeedback::PostFeedback(const FString& Title, const FString& Descri
 	Request->SetContent(Payload);
 
 	Request->OnProcessRequestComplete().BindLambda(
-		[](FHttpRequestPtr Req, FHttpResponsePtr Resp, bool bSuccess)
+		[OnComplete](FHttpRequestPtr Req, FHttpResponsePtr Resp, bool bSuccess)
 		{
 			if (bSuccess && Resp.IsValid())
 			{
 				int32 Code = Resp->GetResponseCode();
-				FString Body = Resp->GetContentAsString();
-				UE_LOG(LogTemp, Log, TEXT("BugSplat: Feedback response (HTTP %d): %s"), Code, *Body);
+				bool bOk = Code >= 200 && Code < 300;
+				UE_LOG(LogTemp, Log, TEXT("BugSplat: Feedback response (HTTP %d)"), Code);
+				OnComplete.ExecuteIfBound(bOk, Code);
 			}
 			else
 			{
 				UE_LOG(LogTemp, Error, TEXT("BugSplat: Feedback request failed (no response)"));
+				OnComplete.ExecuteIfBound(false, 0);
 			}
 		}
 	);
 
 	Request->ProcessRequest();
-	UE_LOG(LogTemp, Log, TEXT("BugSplat: Submitting feedback to %s (database=%s, appName=%s, appVersion=%s, title=%s)"),
-		*Url, *Database, *AppName, *AppVersion, *Title);
+	UE_LOG(LogTemp, Log, TEXT("BugSplat: Submitting feedback to %s (database=%s, appName=%s, appVersion=%s)"),
+		*Url, *Database, *AppName, *AppVersion);
 }
 
 FString UBugSplatFeedback::GetLogFilePath()
