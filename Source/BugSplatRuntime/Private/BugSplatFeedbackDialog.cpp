@@ -235,7 +235,12 @@ FReply SBugSplatFeedbackDialog::OnSubmitClicked()
 
 	if (Subject.IsEmpty())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("BugSplat: Feedback subject is empty, not submitting"));
+		if (StatusText.IsValid())
+		{
+			StatusText->SetText(FText::FromString(TEXT("Subject is required")));
+			StatusText->SetColorAndOpacity(FSlateColor(FLinearColor(0.9f, 0.3f, 0.3f)));
+			StatusText->SetVisibility(EVisibility::Visible);
+		}
 		return FReply::Handled();
 	}
 
@@ -261,6 +266,7 @@ void SBugSplatFeedbackDialog::ShowConfirmationAndDismiss()
 {
 	if (StatusText.IsValid())
 	{
+		StatusText->SetColorAndOpacity(FSlateColor(FLinearColor(0.4f, 0.9f, 0.4f)));
 		StatusText->SetText(FText::FromString(TEXT("Feedback sent — thank you!")));
 		StatusText->SetVisibility(EVisibility::Visible);
 	}
