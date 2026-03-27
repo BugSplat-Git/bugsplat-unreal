@@ -349,6 +349,28 @@ Attachments.Add(UBugSplatFeedback::GetLogFilePath());
 UBugSplatFeedback::PostFeedback(TEXT("My feedback title"), TEXT("Details here"), Attachments);
 ```
 
+For C++ callers that need to handle success or failure, use `PostFeedbackWithCallback`:
+
+```cpp
+#include "BugSplatFeedback.h"
+
+UBugSplatFeedback::PostFeedbackWithCallback(
+    TEXT("My feedback title"), TEXT("Details here"), Attachments,
+    TEXT(""), TEXT(""), TEXT(""), TMap<FString, FString>(),
+    FBugSplatFeedbackComplete::CreateLambda([](bool bSuccess, int32 HttpStatusCode)
+    {
+        if (bSuccess)
+        {
+            // Show success in your UI
+        }
+        else
+        {
+            // Show error in your UI
+        }
+    })
+);
+```
+
 See [`BugSplatFeedback.h`](Source/BugSplatRuntime/Public/BugSplatFeedback.h) for the full API and [`BugSplatFeedback.cpp`](Source/BugSplatRuntime/Private/BugSplatFeedback.cpp) for the implementation. The built-in dialog in [`BugSplatFeedbackDialog.cpp`](Source/BugSplatRuntime/Private/BugSplatFeedbackDialog.cpp) serves as a reference for how to wire up your own UI.
 
 #### Feedback API Reference
