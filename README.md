@@ -338,104 +338,36 @@ SBugSplatFeedbackDialog::Show();
 
 ### Custom Feedback Dialog
 
-If you'd prefer to use your own UI, you can submit feedback to BugSplat directly via HTTP. Post a `multipart/form-data` request to:
+If you'd prefer to build your own feedback UI, you can call `UBugSplatFeedback::PostFeedback` directly from Blueprint or C++. It handles the HTTP submission, crash context attributes, and file attachments for you — just provide a title, optional description, and optional file paths:
 
-```
-https://{database}.bugsplat.com/post/feedback/
+```cpp
+#include "BugSplatFeedback.h"
+
+// Submit feedback with the Unreal log attached
+TArray<FString> Attachments;
+Attachments.Add(UBugSplatFeedback::GetLogFilePath());
+UBugSplatFeedback::PostFeedback(TEXT("My feedback title"), TEXT("Details here"), Attachments);
 ```
 
-Include the following form fields:
+See [`BugSplatFeedback.h`](Source/BugSplatRuntime/Public/BugSplatFeedback.h) for the full API and [`BugSplatFeedback.cpp`](Source/BugSplatRuntime/Private/BugSplatFeedback.cpp) for the implementation. The built-in dialog in [`BugSplatFeedbackDialog.cpp`](Source/BugSplatRuntime/Private/BugSplatFeedbackDialog.cpp) serves as a reference for how to wire up your own UI.
+
+#### Feedback API Reference
+
+`PostFeedback` posts a `multipart/form-data` request to `https://{database}.bugsplat.com/post/feedback/` with the following fields:
 
 | Field | Required | Description |
 |-------|----------|-------------|
-| `database` | Yes | Your BugSplat database name |
-| `appName` | Yes | Application name (must match your BugSplat settings) |
-| `appVersion` | Yes | Application version |
+| `database` | Yes | Your BugSplat database name (from plugin settings) |
+| `appName` | Yes | Application name (from plugin settings) |
+| `appVersion` | Yes | Application version (from plugin settings) |
 | `title` | Yes | Brief summary of the feedback |
 | `description` | No | Additional details |
+| `attributes` | No | JSON string of crash context metadata (included automatically) |
 | `user` | No | Username of the person submitting feedback |
 | `email` | No | Email of the person submitting feedback |
 | `appKey` | No | Application key |
-| `attributes` | No | JSON string of key-value pairs for custom metadata |
 
-File attachments can be included as additional multipart file fields in the same request. The server accepts any number of file fields — each will be bundled into the feedback report.
-
-**C++ example** (with file attachment):
-
-```cpp
-#include "HttpModule.h"
-#include "Interfaces/IHttpRequest.h"
-#include "Interfaces/IHttpResponse.h"
-#include "Misc/FileHelper.h"
-#include "Misc/Paths.h"
-
-void SubmitCustomFeedback(const FString& Database, const FString& AppName, const FString& AppVersion, const FString& Title, const FString& Description)
-{
-    FString Url = FString::Printf(TEXT("https://%s.bugsplat.com/post/feedback/"), *Database);
-
-    TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FHttpModule::Get().CreateRequest();
-    Request->SetURL(Url);
-    Request->SetVerb(TEXT("POST"));
-
-    FString Boundary = FGuid::NewGuid().ToString();
-    Request->SetHeader(TEXT("Content-Type"), FString::Printf(TEXT("multipart/form-data; boundary=%s"), *Boundary));
-
-    TArray<uint8> Payload;
-
-    auto AppendString = [](TArray<uint8>& Data, const FString& Str)
-    {
-        FTCHARToUTF8 Utf8(*Str);
-        Data.Append((const uint8*)Utf8.Get(), Utf8.Length());
-    };
-
-    auto AddField = [&](const FString& Name, const FString& Value)
-    {
-        AppendString(Payload, FString::Printf(TEXT("--%s\r\n"), *Boundary));
-        AppendString(Payload, FString::Printf(TEXT("Content-Disposition: form-data; name=\"%s\"\r\n\r\n"), *Name));
-        AppendString(Payload, Value + TEXT("\r\n"));
-    };
-
-    auto AddFile = [&](const FString& FieldName, const FString& FileName, const TArray<uint8>& FileData)
-    {
-        AppendString(Payload, FString::Printf(TEXT("--%s\r\n"), *Boundary));
-        AppendString(Payload, FString::Printf(TEXT("Content-Disposition: form-data; name=\"%s\"; filename=\"%s\"\r\n"), *FieldName, *FileName));
-        AppendString(Payload, TEXT("Content-Type: application/octet-stream\r\n\r\n"));
-        Payload.Append(FileData);
-        AppendString(Payload, TEXT("\r\n"));
-    };
-
-    AddField(TEXT("database"), Database);
-    AddField(TEXT("appName"), AppName);
-    AddField(TEXT("appVersion"), AppVersion);
-    AddField(TEXT("title"), Title);
-    if (!Description.IsEmpty())
-    {
-        AddField(TEXT("description"), Description);
-    }
-
-    // Attach a file (e.g., the Unreal log)
-    FString LogPath = FPaths::ConvertRelativePathToFull(FPaths::ProjectLogDir() / FApp::GetProjectName() + TEXT(".log"));
-    TArray<uint8> LogData;
-    if (FFileHelper::LoadFileToArray(LogData, *LogPath))
-    {
-        AddFile(TEXT("logFile"), FPaths::GetCleanFilename(LogPath), LogData);
-    }
-
-    AppendString(Payload, FString::Printf(TEXT("--%s--\r\n"), *Boundary));
-
-    Request->SetContent(Payload);
-    Request->OnProcessRequestComplete().BindLambda(
-        [](FHttpRequestPtr Req, FHttpResponsePtr Resp, bool bSuccess)
-        {
-            if (bSuccess && Resp.IsValid() && Resp->GetResponseCode() == 200)
-            {
-                UE_LOG(LogTemp, Log, TEXT("Feedback submitted successfully"));
-            }
-        }
-    );
-    Request->ProcessRequest();
-}
-```
+File attachments can be included as additional multipart file fields. Pass absolute file paths via the `Attachments` parameter.
 
 ## 🧑‍💻 Contributing
 

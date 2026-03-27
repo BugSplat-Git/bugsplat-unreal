@@ -1,4 +1,4 @@
-// Copyright 2023 BugSplat. All Rights Reserved.
+// Copyright BugSplat. All Rights Reserved.
 
 #pragma once
 
@@ -34,7 +34,6 @@ private:
 
 	FReply OnSubmitClicked();
 	FReply OnCancelClicked();
-	void SubmitFeedback(const FString& Subject, const FString& Description);
 	void ShowConfirmationAndDismiss();
 
 	static TSharedPtr<SWidget> ViewportWidget;
