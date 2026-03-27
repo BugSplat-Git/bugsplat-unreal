@@ -14,6 +14,7 @@
 #include "Misc/Paths.h"
 #include "Misc/Guid.h"
 #include "Misc/App.h"
+#include "GenericPlatform/GenericPlatformOutputDevices.h"
 
 void UBugSplatFeedback::PostFeedback(const FString& Title, const FString& Description, const TArray<FString>& Attachments, const FString& User, const FString& Email, const FString& AppKey, const TMap<FString, FString>& CustomAttributes)
 {
@@ -167,6 +168,5 @@ void UBugSplatFeedback::PostFeedbackWithCallback(const FString& Title, const FSt
 
 FString UBugSplatFeedback::GetLogFilePath()
 {
-	FString LogFilePath = FPaths::ProjectLogDir() / FApp::GetProjectName() + TEXT(".log");
-	return FPaths::ConvertRelativePathToFull(LogFilePath);
+	return FGenericPlatformOutputDevices::GetAbsoluteLogFilename();
 }
