@@ -246,7 +246,7 @@ FReply SBugSplatFeedbackDialog::OnSubmitClicked()
 		Attachments.Add(UBugSplatFeedback::GetLogFilePath());
 	}
 
-	UBugSplatFeedback::PostFeedback(Subject, Description, Attachments);
+	UBugSplatFeedback::PostFeedback(Subject, Description, Attachments, TEXT(""), TEXT(""), TEXT(""), TMap<FString, FString>());
 	ShowConfirmationAndDismiss();
 	return FReply::Handled();
 }

@@ -15,7 +15,7 @@
 #include "Misc/Guid.h"
 #include "Misc/App.h"
 
-void UBugSplatFeedback::PostFeedback(const FString& Title, const FString& Description, const TArray<FString>& Attachments)
+void UBugSplatFeedback::PostFeedback(const FString& Title, const FString& Description, const TArray<FString>& Attachments, const FString& User, const FString& Email, const FString& AppKey, const TMap<FString, FString>& CustomAttributes)
 {
 	if (Title.IsEmpty())
 	{
@@ -83,9 +83,22 @@ void UBugSplatFeedback::PostFeedback(const FString& Title, const FString& Descri
 	{
 		AddField(TEXT("description"), Description);
 	}
+	if (!User.IsEmpty())
+	{
+		AddField(TEXT("user"), User);
+	}
+	if (!Email.IsEmpty())
+	{
+		AddField(TEXT("email"), Email);
+	}
+	if (!AppKey.IsEmpty())
+	{
+		AddField(TEXT("appKey"), AppKey);
+	}
 
-	// Include crash context attributes
+	// Include crash context attributes merged with caller-provided attributes
 	TMap<FString, FString> Attributes = FBugSplatRuntimeModule::Get().GetCrashAttributes();
+	Attributes.Append(CustomAttributes);
 	if (Attributes.Num() > 0)
 	{
 		TSharedRef<FJsonObject> JsonObject = MakeShared<FJsonObject>();

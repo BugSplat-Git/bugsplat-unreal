@@ -19,9 +19,13 @@ public:
 	 * @param Title        Required. Brief summary of the feedback.
 	 * @param Description  Optional. Additional details.
 	 * @param Attachments  Optional. Array of absolute file paths to attach to the report.
+	 * @param User              Optional. Username of the person submitting feedback.
+	 * @param Email             Optional. Email of the person submitting feedback.
+	 * @param AppKey            Optional. Application key.
+	 * @param CustomAttributes  Optional. Key-value pairs merged with crash context attributes.
 	 */
-	UFUNCTION(BlueprintCallable, Category = "BugSplat")
-	static void PostFeedback(const FString& Title, const FString& Description, const TArray<FString>& Attachments);
+	UFUNCTION(BlueprintCallable, Category = "BugSplat", meta = (AdvancedDisplay = "User,Email,AppKey,CustomAttributes"))
+	static void PostFeedback(const FString& Title, const FString& Description, const TArray<FString>& Attachments, const FString& User, const FString& Email, const FString& AppKey, const TMap<FString, FString>& CustomAttributes);
 
 	/** Returns the full path to the current Unreal Engine log file. Useful for passing to PostFeedback Attachments. */
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "BugSplat")
