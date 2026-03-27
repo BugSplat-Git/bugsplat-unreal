@@ -1,4 +1,4 @@
-// Copyright 2023 BugSplat. All Rights Reserved.
+// Copyright BugSplat. All Rights Reserved.
 
 using System.IO;
 using UnrealBuildTool;
@@ -48,8 +48,9 @@ public class BugSplatRuntime : ModuleRules
 				"Slate",
 				"SlateCore",
 				"Projects",
-				"Json"
-				// ... add private dependencies that you statically link with here ...	
+				"Json",
+				"HTTP"
+				// ... add private dependencies that you statically link with here ...
 			}
 			);
 		

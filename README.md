@@ -305,6 +305,92 @@ If everything is configured correctly, you should see something that resembles t
 
 <img width="3456" height="1996" alt="image" src="https://github.com/user-attachments/assets/53a6acd8-8a3f-4355-bddf-02023af17660" />
 
+## 💬 User Feedback
+
+BugSplat includes a built-in user feedback dialog that lets players submit feedback directly from your game. Feedback reports appear alongside crash reports on the [Crashes](https://app.bugsplat.com/v2/crashes) page, tagged with a `[User Feedback]` prefix.
+
+### Built-in Feedback Dialog
+
+The plugin provides a ready-to-use feedback dialog with subject and description fields. To add it to your game:
+
+1. Open any Widget Blueprint (e.g., your HUD or main menu).
+2. Add a **Button** widget and position it where you'd like the feedback trigger to appear.
+3. In the button's **Events** section, click the **+** next to **On Clicked**.
+4. In the Event Graph, search for **Show Feedback Dialog** (under the BugSplat category) and connect it to the On Clicked event.
+
+When a player clicks the button, a modal dialog appears with:
+
+- **Subject** (required) — a single-line text field for a brief summary
+- **Description** (optional) — a multi-line text area for additional details
+- **Include application logs** (checkbox, on by default) — attaches the Unreal Engine log file to the feedback report
+
+After submitting, a confirmation message is displayed briefly before the dialog closes automatically. The feedback is posted to your BugSplat database using the Database, Application, and Version values from your plugin settings.
+
+The built-in dialog also automatically includes crash context attributes (engine version, platform, CPU, GPU, memory stats, OS info, etc.) with each submission.
+
+You can also open the dialog from C++:
+
+```cpp
+#include "BugSplatFeedbackDialog.h"
+
+SBugSplatFeedbackDialog::Show();
+```
+
+### Custom Feedback Dialog
+
+If you'd prefer to build your own feedback UI, you can call `UBugSplatFeedback::PostFeedback` directly from Blueprint or C++. It handles the HTTP submission, crash context attributes, and file attachments for you — just provide a title, optional description, and optional file paths:
+
+```cpp
+#include "BugSplatFeedback.h"
+
+// Submit feedback with the Unreal log attached
+TArray<FString> Attachments;
+Attachments.Add(UBugSplatFeedback::GetLogFilePath());
+UBugSplatFeedback::PostFeedback(TEXT("My feedback title"), TEXT("Details here"), Attachments);
+```
+
+For C++ callers that need to handle success or failure, use `PostFeedbackWithCallback`:
+
+```cpp
+#include "BugSplatFeedback.h"
+
+UBugSplatFeedback::PostFeedbackWithCallback(
+    TEXT("My feedback title"), TEXT("Details here"), Attachments,
+    TEXT(""), TEXT(""), TEXT(""), TMap<FString, FString>(),
+    FBugSplatFeedbackComplete::CreateLambda([](bool bSuccess, int32 HttpStatusCode)
+    {
+        if (bSuccess)
+        {
+            // Show success in your UI
+        }
+        else
+        {
+            // Show error in your UI
+        }
+    })
+);
+```
+
+See [`BugSplatFeedback.h`](Source/BugSplatRuntime/Public/BugSplatFeedback.h) for the full API and [`BugSplatFeedback.cpp`](Source/BugSplatRuntime/Private/BugSplatFeedback.cpp) for the implementation. The built-in dialog in [`BugSplatFeedbackDialog.cpp`](Source/BugSplatRuntime/Private/BugSplatFeedbackDialog.cpp) serves as a reference for how to wire up your own UI.
+
+#### Feedback API Reference
+
+`PostFeedback` posts a `multipart/form-data` request to `https://{database}.bugsplat.com/post/feedback/` with the following fields:
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `database` | Yes | Your BugSplat database name (from plugin settings) |
+| `appName` | Yes | Application name (from plugin settings) |
+| `appVersion` | Yes | Application version (from plugin settings) |
+| `title` | Yes | Brief summary of the feedback |
+| `description` | No | Additional details |
+| `attributes` | No | JSON string of crash context metadata (included automatically) |
+| `user` | No | Username of the person submitting feedback |
+| `email` | No | Email of the person submitting feedback |
+| `appKey` | No | Application key |
+
+File attachments can be included as additional multipart file fields. Pass absolute file paths via the `Attachments` parameter.
+
 ## 🧑‍💻 Contributing
 
 BugSplat ❤️s open source! If you feel that this package can be improved, please open an [Issue](https://github.com/BugSplat-Git/bugsplat-unreal/issues). If you have an awesome new feature you'd like to implement, we'd love to merge your [Pull Request](https://github.com/BugSplat-Git/bugsplat-unreal/pulls). You can also send us an [email](mailto:support@bugsplat.com), join us on [Discord](https://discord.gg/K4KjjRV5ve), or message us via the in-app chat on [bugsplat.com](https://bugsplat.com).
