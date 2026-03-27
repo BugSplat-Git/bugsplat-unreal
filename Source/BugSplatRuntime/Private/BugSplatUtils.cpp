@@ -1,5 +1,6 @@
 // Copyright BugSplat. All Rights Reserved.
 #include "BugSplatUtils.h"
+#include "BugSplatFeedbackDialog.h"
 
 void UBugSplatUtils::GenerateCrash()
 {
@@ -25,4 +26,10 @@ void UBugSplatUtils::GenerateEnsure()
 void UBugSplatUtils::GenerateFatalLog()
 {
 	UE_LOG(LogTemp, Fatal, TEXT("BugSplat: GenerateFatalLog"));
+}
+
+void UBugSplatUtils::ShowFeedbackDialog()
+{
+	UE_LOG(LogTemp, Log, TEXT("BugSplat: ShowFeedbackDialog"));
+	SBugSplatFeedbackDialog::Show();
 }

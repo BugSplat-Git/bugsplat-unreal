@@ -305,6 +305,138 @@ If everything is configured correctly, you should see something that resembles t
 
 <img width="3456" height="1996" alt="image" src="https://github.com/user-attachments/assets/53a6acd8-8a3f-4355-bddf-02023af17660" />
 
+## 💬 User Feedback
+
+BugSplat includes a built-in user feedback dialog that lets players submit feedback directly from your game. Feedback reports appear alongside crash reports on the [Crashes](https://app.bugsplat.com/v2/crashes) page, tagged with a `[User Feedback]` prefix.
+
+### Built-in Feedback Dialog
+
+The plugin provides a ready-to-use feedback dialog with subject and description fields. To add it to your game:
+
+1. Open any Widget Blueprint (e.g., your HUD or main menu).
+2. Add a **Button** widget and position it where you'd like the feedback trigger to appear.
+3. In the button's **Events** section, click the **+** next to **On Clicked**.
+4. In the Event Graph, search for **Show Feedback Dialog** (under the BugSplat category) and connect it to the On Clicked event.
+
+When a player clicks the button, a modal dialog appears with:
+
+- **Subject** (required) — a single-line text field for a brief summary
+- **Description** (optional) — a multi-line text area for additional details
+- **Include application logs** (checkbox, on by default) — attaches the Unreal Engine log file to the feedback report
+
+After submitting, a confirmation message is displayed briefly before the dialog closes automatically. The feedback is posted to your BugSplat database using the Database, Application, and Version values from your plugin settings.
+
+The built-in dialog also automatically includes crash context attributes (engine version, platform, CPU, GPU, memory stats, OS info, etc.) with each submission.
+
+You can also open the dialog from C++:
+
+```cpp
+#include "BugSplatFeedbackDialog.h"
+
+SBugSplatFeedbackDialog::Show();
+```
+
+### Custom Feedback Dialog
+
+If you'd prefer to use your own UI, you can submit feedback to BugSplat directly via HTTP. Post a `multipart/form-data` request to:
+
+```
+https://{database}.bugsplat.com/post/feedback/
+```
+
+Include the following form fields:
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `database` | Yes | Your BugSplat database name |
+| `appName` | Yes | Application name (must match your BugSplat settings) |
+| `appVersion` | Yes | Application version |
+| `title` | Yes | Brief summary of the feedback |
+| `description` | No | Additional details |
+| `user` | No | Username of the person submitting feedback |
+| `email` | No | Email of the person submitting feedback |
+| `appKey` | No | Application key |
+| `attributes` | No | JSON string of key-value pairs for custom metadata |
+
+File attachments can be included as additional multipart file fields in the same request. The server accepts any number of file fields — each will be bundled into the feedback report.
+
+**C++ example** (with file attachment):
+
+```cpp
+#include "HttpModule.h"
+#include "Interfaces/IHttpRequest.h"
+#include "Interfaces/IHttpResponse.h"
+#include "Misc/FileHelper.h"
+#include "Misc/Paths.h"
+
+void SubmitCustomFeedback(const FString& Database, const FString& AppName, const FString& AppVersion, const FString& Title, const FString& Description)
+{
+    FString Url = FString::Printf(TEXT("https://%s.bugsplat.com/post/feedback/"), *Database);
+
+    TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FHttpModule::Get().CreateRequest();
+    Request->SetURL(Url);
+    Request->SetVerb(TEXT("POST"));
+
+    FString Boundary = FGuid::NewGuid().ToString();
+    Request->SetHeader(TEXT("Content-Type"), FString::Printf(TEXT("multipart/form-data; boundary=%s"), *Boundary));
+
+    TArray<uint8> Payload;
+
+    auto AppendString = [](TArray<uint8>& Data, const FString& Str)
+    {
+        FTCHARToUTF8 Utf8(*Str);
+        Data.Append((const uint8*)Utf8.Get(), Utf8.Length());
+    };
+
+    auto AddField = [&](const FString& Name, const FString& Value)
+    {
+        AppendString(Payload, FString::Printf(TEXT("--%s\r\n"), *Boundary));
+        AppendString(Payload, FString::Printf(TEXT("Content-Disposition: form-data; name=\"%s\"\r\n\r\n"), *Name));
+        AppendString(Payload, Value + TEXT("\r\n"));
+    };
+
+    auto AddFile = [&](const FString& FieldName, const FString& FileName, const TArray<uint8>& FileData)
+    {
+        AppendString(Payload, FString::Printf(TEXT("--%s\r\n"), *Boundary));
+        AppendString(Payload, FString::Printf(TEXT("Content-Disposition: form-data; name=\"%s\"; filename=\"%s\"\r\n"), *FieldName, *FileName));
+        AppendString(Payload, TEXT("Content-Type: application/octet-stream\r\n\r\n"));
+        Payload.Append(FileData);
+        AppendString(Payload, TEXT("\r\n"));
+    };
+
+    AddField(TEXT("database"), Database);
+    AddField(TEXT("appName"), AppName);
+    AddField(TEXT("appVersion"), AppVersion);
+    AddField(TEXT("title"), Title);
+    if (!Description.IsEmpty())
+    {
+        AddField(TEXT("description"), Description);
+    }
+
+    // Attach a file (e.g., the Unreal log)
+    FString LogPath = FPaths::ConvertRelativePathToFull(FPaths::ProjectLogDir() / FApp::GetProjectName() + TEXT(".log"));
+    TArray<uint8> LogData;
+    if (FFileHelper::LoadFileToArray(LogData, *LogPath))
+    {
+        AddFile(TEXT("logFile"), FPaths::GetCleanFilename(LogPath), LogData);
+    }
+
+    AppendString(Payload, FString::Printf(TEXT("--%s--\r\n"), *Boundary));
+
+    Request->SetContent(Payload);
+    Request->OnProcessRequestComplete().BindLambda(
+        [](FHttpRequestPtr Req, FHttpResponsePtr Resp, bool bSuccess)
+        {
+            if (bSuccess && Resp.IsValid() && Resp->GetResponseCode() == 200)
+            {
+                UE_LOG(LogTemp, Log, TEXT("Feedback submitted successfully"));
+            }
+        }
+    );
+    Request->ProcessRequest();
+}
+```
+
 ## 🧑‍💻 Contributing
 
 BugSplat ❤️s open source! If you feel that this package can be improved, please open an [Issue](https://github.com/BugSplat-Git/bugsplat-unreal/issues). If you have an awesome new feature you'd like to implement, we'd love to merge your [Pull Request](https://github.com/BugSplat-Git/bugsplat-unreal/pulls). You can also send us an [email](mailto:support@bugsplat.com), join us on [Discord](https://discord.gg/K4KjjRV5ve), or message us via the in-app chat on [bugsplat.com](https://bugsplat.com).

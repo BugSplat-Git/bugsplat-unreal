@@ -23,4 +23,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "BugSplat")
 	static void GenerateFatalLog();
+
+	UFUNCTION(BlueprintCallable, Category = "BugSplat")
+	static void ShowFeedbackDialog();
 };
