@@ -15,12 +15,10 @@ FOUNDATION_EXPORT const unsigned char BugSplatVersionString[];
 
 // In this header, you should import all the public headers of your framework using statements like #import <BugSplat/PublicHeader.h>
 
+#import <BugSplat/BugSplatDelegate.h>
+#import <BugSplat/BugSplatAttachment.h>
 #if TARGET_OS_OSX
-  #import <BugSplatMac/BugSplatDelegate.h>
-  #import <BugSplatMac/BugSplatAttachment.h>
-#else
-  #import <BugSplat/BugSplatDelegate.h>
-  #import <BugSplat/BugSplatAttachment.h>
+#import <BugSplat/BugSplatMac.h>
 #endif
 
 NS_ASSUME_NONNULL_BEGIN
@@ -210,6 +208,31 @@ NS_ASSUME_NONNULL_BEGIN
  *
  */
 - (BOOL)setValue:(nullable NSString *)value forAttribute:(NSString *)attribute NS_SWIFT_NAME(set(_:for:));
+
+/**
+ * Submits user feedback (non-crash) to BugSplat.
+ *
+ * This sends a feedback report using crash type ID 36 (User.Feedback).
+ * The feedback is packaged as a JSON file and uploaded via the standard
+ * presigned URL flow.
+ *
+ * @param title The feedback title (required).
+ * @param description Optional description providing additional detail.
+ * @param userName Optional user name. Falls back to the `userName` property if nil.
+ * @param userEmail Optional user email. Falls back to the `userEmail` property if nil.
+ * @param appKey Optional application key. Falls back to the `appKey` property if nil.
+ * @param attachments Optional array of file attachments to include with the feedback.
+ * @param completion Optional completion handler called when the upload finishes.
+ *                   The error parameter is nil on success.
+ */
+- (void)postFeedback:(NSString *)title
+         description:(nullable NSString *)description
+            userName:(nullable NSString *)userName
+           userEmail:(nullable NSString *)userEmail
+              appKey:(nullable NSString *)appKey
+         attachments:(nullable NSArray<BugSplatAttachment *> *)attachments
+          completion:(nullable void (^)(NSError * _Nullable error))completion
+    NS_SWIFT_NAME(postFeedback(title:description:userName:userEmail:appKey:attachments:completion:));
 
 // macOS specific API
 #if TARGET_OS_OSX
