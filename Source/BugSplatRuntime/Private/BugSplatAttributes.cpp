@@ -40,7 +40,7 @@ void UBugSplatAttributes::SetAttribute(const FString& Key, const FString& Value)
 	FGenericCrashContext::SetGameData(Key, Value);
 #endif
 
-	UE_LOG(LogBugSplatAttributes, Verbose, TEXT("SetAttribute: %s = %s"), *Key, *Value);
+	UE_LOG(LogBugSplatAttributes, Verbose, TEXT("SetAttribute: %s"), *Key);
 }
 
 void UBugSplatAttributes::RemoveAttribute(const FString& Key)
