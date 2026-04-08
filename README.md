@@ -281,6 +281,26 @@ void UMyUnrealCrasherGameInstance::Init()
 
 </details>
 
+#### Attributes (iOS and Android)
+
+The BugSplat plugin automatically adds several attributes from the crash context at initialization time. These attributes are not updated automatically after initialization. If you'd like to update them or add new ones, use the `SetAttribute` and `RemoveAttribute` functions.
+
+To call `SetAttribute` from C++, add `BugSplatRuntime` to your module's `PrivateDependencyModuleNames` in your `.Build.cs` file:
+
+```csharp
+PrivateDependencyModuleNames.AddRange(new string[] { "BugSplatRuntime" });
+```
+
+Then include the header and call `SetAttribute`:
+
+```cpp
+#include "BugSplatAttributes.h"
+
+UBugSplatAttributes::SetAttribute(TEXT("userId"), TEXT("12345"));
+```
+
+`SetAttribute` is also available as a Blueprint node under the BugSplat category.
+
 ### Xbox and PlayStation
 
 BugSplat can provide instructions for implementing Unreal crash reporting on Xbox and PlayStation. Please email us at [support@bugsplat.com](mailto:support@bugsplat.com) for more info.
