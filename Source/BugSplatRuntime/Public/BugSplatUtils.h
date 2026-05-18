@@ -32,4 +32,10 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "BugSplat")
 	static bool IsAndroid();
+
+	UFUNCTION(BlueprintPure, Category = "BugSplat")
+	static bool IsIOS();
+
+	UFUNCTION(BlueprintPure, Category = "BugSplat")
+	static bool IsMobile();
 };

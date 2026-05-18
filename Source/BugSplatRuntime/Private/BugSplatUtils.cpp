@@ -8,6 +8,11 @@
 #include "Android/AndroidJava.h"
 #endif
 
+#if PLATFORM_IOS
+#import <Foundation/Foundation.h>
+#import <dispatch/dispatch.h>
+#endif
+
 void UBugSplatUtils::GenerateCrash()
 {
 	UE_LOG(LogTemp, Log, TEXT("BugSplat: GenerateCrash"));
@@ -43,8 +48,15 @@ void UBugSplatUtils::GenerateHang()
 	jmethodID HangMethod = FJavaWrapper::FindStaticMethod(Env, BugSplatClass, "hang", "()V", false);
 	Env->CallStaticVoidMethod(BugSplatClass, HangMethod);
 	Env->DeleteLocalRef(BugSplatClass);
+#elif PLATFORM_IOS
+	// Block the iOS main thread until the OS watchdog terminates the app.
+	// bugsplat-apple's hang tracker observes the unresponsive runloop and persists
+	// a fatal-hang report that uploads on the next launch.
+	dispatch_async(dispatch_get_main_queue(), ^{
+		while (true) { /* spin until watchdog kill */ }
+	});
 #else
-	UE_LOG(LogTemp, Warning, TEXT("BugSplat: GenerateHang is Android-only; ignoring on this platform."));
+	UE_LOG(LogTemp, Warning, TEXT("BugSplat: GenerateHang is mobile-only; ignoring on this platform."));
 #endif
 }
 
@@ -61,4 +73,18 @@ bool UBugSplatUtils::IsAndroid()
 #else
 	return false;
 #endif
+}
+
+bool UBugSplatUtils::IsIOS()
+{
+#if PLATFORM_IOS
+	return true;
+#else
+	return false;
+#endif
+}
+
+bool UBugSplatUtils::IsMobile()
+{
+	return IsAndroid() || IsIOS();
 }
