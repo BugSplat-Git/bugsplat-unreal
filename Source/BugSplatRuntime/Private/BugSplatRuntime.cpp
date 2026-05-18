@@ -342,6 +342,10 @@ void FBugSplatRuntimeModule::SetupCrashReportingIos()
 			// Configure BugSplat options if needed
 			[[BugSplat shared]setAutoSubmitCrashReport:YES]; // Or NO if you want to show a dialog
 
+			// Enable fatal main-thread hang detection. Must be set before -start.
+			[[BugSplat shared]setEnableHangDetection:YES];
+			[[BugSplat shared]setHangDetectionThreshold:2.0];
+
 			// Set application name and version from Unreal settings (overrides Info.plist values)
 			// This ensures consistency with Android crash reporting
 			NSString* nsAppName = [NSString stringWithUTF8String : TCHAR_TO_UTF8(*AppName)];

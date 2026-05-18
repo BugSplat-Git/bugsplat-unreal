@@ -25,5 +25,17 @@ public:
 	static void GenerateFatalLog();
 
 	UFUNCTION(BlueprintCallable, Category = "BugSplat")
+	static void GenerateHang();
+
+	UFUNCTION(BlueprintCallable, Category = "BugSplat")
 	static void ShowFeedbackDialog();
+
+	UFUNCTION(BlueprintPure, Category = "BugSplat")
+	static bool IsAndroid();
+
+	UFUNCTION(BlueprintPure, Category = "BugSplat")
+	static bool IsIOS();
+
+	UFUNCTION(BlueprintPure, Category = "BugSplat")
+	static bool IsMobile();
 };

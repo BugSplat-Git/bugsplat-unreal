@@ -166,6 +166,49 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL autoSubmitCrashReport;
 
 /**
+ * Enable detection and reporting of fatal main-thread hangs.
+ *
+ * When set to YES before `-start` is invoked, BugSplat monitors the main runloop for
+ * prolonged unresponsive periods while the app is active in the foreground. If a hang
+ * is detected and the app is subsequently terminated without the main thread recovering
+ * (launch/resume watchdog kills, user force-quit), a hang report is uploaded on the next
+ * launch using the same pipeline as crash reports.
+ *
+ * If the main thread resumes after a hang is detected, the persisted report is discarded -
+ * non-fatal hangs are not reported in this version.
+ *
+ * Hang reports carry the exception name `App Hang (Fatal)` and include attributes prefixed
+ * with `bugsplat-hang-` (duration, detection time, app state, launch id) that can be used
+ * to correlate with crashes from the same launch.
+ *
+ * Detection is suppressed when a debugger is attached or the app is not active. As a
+ * consequence, hangs that begin while the app is in the background (including those
+ * terminated by background-task expiration) are not reported.
+ *
+ * This property is a no-op inside app extensions.
+ *
+ * When this property is YES, `-start` must be invoked on the main thread - the
+ * main thread's Mach port is captured there so the hang report identifies the
+ * correct thread. Debug builds assert; Release builds will silently capture the
+ * wrong thread.
+ *
+ * Default: NO
+ */
+@property (nonatomic, assign) BOOL enableHangDetection;
+
+/**
+ * Threshold in seconds for declaring the main thread hung when `enableHangDetection` is YES.
+ *
+ * Must be set before `-start` is invoked. Values below 0.1 are clamped to 0.1 by the
+ * underlying tracker. Typical production values are 1.0-5.0 seconds; choose a value above
+ * any work the app may legitimately do on the main thread (image decoding, JSON parsing,
+ * etc.) to avoid false positives.
+ *
+ * Default: 2.0
+ */
+@property (nonatomic, assign) NSTimeInterval hangDetectionThreshold;
+
+/**
  * Add an attribute and value to a dictionary of attributes that will potentially be included in a crash report.
  * If the attribute is an invalid XML entity name, or the attribute+value pair cannot be set,
  * the method will return NO, otherwise it will return YES.
