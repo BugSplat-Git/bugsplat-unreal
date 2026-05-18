@@ -51,9 +51,11 @@ void UBugSplatUtils::GenerateHang()
 #elif PLATFORM_IOS
 	// Block the iOS main thread until the OS watchdog terminates the app.
 	// bugsplat-apple's hang tracker observes the unresponsive runloop and persists
-	// a fatal-hang report that uploads on the next launch.
+	// a fatal-hang report that uploads on the next launch. Sleeping until
+	// distantFuture (vs spinning) keeps the CPU quiet while frozen; matches the
+	// bugsplat-apple sample's Hang button.
 	dispatch_async(dispatch_get_main_queue(), ^{
-		while (true) { /* spin until watchdog kill */ }
+		[NSThread sleepUntilDate:[NSDate distantFuture]];
 	});
 #else
 	UE_LOG(LogTemp, Warning, TEXT("BugSplat: GenerateHang is mobile-only; ignoring on this platform."));
