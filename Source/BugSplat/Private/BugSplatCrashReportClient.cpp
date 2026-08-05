@@ -46,8 +46,12 @@ void FBugSplatCrashReportClient::UpdateCrashReportClientIni(FString Database, FS
 	FString CrashReportClientVersionConfigTag = FString(TEXT("CrashReportClientVersion"));
 	FString CrashReportClientVersionValue = FString(TEXT("1.0"));
 
+	FString EnsureRecordDumpConfigTag = FString(TEXT("Ensure.RecordDump"));
+	FString EnsureRecordDumpValue = FString(TEXT("true"));
+
 	ini.SetString(*SectionTag, *DataRouterUrlConfigTag, *DataRouterUrlValue, DefaultEngineIniFilePath);
 	ini.SetString(*SectionTag, *CrashReportClientVersionConfigTag, *CrashReportClientVersionValue, DefaultEngineIniFilePath);
+	ini.SetString(*SectionTag, *EnsureRecordDumpConfigTag, *EnsureRecordDumpValue, DefaultEngineIniFilePath);
 }
 
 void FBugSplatCrashReportClient::UpdateEngineSettings()

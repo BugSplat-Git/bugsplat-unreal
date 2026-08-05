@@ -57,6 +57,58 @@ To configure `CrashReportClient` to post to BugSplat, the `DataRouterUrl` value 
 
 In order to get function names and line numbers in crash reports, you'll need to upload your game's `.exe`, `.dll`, and `.pdb` files. To upload debug symbols for reach build, ensure that the `Enable Automatic Symbol Uploads` option is selected. When selected, a script to execute [symbol-upload](https://github.com/BugSplat-Git/symbol-upload) will be added to the `PostBuildSteps` field in `BugSplat.uplugin`. The symbol upload script will run automatically when your game is built.
 
+#### Ensure Reporting
+
+Unreal's `ensure`, `ensureMsgf`, `ensureAlways`, and `ensureAlwaysMsgf` macros are non-fatal assertions that log errors without crashing your game. BugSplat can capture these as crash reports so you can track issues in production without impacting players.
+
+The BugSplat plugin automatically sets `Ensure.RecordDump=true` in `DefaultEngine.ini` when configuring the `CrashReportClient`. This enables ensure failures to generate minidumps that are submitted to BugSplat.
+
+**Shipping Builds**
+
+By default, assertions are compiled out in Shipping builds. To enable ensure reporting in Shipping, add `bUseChecksInShipping = true` to your `*.Target.cs` file:
+
+```csharp
+public class MyGameTarget : TargetRules
+{
+    public MyGameTarget(TargetInfo Target) : base(Target)
+    {
+        Type = TargetType.Game;
+        bUseChecksInShipping = true;
+    }
+}
+```
+
+**Runtime Configuration**
+
+The following CVars control ensure reporting behavior at runtime:
+
+| CVar | Default | Description |
+|------|---------|-------------|
+| `core.EnsuresAreErrors` | `1` | When enabled, ensure failures generate error logs and crash reports. Set to `0` to produce warning logs only. |
+| `core.EnsureAlwaysEnabled` | `true` | Controls whether `ensureAlways` fires repeatedly or once per callsite. |
+
+The `-nocrashreports` command-line flag can be used to globally disable all report submission.
+
+**Volume Management**
+
+To control the volume of ensure reports, you can use any of the following strategies:
+
+- `HandleEnsurePercent=N` in `DefaultEngine.ini` under `[CrashReportClient]` to handle only N percent of ensures (0-100)
+- Set `core.EnsuresAreErrors=0` to disable reporting while preserving logging
+- Set `core.EnsureAlwaysEnabled=false` to convert repeated `ensureAlways` reporting to single-occurrence
+
+**Testing**
+
+To verify ensure reporting is working, add the following to your source code and run a packaged build:
+
+```cpp
+ensure(false && "BugSplat test ensure");
+```
+
+After running, confirm the report appears on the [Crashes](https://app.bugsplat.com/v2/crashes) page.
+
+For more details, see the full [Unreal Assert, Check, and Ensure Reporting](https://docs.bugsplat.com/introduction/getting-started/integrations/game-development/unreal-engine/unreal-assert-check-and-ensure-reporting) documentation.
+
 #### macOS
 
 To create a `.dSYM` file for a macOS build invoke `RunUAT.command` with the `-EnableDSym` flag per the example below:
