@@ -14,6 +14,12 @@ UBugSplatEditorSettings::UBugSplatEditorSettings(const FObjectInitializer& Objec
 	bUploadDebugSymbols = false;
 	bEnableCrashReportingIos = true;
 	bEnableCrashReportingAndroid = true;
+	bEnableNativeDesktop = false;
+	DesktopUploadPolicy = EBugSplatUploadPolicy::Quiet;
+	DesktopDumpType = EBugSplatDumpType::Normal;
+	DesktopHangDetectionTimeoutMs = 0;
+	DesktopHangPolicy = EBugSplatHangPolicy::Report;
+	bDesktopOpenSupportUrl = true;
 }
 
 bool UBugSplatEditorSettings::HasValidCrashReporterSettings() const

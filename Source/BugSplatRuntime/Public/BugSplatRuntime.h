@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Containers/Ticker.h"
 #include "Modules/ModuleManager.h"
 
 class UBugSplatEditorSettings;
@@ -25,6 +26,8 @@ public:
 private:
 	void SetupCrashReportingIos();
 	void SetupCrashReportingAndroid();
+	void SetupCrashReportingDesktop();
 
 	UBugSplatEditorSettings* BugSplatEditorSettings;
+	FTSTicker::FDelegateHandle HeartbeatTicker;
 };
