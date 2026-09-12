@@ -1,6 +1,7 @@
 // Copyright BugSplat. All Rights Reserved.
 
 #include "BugSplatAttributes.h"
+#include "BugSplatNative.h"
 #include "GenericPlatform/GenericPlatformCrashContext.h"
 
 #if PLATFORM_IOS
@@ -38,6 +39,8 @@ void UBugSplatAttributes::SetAttribute(const FString& Key, const FString& Value)
 	Env->DeleteLocalRef(BugSplatClass);
 #else
 	FGenericCrashContext::SetGameData(Key, Value);
+	// CrashReportClient reads the crash context; bugsplat-native reads its own annotations.
+	FBugSplatNative::Get().SetAttribute(Key, Value);
 #endif
 
 	UE_LOG(LogBugSplatAttributes, Verbose, TEXT("SetAttribute: %s"), *Key);
@@ -64,6 +67,7 @@ void UBugSplatAttributes::RemoveAttribute(const FString& Key)
 	Env->DeleteLocalRef(BugSplatClass);
 #else
 	FGenericCrashContext::SetGameData(Key, TEXT(""));
+	FBugSplatNative::Get().RemoveAttribute(Key);
 #endif
 
 	UE_LOG(LogBugSplatAttributes, Verbose, TEXT("RemoveAttribute: %s"), *Key);

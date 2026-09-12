@@ -2,6 +2,7 @@
 
 #include "BugSplatRuntime.h"
 #include "BugSplatEditorSettings.h"
+#include "BugSplatNative.h"
 
 #include "Developer/Settings/Public/ISettingsModule.h"
 #include "UObject/Package.h"
@@ -291,10 +292,24 @@ void FBugSplatRuntimeModule::StartupModule()
 
 	SetupCrashReportingAndroid();
 #endif
+
+#if (PLATFORM_WINDOWS || PLATFORM_MAC || PLATFORM_LINUX) && !WITH_EDITOR
+	// Games only: the editor has its own crash handling and a BugSplatMonitor attached to the
+	// editor process would outlive PIE sessions.
+	if (BugSplatEditorSettings->bEnableNativeDesktop)
+		SetupCrashReportingDesktop();
+#endif
 }
 
 void FBugSplatRuntimeModule::ShutdownModule()
 {
+	if (HeartbeatTicker.IsValid())
+	{
+		FTSTicker::GetCoreTicker().RemoveTicker(HeartbeatTicker);
+		HeartbeatTicker.Reset();
+	}
+	FBugSplatNative::Get().Shutdown();
+
 	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
 	{
 		SettingsModule->UnregisterSettings("Project", "Plugins", "BugSplat");
@@ -319,6 +334,24 @@ FBugSplatRuntimeModule& FBugSplatRuntimeModule::Get()
 UBugSplatEditorSettings* FBugSplatRuntimeModule::GetSettings() const
 {
 	return BugSplatEditorSettings;
+}
+
+void FBugSplatRuntimeModule::SetupCrashReportingDesktop()
+{
+	FBugSplatNative& Native = FBugSplatNative::Get();
+	if (!Native.Start(*BugSplatEditorSettings))
+	{
+		UE_LOG(LogBugsplat, Error, TEXT("bugsplat-native did not start: %s. Engine crashes still go through CrashReportClient; hang detection, captures and native feedback are unavailable."), *Native.GetLastError());
+		return;
+	}
+
+	// The hang detector's evidence that the game thread is alive: one heartbeat per tick. A
+	// blocked game thread stops ticking, which is precisely the condition being detected.
+	HeartbeatTicker = FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([](float)
+	{
+		FBugSplatNative::Get().Heartbeat();
+		return true;
+	}), 0.0f);
 }
 
 void FBugSplatRuntimeModule::SetupCrashReportingIos()

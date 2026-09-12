@@ -57,6 +57,19 @@ To configure `CrashReportClient` to post to BugSplat, the `DataRouterUrl` value 
 
 In order to get function names and line numbers in crash reports, you'll need to upload your game's `.exe`, `.dll`, and `.pdb` files. To upload debug symbols for reach build, ensure that the `Enable Automatic Symbol Uploads` option is selected. When selected, a script to execute [symbol-upload](https://github.com/BugSplat-Git/symbol-upload) will be added to the `PostBuildSteps` field in `BugSplat.uplugin`. The symbol upload script will run automatically when your game is built.
 
+#### Desktop: bugsplat-native (hangs, captures, feedback, attachments)
+
+Engine crashes on Windows, macOS and Linux keep going through `CrashReportClient` as above. For everything `CrashReportClient` cannot do, the plugin can also load BugSplat's native SDK, [bugsplat-native](https://github.com/BugSplat-Git/bugsplat-native), in the game process: turn on **Enable bugsplat-native on Desktop** under **Project Settings > Plugins > BugSplat > Desktop (bugsplat-native)**. It adds:
+
+- **Hang detection** — the plugin sends a heartbeat from the game thread every tick; when it stops for longer than **Hang Detection Timeout (ms)**, `BugSplatMonitor` dumps the live game and uploads a hang report. **Hang Policy** `Report` lets the game continue, `Report And Terminate` offers the user Wait / Close. `GenerateHang` exercises it on desktop.
+- **Live captures** — `Capture Report` (`UBugSplatNative::CaptureReport`) dumps the running game and reports it like a crash without crashing.
+- **Feedback** — `PostFeedback` uploads through BugSplat's presigned uploader and comes back with a crash id and support-response URL.
+- **Structured reports** — `Post Structured Report` (`UBugSplatNative::PostStructuredReport`) sends a client-generated report with your own frames (`Function|File|Line`).
+- **Attributes and attachments at any time** — `SetAttribute` mirrors to the native SDK as well as the crash context; `Add Attachment` / `Remove Attachment` files are copied into every native report by the monitor right after the dump.
+- **Upload Policy** (`Dialog` shows the BugSplat dialog, `Quiet` uploads silently, `Manual` leaves reports for `Post Pending Reports`) and **Dump Type** (`Normal`, `Heap`, `Full`).
+
+The runtime must be present under `Source/ThirdParty/BugSplatNative/<Win64|Mac|Linux>` (`Win64` ships in this repository; fetch the others with `Source/Scripts/fetch-bugsplat-native.ps1` or `.sh`). Nothing links against it: the plugin loads it by path at startup, stages it with the packaged game, and logs why it did not start when the files are missing. It never starts inside the editor. `Is Native Crash Reporting Running` tells Blueprint whether it is active.
+
 #### macOS
 
 To create a `.dSYM` file for a macOS build invoke `RunUAT.command` with the `-EnableDSym` flag per the example below:

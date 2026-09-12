@@ -62,6 +62,30 @@ public class BugSplatRuntime : ModuleRules
 			}
 			);
 		
+		// bugsplat-native (desktop). The header supplies the types; the library and its helpers are
+		// loaded at runtime from Source/ThirdParty/BugSplatNative/<Platform>, so nothing links against
+		// them and the plugin builds whether or not the binaries are present. Whatever is there is
+		// staged next to the plugin in a packaged game so the SDK finds it at the same relative path.
+		string BugSplatNativeDir = Path.GetFullPath(Path.Combine(ModuleDirectory, "..", "ThirdParty", "BugSplatNative"));
+		PublicIncludePaths.Add(Path.Combine(BugSplatNativeDir, "include"));
+
+		string BugSplatNativePlatformDir = null;
+		if (Target.Platform == UnrealTargetPlatform.Win64) BugSplatNativePlatformDir = "Win64";
+		else if (Target.Platform == UnrealTargetPlatform.Mac) BugSplatNativePlatformDir = "Mac";
+		else if (Target.Platform == UnrealTargetPlatform.Linux) BugSplatNativePlatformDir = "Linux";
+
+		if (BugSplatNativePlatformDir != null)
+		{
+			string RuntimeDir = Path.Combine(BugSplatNativeDir, BugSplatNativePlatformDir);
+			if (Directory.Exists(RuntimeDir))
+			{
+				foreach (string File in Directory.GetFiles(RuntimeDir, "*", SearchOption.AllDirectories))
+				{
+					RuntimeDependencies.Add(File, StagedFileType.NonUFS);
+				}
+			}
+		}
+
 		if (Target.Platform == UnrealTargetPlatform.IOS)
 		{
 			// Path to the framework directory

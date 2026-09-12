@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "appearance": "system",
+
+  "brand": {
+    "productName": "BugSplat",
+    "logo": "",
+    "logoHeight": 0,
+    "logoAlignment": "start"
+  },
+
+  "palette": {
+    "light": {
+      "background": "#F3F3F3",
+      "surface": "#FFFFFF",
+      "surfaceAlt": "#F6F6F6",
+      "bannerBackground": "#FFFFFF",
+      "textPrimary": "#1A1A1A",
+      "textSecondary": "#606060",
+      "textDisabled": "#A0A0A0",
+      "accent": "#0F6CBD",
+      "accentHover": "#115EA3",
+      "accentPressed": "#0C4B85",
+      "accentText": "#FFFFFF",
+      "border": "#D1D1D1",
+      "borderStrong": "#8A8A8A",
+      "focus": "#1A1A1A",
+      "error": "#C42B1C"
+    },
+    "dark": {
+      "background": "#202020",
+      "surface": "#2D2D2D",
+      "surfaceAlt": "#383838",
+      "bannerBackground": "#FFFFFF",
+      "textPrimary": "#FFFFFF",
+      "textSecondary": "#B4B4B4",
+      "textDisabled": "#767676",
+      "accent": "#4C9EEB",
+      "accentHover": "#60ACF0",
+      "accentPressed": "#4086C8",
+      "accentText": "#000000",
+      "border": "#424242",
+      "borderStrong": "#6E6E6E",
+      "focus": "#FFFFFF",
+      "error": "#FF99A4"
+    }
+  },
+
+  "type": {
+    "family": "Segoe UI",
+    "baseSize": 9,
+    "headingSize": 13,
+    "headingWeight": 600
+  },
+
+  "layout": {
+    "windowWidth": 440,
+    "padding": 20,
+    "spacing": 14,
+    "controlRadius": 4,
+    "roundedWindow": true,
+    "mica": true,
+    "banner": true,
+    "bannerHeight": 64,
+    "descriptionLines": 5
+  },
+
+  "features": {
+    "showName": true,
+    "showEmail": true,
+    "showConsent": false,
+    "showAlwaysSend": false,
+    "showDetailsButton": true,
+    "requireEmail": false,
+    "autoCloseSeconds": 0
+  }
+}

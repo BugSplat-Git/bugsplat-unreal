@@ -1,0 +1,48 @@
+{
+  "locale": "en-US",
+  "direction": "ltr",
+  "fontFamily": "",
+
+  "strings": {
+    "title": "Crash Report",
+    "headline": "A problem has caused your program to close.",
+    "body": "Reporting this error will help us make our product more reliable. Please send this error report using the button below. All information is treated as confidential and is only used to improve future versions of this program.",
+
+    "hangTitle": "Application Not Responding",
+    "hangHeadline": "{appName} is not responding.",
+    "hangBody": "The program has stopped responding. Sending a report will help us find out why. All information is treated as confidential and is only used to improve future versions of this program.",
+
+    "reportTitle": "Send Report",
+    "reportHeadline": "Send a report to {productName}?",
+    "reportBody": "A report has been prepared. Sending it will help us make our product more reliable. All information is treated as confidential and is only used to improve future versions of this program.",
+
+    "reportInfo": "{appName} {appVersion}",
+    "reportInfoEnvironment": "{appName} {appVersion} on {environment}",
+
+    "descriptionLabel": "Please describe the events just before this dialog appeared:",
+    "contactNote": "Contact information below is optional. If you provide it, we will keep it confidential. We will only contact you with information relevant to this crash report.",
+    "nameLabel": "Name (optional)",
+    "emailLabel": "Email address (optional)",
+    "consent": "Allow BugSplat to store this information for a period of up to one year.",
+    "alwaysSend": "&Always send reports without asking",
+    "send": "&Send Error Report",
+    "dontSend": "&Don't Send",
+    "details": "&View Report Details",
+
+    "progressTitle": "Sending error report",
+    "progressContacting": "Contacting server",
+    "progressPackaging": "Generating error report",
+    "progressUploading": "Posting data",
+    "progressDone": "Done",
+    "progressFailed": "Failed",
+    "thankYou": "Thank you for sending this error report. It has been received successfully.",
+    "close": "&Close",
+
+    "filesTitle": "Report Details",
+    "filesBody": "A crash report has been generated for you, containing the files listed below. The report contains detailed information about the state of the application at the time that it crashed, as well as the information you provided us.",
+    "filesColumnFile": "File",
+    "filesColumnPath": "Path",
+    "ok": "OK",
+    "cancel": "Cancel"
+  }
+}

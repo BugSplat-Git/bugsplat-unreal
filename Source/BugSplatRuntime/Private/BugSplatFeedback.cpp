@@ -3,6 +3,8 @@
 #include "BugSplatFeedback.h"
 #include "BugSplatRuntime.h"
 #include "BugSplatEditorSettings.h"
+#include "BugSplatNative.h"
+#include "Async/Async.h"
 
 #include "HttpModule.h"
 #include "Interfaces/IHttpRequest.h"
@@ -46,6 +48,34 @@ void UBugSplatFeedback::PostFeedbackWithCallback(const FString& Title, const FSt
 	{
 		UE_LOG(LogTemp, Error, TEXT("BugSplat: Cannot submit feedback - Database or Application not configured in plugin settings"));
 		OnComplete.ExecuteIfBound(false, 0);
+		return;
+	}
+
+	// With bugsplat-native running, feedback takes the same store and presigned uploader as every
+	// other report and comes back with a crash id and support-response URL. The upload blocks, so
+	// it runs on a worker thread and the callback is delivered on the game thread.
+	if (FBugSplatNative::Get().IsRunning())
+	{
+		FBugSplatNative& Native = FBugSplatNative::Get();
+		if (!User.IsEmpty()) Native.SetUser(User);
+		if (!Email.IsEmpty()) Native.SetEmail(Email);
+		if (!AppKey.IsEmpty()) Native.SetKey(AppKey);
+		for (const TPair<FString, FString>& Pair : CustomAttributes)
+		{
+			Native.SetAttribute(Pair.Key, Pair.Value);
+		}
+
+		Async(EAsyncExecution::Thread, [Title, Description, Attachments, OnComplete]()
+		{
+			FBugSplatUploadResult Result;
+			FBugSplatNative::Get().PostFeedback(Title, Description, Attachments, Result);
+			AsyncTask(ENamedThreads::GameThread, [Result, OnComplete]()
+			{
+				UE_LOG(LogTemp, Log, TEXT("BugSplat: Feedback %s via bugsplat-native (crashId=%lld http=%d) %s"),
+					Result.bSuccess ? TEXT("uploaded") : TEXT("failed"), Result.CrashId, Result.HttpStatus, *Result.InfoUrl);
+				OnComplete.ExecuteIfBound(Result.bSuccess, Result.HttpStatus != 0 ? Result.HttpStatus : (Result.bSuccess ? 200 : 0));
+			});
+		});
 		return;
 	}
 
