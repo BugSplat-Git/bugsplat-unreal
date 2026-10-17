@@ -1,6 +1,8 @@
 // Copyright BugSplat. All Rights Reserved.
 #include "BugSplatUtils.h"
 #include "BugSplatFeedbackDialog.h"
+#include "Engine/Engine.h"
+#include "Misc/Build.h"
 
 #if PLATFORM_ANDROID
 #include "Android/AndroidJNI.h"
@@ -59,6 +61,20 @@ void UBugSplatUtils::GenerateHang()
 	});
 #else
 	UE_LOG(LogTemp, Warning, TEXT("BugSplat: GenerateHang is mobile-only; ignoring on this platform."));
+#endif
+}
+
+void UBugSplatUtils::GenerateGpuCrash(EBugSplatGpuCrashType Type)
+{
+#if WITH_GPUDEBUGCRASH
+	const TCHAR* Command = Type == EBugSplatGpuCrashType::PageFault ? TEXT("GPUDebugCrash pagefault") : TEXT("GPUDebugCrash hang");
+	UE_LOG(LogTemp, Log, TEXT("BugSplat: GenerateGpuCrash (%s)"), Command);
+	if (GEngine)
+	{
+		GEngine->Exec(nullptr, Command);
+	}
+#else
+	UE_LOG(LogTemp, Warning, TEXT("BugSplat: GenerateGpuCrash needs GPUDebugCrash, which this build excludes. Set ALLOW_GPUDEBUGCRASH_IN_SHIPPING=1 in your Target.cs to test GPU crashes in Shipping."));
 #endif
 }
 
