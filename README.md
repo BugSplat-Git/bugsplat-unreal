@@ -89,6 +89,8 @@ Note that sometimes iOS applications won't crash while the USB cable is connecte
 
 #### Android
 
+On Android 12 and later, a native crash is reported from the system's tombstone the next time the game is launched, so a crash isn't sent until the player opens the game again. Attachments, including the Unreal log, are read at that point, and attachments past 20 MB in total are skipped. On Android 8–11, crashes are captured and sent at crash time.
+
 > [!Note]
 > Code is aggressively optimized when building for Android. Oftentimes, Unreal's build process optimizes away code that generates simple errors used in testing. To test a null pointer dereference, you can add the `volatile` keyword to work around compiler optimizations.
 
