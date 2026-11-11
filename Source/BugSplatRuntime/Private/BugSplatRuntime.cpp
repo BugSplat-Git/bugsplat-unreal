@@ -395,7 +395,7 @@ void FBugSplatRuntimeModule::SetupCrashReportingAndroid()
 		Env->CallObjectMethod(AttributesMap, HashMapPut, *FJavaClassObject::GetJString(Attribute.Key), *FJavaClassObject::GetJString(Attribute.Value));
 	}
 
-	FString LogFile = FPaths::ConvertRelativePathToFull(FAndroidOutputDevices::GetAbsoluteLogFilename());
+	FString LogFile = IFileManager::Get().ConvertToAbsolutePathForExternalAppForRead(*FAndroidOutputDevices::GetAbsoluteLogFilename());
 
 	// Create string array with single log file
 	jobjectArray AttachmentArray = Env->NewObjectArray(1,
